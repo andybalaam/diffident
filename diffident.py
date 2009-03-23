@@ -31,8 +31,8 @@ def test_2_different():
 	listview.set_columns( 80 )
 
 	assert( listview.get_string() ==
-"""line 1 here                           <> line 1 here different                
-line 2 here                           <> line 2 here different                
+"""line 1 here                            <> line 1 here different                 
+line 2 here                            <> line 2 here different                 
 """ )
 
 
