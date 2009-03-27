@@ -30,8 +30,7 @@ class DiffModel:
 		ret = []
 		left_lines = []
 
-		num = 0
-		for num, line in enumerate( self.diff ):
+		for line in self.diff:
 			#if is_hunk_area( line ):
 			#
 			#el
@@ -42,7 +41,7 @@ class DiffModel:
 					DiffModel.DIFFERENT ) )
 				left_lines = left_lines[1:]
 
-		for line in self.left_file[num:]:
+		for line in self.left_file[len(ret):]:
 			ret.append( DiffModel.DiffLine( line, line, DiffModel.IDENTICAL ) )
 
 		return ret
