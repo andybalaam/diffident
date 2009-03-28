@@ -552,6 +552,92 @@ def removed_at_beginning():
 	assert_strings_equal( lines[3].right, "line 4 here" )
 	assert( lines[3].status == DiffModel.IDENTICAL )
 
+def changed_added_removed():
+
+	file1 = [
+		"line 1 here",
+		"line 2 here",
+		"line 3 here",
+		"line 4 here",
+		"line 5 here",
+		"line 7 here",
+		"line 8 here",
+		"line 9 here",
+		"line 10 here",
+	]
+
+	file2 = [
+		"line 1 here",
+		"line 2 here different",
+		"line 4 here",
+		"line 5 here",
+		"line 6 here",
+		"line 7 here",
+		"line 8 here",
+		"line 10 here",
+	]
+
+	diff = [
+		"--- test/file1.txt	2009-03-28 20:37:54.000000000 +0000",
+		"+++ test/file2.txt	2009-03-28 20:37:47.000000000 +0000",
+		"@@ -1,9 +1,8 @@",
+		" line 1 here",
+		"-line 2 here",
+		"-line 3 here",
+		"+line 2 here different",
+		" line 4 here",
+		" line 5 here",
+		"+line 6 here",
+		" line 7 here",
+		" line 8 here",
+		"-line 9 here",
+		" line 10 here",
+	]
+
+	diffmodel = DiffModel( file1, file2, diff )
+
+	lines = diffmodel.get_lines()
+
+	assert_strings_equal( lines[0].left, "line 1 here" )
+	assert_strings_equal( lines[0].right, "line 1 here" )
+	assert( lines[0].status == DiffModel.IDENTICAL )
+
+	assert_strings_equal( lines[1].left, "line 2 here" )
+	assert_strings_equal( lines[1].right, "line 2 here different" )
+	assert( lines[1].status == DiffModel.DIFFERENT )
+
+	assert_strings_equal( lines[2].left, "line 3 here" )
+	assert( lines[2].right is None )
+	assert( lines[2].status == DiffModel.REMOVE )
+
+	assert_strings_equal( lines[3].left, "line 4 here" )
+	assert_strings_equal( lines[3].right, "line 4 here" )
+	assert( lines[3].status == DiffModel.IDENTICAL )
+
+	assert_strings_equal( lines[4].left, "line 5 here" )
+	assert_strings_equal( lines[4].right, "line 5 here" )
+	assert( lines[4].status == DiffModel.IDENTICAL )
+
+	assert( lines[5].left is None )
+	assert_strings_equal( lines[5].right, "line 6 here" )
+	assert( lines[5].status == DiffModel.ADD )
+
+	assert_strings_equal( lines[6].left, "line 7 here" )
+	assert_strings_equal( lines[6].right, "line 7 here" )
+	assert( lines[6].status == DiffModel.IDENTICAL )
+
+	assert_strings_equal( lines[7].left, "line 8 here" )
+	assert_strings_equal( lines[7].right, "line 8 here" )
+	assert( lines[7].status == DiffModel.IDENTICAL )
+
+	assert_strings_equal( lines[8].left, "line 9 here" )
+	assert( lines[8].right is None )
+	assert( lines[8].status == DiffModel.REMOVE )
+
+	assert_strings_equal( lines[9].left, "line 10 here" )
+	assert_strings_equal( lines[9].right, "line 10 here" )
+	assert( lines[9].status == DiffModel.IDENTICAL )
+
 def run():
 	parse_hunks()
 
@@ -568,4 +654,6 @@ def run():
 	removed_at_end()
 	removed_in_middle()
 	removed_at_beginning()
+
+	changed_added_removed()
 
