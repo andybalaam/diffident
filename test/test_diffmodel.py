@@ -216,6 +216,50 @@ def multiple_hunks_no_deletions_or_additions():
 	assert_strings_equal( lines[39].right, "line 40 here" )
 	assert( lines[39].status == DiffModel.IDENTICAL )
 
+def added_at_end():
+
+	file1 = [
+		"line 1 here",
+		"line 2 here",
+	]
+
+	file2 = [
+		"line 1 here",
+		"line 2 here",
+		"line 3 here",
+		"line 4 here",
+	]
+
+	diff = [
+		"--- test/file1.txt	2009-03-28 15:18:52.000000000 +0000",
+		"+++ test/file2.txt	2009-03-28 15:19:28.000000000 +0000",
+		"@@ -1,2 +1,4 @@",
+		" line 1 here",
+		" line 2 here",
+		"+line 3 here",
+		"+line 4 here",
+	]
+
+	diffmodel = DiffModel( file1, file2, diff )
+
+	lines = diffmodel.get_lines()
+
+	assert_strings_equal( lines[0].left,  "line 1 here" )
+	assert_strings_equal( lines[0].right, "line 1 here" )
+	assert( lines[0].status == DiffModel.IDENTICAL )
+
+	assert_strings_equal( lines[1].left,  "line 2 here" )
+	assert_strings_equal( lines[1].right, "line 2 here" )
+	assert( lines[1].status == DiffModel.IDENTICAL )
+
+	assert( lines[2].left is None )
+	assert_strings_equal( lines[2].right, "line 3 here" )
+	assert( lines[2].status == DiffModel.ADD )
+
+	assert( lines[3].left is None )
+	assert_strings_equal( lines[3].right, "line 4 here" )
+	assert( lines[3].status == DiffModel.ADD )
+
 def run():
 	parse_hunks()
 
@@ -224,4 +268,5 @@ def run():
 	diff_then_same()
 	same_then_diff()
 	multiple_hunks_no_deletions_or_additions()
+	added_at_end()
 

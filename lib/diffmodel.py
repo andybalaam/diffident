@@ -97,10 +97,14 @@ class DiffModel:
 				left_lines.append( diff_line[1:] )
 				left_iter.next_no_throw()
 			elif is_plus_line( diff_line ):
-				ret.append( DiffModel.DiffLine( left_lines[0], diff_line[1:],
-					DiffModel.DIFFERENT ) )
-				left_lines = left_lines[1:]
-			else:
+				if len( left_lines ) > 0:
+					ret.append( DiffModel.DiffLine(
+						left_lines[0], diff_line[1:], DiffModel.DIFFERENT ) )
+					left_lines = left_lines[1:]
+				else:
+					ret.append( DiffModel.DiffLine(
+						None, diff_line[1:], DiffModel.ADD ) )
+			else: # TODO: is_space_line
 				real_line = diff_line[1:]
 				ret.append( DiffModel.DiffLine( real_line, real_line,
 					DiffModel.IDENTICAL ) )
