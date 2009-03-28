@@ -260,6 +260,86 @@ def added_at_end():
 	assert_strings_equal( lines[3].right, "line 4 here" )
 	assert( lines[3].status == DiffModel.ADD )
 
+def added_in_middle():
+
+	file1 = [
+		"line 1 here",
+		"line 3 here",
+		"line 4 here",
+		"line 5 here",
+		"line 6 here",
+		"line 7 here",
+		"line 8 here",
+		"line 9 here",
+		"line 10 here",
+		"line 11 here",
+		"line 12 here",
+		"line 13 here",
+		"line 14 here",
+		"line 16 here",
+	]
+
+	file2 = [
+		"line 1 here",
+		"line 2 here",
+		"line 3 here",
+		"line 4 here",
+		"line 5 here",
+		"line 6 here",
+		"line 7 here",
+		"line 8 here",
+		"line 9 here",
+		"line 10 here",
+		"line 11 here",
+		"line 12 here",
+		"line 13 here",
+		"line 14 here",
+		"line 15 here",
+		"line 16 here",
+	]
+
+	diff = [
+		"--- test/file1.txt	2009-03-28 15:28:21.000000000 +0000",
+		"+++ test/file2.txt	2009-03-28 15:27:50.000000000 +0000",
+		"@@ -1,4 +1,5 @@",
+		" line 1 here",
+		"+line 2 here",
+		" line 3 here",
+		" line 4 here",
+		" line 5 here",
+		"@@ -11,4 +12,5 @@",
+		" line 12 here",
+		" line 13 here",
+		" line 14 here",
+		"+line 15 here",
+		" line 16 here",
+	]
+
+	diffmodel = DiffModel( file1, file2, diff )
+
+	lines = diffmodel.get_lines()
+
+	assert_strings_equal( lines[0].left,  "line 1 here" )
+	assert_strings_equal( lines[0].right, "line 1 here" )
+	assert( lines[0].status == DiffModel.IDENTICAL )
+
+	assert( lines[1].left is None )
+	assert_strings_equal( lines[1].right, "line 2 here" )
+	assert( lines[1].status == DiffModel.ADD )
+
+	for i in range( 3, 15 ):
+		assert_strings_equal( lines[i-1].left,  "line %d here" % i )
+		assert_strings_equal( lines[i-1].right, "line %d here" % i )
+		assert( lines[i-1].status == DiffModel.IDENTICAL )
+
+	assert( lines[14].left is None )
+	assert_strings_equal( lines[14].right, "line 15 here" )
+	assert( lines[14].status == DiffModel.ADD )
+
+	assert_strings_equal( lines[15].left, "line 16 here" )
+	assert_strings_equal( lines[15].right, "line 16 here" )
+	assert( lines[15].status == DiffModel.IDENTICAL )
+
 def run():
 	parse_hunks()
 
@@ -269,4 +349,5 @@ def run():
 	same_then_diff()
 	multiple_hunks_no_deletions_or_additions()
 	added_at_end()
+	added_in_middle()
 
