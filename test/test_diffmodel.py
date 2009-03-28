@@ -340,6 +340,50 @@ def added_in_middle():
 	assert_strings_equal( lines[15].right, "line 16 here" )
 	assert( lines[15].status == DiffModel.IDENTICAL )
 
+def added_at_beginning():
+
+	file1 = [
+		"line 3 here",
+		"line 4 here",
+	]
+
+	file2 = [
+		"line 1 here",
+		"line 2 here",
+		"line 3 here",
+		"line 4 here",
+	]
+
+	diff = [
+		"--- test/file1.txt	2009-03-28 15:33:40.000000000 +0000",
+		"+++ test/file2.txt	2009-03-28 15:33:45.000000000 +0000",
+		"@@ -1,2 +1,4 @@",
+		"+line 1 here",
+		"+line 2 here",
+		" line 3 here",
+		" line 4 here",
+	]
+
+	diffmodel = DiffModel( file1, file2, diff )
+
+	lines = diffmodel.get_lines()
+
+	assert( lines[0].left is None )
+	assert_strings_equal( lines[0].right, "line 1 here" )
+	assert( lines[0].status == DiffModel.ADD )
+
+	assert( lines[1].left is None )
+	assert_strings_equal( lines[1].right, "line 2 here" )
+	assert( lines[1].status == DiffModel.ADD )
+
+	assert_strings_equal( lines[2].left, "line 3 here" )
+	assert_strings_equal( lines[2].right, "line 3 here" )
+	assert( lines[2].status == DiffModel.IDENTICAL )
+
+	assert_strings_equal( lines[3].left, "line 4 here" )
+	assert_strings_equal( lines[3].right, "line 4 here" )
+	assert( lines[3].status == DiffModel.IDENTICAL )
+
 def run():
 	parse_hunks()
 
@@ -350,4 +394,5 @@ def run():
 	multiple_hunks_no_deletions_or_additions()
 	added_at_end()
 	added_in_middle()
+	added_at_beginning()
 
