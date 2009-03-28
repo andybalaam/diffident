@@ -428,6 +428,86 @@ def removed_at_end():
 	assert( lines[3].right is None )
 	assert( lines[3].status == DiffModel.REMOVE )
 
+def removed_in_middle():
+
+	file1 = [
+		"line 1 here",
+		"line 2 here",
+		"line 3 here",
+		"line 4 here",
+		"line 5 here",
+		"line 6 here",
+		"line 7 here",
+		"line 8 here",
+		"line 9 here",
+		"line 10 here",
+		"line 11 here",
+		"line 12 here",
+		"line 13 here",
+		"line 14 here",
+		"line 15 here",
+		"line 16 here",
+	]
+
+	file2 = [
+		"line 1 here",
+		"line 3 here",
+		"line 4 here",
+		"line 5 here",
+		"line 6 here",
+		"line 7 here",
+		"line 8 here",
+		"line 9 here",
+		"line 10 here",
+		"line 11 here",
+		"line 12 here",
+		"line 13 here",
+		"line 14 here",
+		"line 16 here",
+	]
+
+	diff = [
+		"--- test/file1.txt	2009-03-28 20:29:28.000000000 +0000",
+		"+++ test/file2.txt	2009-03-28 20:29:37.000000000 +0000",
+		"@@ -1,5 +1,4 @@",
+		" line 1 here",
+		"-line 2 here",
+		" line 3 here",
+		" line 4 here",
+		" line 5 here",
+		"@@ -12,5 +11,4 @@",
+		" line 12 here",
+		" line 13 here",
+		" line 14 here",
+		"-line 15 here",
+		" line 16 here",
+	]
+
+	diffmodel = DiffModel( file1, file2, diff )
+
+	lines = diffmodel.get_lines()
+
+	assert_strings_equal( lines[0].left,  "line 1 here" )
+	assert_strings_equal( lines[0].right, "line 1 here" )
+	assert( lines[0].status == DiffModel.IDENTICAL )
+
+	assert_strings_equal( lines[1].left, "line 2 here" )
+	assert( lines[1].right is None )
+	assert( lines[1].status == DiffModel.REMOVE )
+
+	for i in range( 3, 15 ):
+		assert_strings_equal( lines[i-1].left,  "line %d here" % i )
+		assert_strings_equal( lines[i-1].right, "line %d here" % i )
+		assert( lines[i-1].status == DiffModel.IDENTICAL )
+
+	assert_strings_equal( lines[14].left, "line 15 here" )
+	assert( lines[14].right is None )
+	assert( lines[14].status == DiffModel.REMOVE )
+
+	assert_strings_equal( lines[15].left, "line 16 here" )
+	assert_strings_equal( lines[15].right, "line 16 here" )
+	assert( lines[15].status == DiffModel.IDENTICAL )
+
 def run():
 	parse_hunks()
 
@@ -442,6 +522,6 @@ def run():
 	added_at_beginning()
 
 	removed_at_end()
-	#removed_in_middle()
+	removed_in_middle()
 	#removed_at_beginning()
 
