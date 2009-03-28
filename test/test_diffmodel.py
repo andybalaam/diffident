@@ -508,6 +508,50 @@ def removed_in_middle():
 	assert_strings_equal( lines[15].right, "line 16 here" )
 	assert( lines[15].status == DiffModel.IDENTICAL )
 
+def removed_at_beginning():
+
+	file1 = [
+		"line 1 here",
+		"line 2 here",
+		"line 3 here",
+		"line 4 here",
+	]
+
+	file2 = [
+		"line 3 here",
+		"line 4 here",
+	]
+
+	diff = [
+		"--- test/file1.txt	2009-03-28 20:32:36.000000000 +0000",
+		"+++ test/file2.txt	2009-03-28 20:32:41.000000000 +0000",
+		"@@ -1,4 +1,2 @@",
+		"-line 1 here",
+		"-line 2 here",
+		" line 3 here",
+		" line 4 here",
+	]
+
+	diffmodel = DiffModel( file1, file2, diff )
+
+	lines = diffmodel.get_lines()
+
+	assert_strings_equal( lines[0].left, "line 1 here" )
+	assert( lines[0].right is None )
+	assert( lines[0].status == DiffModel.REMOVE )
+
+	assert_strings_equal( lines[1].left, "line 2 here" )
+	assert( lines[1].right is None )
+	assert( lines[1].status == DiffModel.REMOVE )
+
+	assert_strings_equal( lines[2].left, "line 3 here" )
+	assert_strings_equal( lines[2].right, "line 3 here" )
+	assert( lines[2].status == DiffModel.IDENTICAL )
+
+	assert_strings_equal( lines[3].left, "line 4 here" )
+	assert_strings_equal( lines[3].right, "line 4 here" )
+	assert( lines[3].status == DiffModel.IDENTICAL )
+
 def run():
 	parse_hunks()
 
@@ -523,5 +567,5 @@ def run():
 
 	removed_at_end()
 	removed_in_middle()
-	#removed_at_beginning()
+	removed_at_beginning()
 
