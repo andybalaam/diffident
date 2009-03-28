@@ -22,7 +22,7 @@ class DiffModel:
 			self.right = right
 			self.status = status
 		def __repr__( self ):
-			return self.left + " -- " +  self.right
+			return "%s -- %s" % ( self.left, self.right )
 
 	class CountingIter:
 		"""A wrapper around an iterator that keeps count of how many times
