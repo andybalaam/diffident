@@ -81,13 +81,24 @@ class DiffModel:
 			ret.append( DiffModel.DiffLine( left_line, left_line,
 				DiffModel.IDENTICAL ) )
 
+	def process_removed_lines( self, ret, left_lines ):
+		for left_line in left_lines:
+			ret.append( DiffModel.DiffLine( left_line, None,
+				DiffModel.REMOVE ) )
+		# Clear the list
+		left_lines[:] = []
+
 	def read_diff_to_end_of_hunk( self, ret, left_iter, diff_iter ):
 		left_lines = []
 		hunk_left_begin = -1
 		while True:
 			# If this throws we allow the StopIteration exception to escape
 			# to our caller.
-			diff_line = diff_iter.next()
+			try:
+				diff_line = diff_iter.next()
+			except StopIteration, e:
+				self.process_removed_lines( ret, left_lines )
+				raise e
 
 			hunk_left_begin = self.parse_hunk_line( diff_line )
 			if hunk_left_begin > 0:
@@ -105,13 +116,12 @@ class DiffModel:
 					ret.append( DiffModel.DiffLine(
 						None, diff_line[1:], DiffModel.ADD ) )
 			else: # TODO: is_space_line
+				self.process_removed_lines( ret, left_lines )
+
 				real_line = diff_line[1:]
 				ret.append( DiffModel.DiffLine( real_line, real_line,
 					DiffModel.IDENTICAL ) )
 				left_iter.next_no_throw()
-
-		# This will fail when we consider diffs expressing deletions
-		assert( len( left_lines ) == 0 )
 
 		return hunk_left_begin
 
