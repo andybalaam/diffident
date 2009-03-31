@@ -26,15 +26,15 @@ def just_differences():
 	listview.set_columns( 80 )
 
 	assert_strings_equal( listview.get_string(),
-"""line 1 here                            <> line 1 here different                 
-line 2 here                            <> line 2 here different                 
+"""line 1 here                               line 1 here different
+line 2 here                               line 2 here different
 """ )
 
 	listview.set_columns( 60 )
 
 	assert_strings_equal( listview.get_string(),
-"""line 1 here                  <> line 1 here different       
-line 2 here                  <> line 2 here different       
+"""line 1 here                     line 1 here different
+line 2 here                     line 2 here different
 """ )
 
 

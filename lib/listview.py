@@ -17,7 +17,7 @@ class ListView:
 		ret = ""
 		lines = self.diffmodel.get_lines()
 		for line in lines:
-			pattern = "%%-%ds <> %%-%ds\n" % ( half_width, half_width )
+			pattern = "%%-%ds    %%s\n" % half_width
 			ret += pattern % ( line.left, line.right )
 		return ret
 
