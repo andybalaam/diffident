@@ -3,7 +3,17 @@ class DiffModel:
 	"""An abstract model of the differences between 2 files."""
 
 	class DiffLine:
+		"""Abstract representation of a line in a diff."""
+
 		def __init__( self, left, right, status ):
+			"""Create a DiffLine.
+			- left is the line in the left file, or
+			  None if this is an ADD line.
+			- right is the line in the right file, or
+			  None if this is a REMOVE line.
+			- status is a constant from lib.difflinetypes describing the type
+			  of line this is: IDENTICAL, DIFFERENT, ADD or REMOVE."""
+
 			self.left = left
 			self.right = right
 			self.status = status
@@ -13,8 +23,14 @@ class DiffModel:
 
 	def __init__( self, parser ):
 		self.parser = parser
+		self.lines = []
 
 	def get_lines( self ):
-		return self.parser.parse_lines()
+		self.parser.parse_lines( self.line_callback )
+		return self.lines
 
+	def line_callback( self, left, right, status ):
+		"""Receive a callback from the parser saying that we have received a
+		line."""
+		self.lines.append( DiffModel.DiffLine( left, right, status ) )
 

@@ -54,33 +54,30 @@ class UnifiedDiffParser:
 		else:
 			return -1
 
-	def read_left_to_linenum( self, ret, linenum, left_iter ):
+	def read_left_to_linenum( self, line_callback, linenum, left_iter ):
 		while left_iter.num < linenum - 1:
 			try:
 				left_line = left_iter.next()
 			except StopIteration:
 				raise Exception(
 					"Reached the end of the left file unexpectedly." )
-			ret.append( DiffModel.DiffLine( left_line, left_line,
-				difflinetypes.IDENTICAL ) )
+			line_callback( left_line, left_line, difflinetypes.IDENTICAL )
 
-	def read_left_to_end( self, ret, left_iter ):
+	def read_left_to_end( self, line_callback, left_iter ):
 		while True:
 			try:
 				left_line = left_iter.next()
 			except StopIteration:
 				break
-			ret.append( DiffModel.DiffLine( left_line, left_line,
-				difflinetypes.IDENTICAL ) )
+			line_callback( left_line, left_line, difflinetypes.IDENTICAL )
 
-	def process_removed_lines( self, ret, left_lines ):
+	def process_removed_lines( self, line_callback, left_lines ):
 		for left_line in left_lines:
-			ret.append( DiffModel.DiffLine( left_line, None,
-				difflinetypes.REMOVE ) )
+			line_callback( left_line, None, difflinetypes.REMOVE )
 		# Clear the list
 		left_lines[:] = []
 
-	def read_diff_to_end_of_hunk( self, ret, left_iter, diff_iter ):
+	def read_diff_to_end_of_hunk( self, line_callback, left_iter, diff_iter ):
 		left_lines = []
 		hunk_left_begin = -1
 		while True:
@@ -89,7 +86,7 @@ class UnifiedDiffParser:
 			try:
 				diff_line = diff_iter.next()
 			except StopIteration, e:
-				self.process_removed_lines( ret, left_lines )
+				self.process_removed_lines( line_callback, left_lines )
 				raise e
 
 			hunk_left_begin = self.parse_hunk_line( diff_line )
@@ -101,24 +98,27 @@ class UnifiedDiffParser:
 				left_iter.next_no_throw()
 			elif is_plus_line( diff_line ):
 				if len( left_lines ) > 0:
-					ret.append( DiffModel.DiffLine(
-						left_lines[0], diff_line[1:], difflinetypes.DIFFERENT ) )
+					line_callback( left_lines[0], diff_line[1:],
+						difflinetypes.DIFFERENT )
 					left_lines = left_lines[1:]
 				else:
-					ret.append( DiffModel.DiffLine(
-						None, diff_line[1:], difflinetypes.ADD ) )
+					line_callback( None, diff_line[1:], difflinetypes.ADD )
 			else: # TODO: is_space_line
-				self.process_removed_lines( ret, left_lines )
+				self.process_removed_lines( line_callback, left_lines )
 
 				real_line = diff_line[1:]
-				ret.append( DiffModel.DiffLine( real_line, real_line,
-					difflinetypes.IDENTICAL ) )
+				line_callback( real_line, real_line,
+					difflinetypes.IDENTICAL )
 				left_iter.next_no_throw()
 
 		return hunk_left_begin
 
-	def parse_lines( self ):
-		ret = []
+	def parse_lines( self, line_callback ):
+		"""Parse the diff supplied in the constructor.  For each line found,
+		call the supplied line_callback function with three arguments:
+		the line on the left (or None if this is an ADD),
+		the line on the right (or None if this is a REMOVE),
+		and the type of line (a constant from lib.difflinetypes)."""
 
 		diff_iter = self.diff.__iter__()
 		left_iter = UnifiedDiffParser.CountingIter( self.left_file.__iter__() )
@@ -132,10 +132,10 @@ class UnifiedDiffParser:
 			hunk_left_begin = self.parse_hunk_line( diff_line )
 			while True:
 				if hunk_left_begin > 0:
-					self.read_left_to_linenum( ret, hunk_left_begin, left_iter )
+					self.read_left_to_linenum( line_callback, hunk_left_begin, left_iter )
 					try:
 						hunk_left_begin = self.read_diff_to_end_of_hunk(
-							ret, left_iter, diff_iter )
+							line_callback, left_iter, diff_iter )
 					except StopIteration:
 						break
 				else:
@@ -145,8 +145,7 @@ class UnifiedDiffParser:
 					except StopIteration:
 						break
 
-		self.read_left_to_end( ret, left_iter )
+		self.read_left_to_end( line_callback, left_iter )
 
-		return ret
 
 
