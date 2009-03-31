@@ -18,7 +18,7 @@ def test_slow():
 	run_quick_tests()
 
 	# TODO: don't use os.system, and handle return values correctly.
-	#retval = os.system( "test/slow/test_slow.sh" )
-	#if retval == 0:
-	print "All tests (including slow ones) passed."
+	retval = os.system( "test/slow/test_slow.sh" )
+	if retval == 0:
+		print "All tests (including slow ones) passed."
 
