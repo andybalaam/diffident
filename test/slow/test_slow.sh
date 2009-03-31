@@ -15,17 +15,8 @@ function assert_retval_is_zero()
 
 function listview_matches_diff()
 {
-	cat >file1.tmptxt <<END
-blah
-blah
-blah
-END
-
-	cat >file2.tmptxt <<END
-blah
-blah
-blah
-END
+	echo "$1" > file1.tmptxt
+	echo "$2" > file2.tmptxt
 
 	./diffident.py file1.tmptxt file2.tmptxt > output-diffident.tmptxt
 
@@ -37,5 +28,17 @@ END
 	#rm *.tmptxt
 }
 
-listview_matches_diff
+function listview_matches_diff_nochanges()
+{
+	FILE1=`cat <<END
+line 1
+line 2
+line 3
+
+END`
+
+	listview_matches_diff "$FILE1" "$FILE1"
+}
+
+listview_matches_diff_nochanges
 
