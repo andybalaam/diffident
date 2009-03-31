@@ -1,5 +1,11 @@
 import lib.difflinetypes as difflinetypes
 
+def empty_if_none( line ):
+	if line is None:
+		return ""
+	else:
+		return line
+
 class ListView:
 	"""A simple view on a DiffModel that just lists all the lines in a file
 	side by side."""
@@ -19,10 +25,18 @@ class ListView:
 		lines = self.diffmodel.get_lines()
 		for line in lines:
 			if line.status == difflinetypes.IDENTICAL:
-				divider = " "
+				divider = "   "
 			elif line.status == difflinetypes.DIFFERENT:
-				divider = "|"
-			pattern = "%%-%ds %s  %%s\n" % ( half_width, divider )
-			ret += pattern % ( line.left, line.right )
+				divider = "|  "
+			elif line.status == difflinetypes.ADD:
+				divider = ">  "
+			elif line.status == difflinetypes.REMOVE:
+				divider = "<"
+			else:
+				raise Exception( "Unknown line type %d." % line.status )
+
+			pattern = "%%-%ds %s%%s\n" % ( half_width, divider )
+			ret += pattern % ( empty_if_none( line.left ),
+				empty_if_none( line.right ) )
 		return ret
 
