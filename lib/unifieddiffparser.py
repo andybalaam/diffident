@@ -1,6 +1,5 @@
 import re
 import lib.difflinetypes as difflinetypes
-from lib.diffmodel import DiffModel # TODO: remove
 
 def is_x_line( line, x ):
 	return ( line[0] == x and not line.startswith( x * 3 ) )
