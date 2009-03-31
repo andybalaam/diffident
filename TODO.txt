@@ -11,4 +11,6 @@ Later:
 - Make the parser able to accept a line-number range so we can handle
   big files.  DiffModel would only cache a certain number of lines, and call
   into the parser whenever it needed to get some other lines.
+- Treat lines beginning +++ that are not hunk beginnings (i.e. don't match
+  exactly the +++ file-name date-format regular expression) as + lines
 
