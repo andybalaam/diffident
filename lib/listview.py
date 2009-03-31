@@ -1,5 +1,8 @@
 
 class ListView:
+	"""A simple view on a DiffModel that just lists all the lines in a file
+	side by side."""
+
 	def __init__( self, diffmodel ):
 		self.diffmodel = diffmodel
 		self.columns = 80
