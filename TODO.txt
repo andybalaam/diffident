@@ -1,8 +1,18 @@
 Next:
 
-- Write tests comparing the output if ListView with diff --side-by-side
-- Modify ListView to match diff's side-by-side format
 - Ignore lines that do not start with a space in unified diffs
+- Basic ncurses interface:
+ - Title line showing pretty names
+ - Side-by side differences with dividing column
+ - Status line saying "Press h for help"
+- Moveable cursor
+- Scrolling when cursor is moved
+- Can copy from one side to the other
+- Help page
+- Can see long lines word-wrapped at bottom? (not short lines)
+- Can edit lines
+- Can scroll to the right to see long lines
+- Can edit long lines because they wrap
 
 Big:
 
