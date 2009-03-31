@@ -1,6 +1,4 @@
 
-- Refactor unified diff parsing into a separate class
-- Write unit tests for remaining DiffModel functionality
 - Remove 2nd file from test_unifieddiffparser
 - Write tests comparing the output if ListView with diff --side-by-side
 - Modify ListView to match diff's side-by-side format
