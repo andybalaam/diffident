@@ -41,9 +41,8 @@ class UnifiedDiffParser:
 			except StopIteration:
 				return None
 
-	def __init__( self, left_file, right_file, diff ):
+	def __init__( self, left_file, diff ):
 		self.left_file = left_file
-		self.right_file = right_file
 		self.diff = diff
 
 	hunk_line_re = re.compile( r"@@ -(\d+),\d+ \+\d+,\d+ @@" )

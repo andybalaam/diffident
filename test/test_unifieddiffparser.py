@@ -5,7 +5,7 @@ from lib.diffmodel import DiffModel
 import lib.difflinetypes as difflinetypes
 
 def parse_hunks():
-	diffparser = UnifiedDiffParser( None, None, None );
+	diffparser = UnifiedDiffParser( None, None );
 	assert( diffparser.parse_hunk_line( "@@ -1,2 +1,2 @@" ) == 1 )
 	assert( diffparser.parse_hunk_line( "@@ -36,5 +36,5 @@" ) == 36 )
 
@@ -13,11 +13,6 @@ def just_differences():
 	file1 = [
 		"line 1 here",
 		"line 2 here",
-	]
-
-	file2 = [
-		"line 1 here different",
-		"line 2 here different",
 	]
 
 	diff = [
@@ -30,7 +25,7 @@ def just_differences():
 		"+line 2 here different",
 	]
 
-	unifieddiffparser = UnifiedDiffParser( file1, file2, diff )
+	unifieddiffparser = UnifiedDiffParser( file1, diff )
 	diffmodel = DiffModel( unifieddiffparser )
 
 	lines = diffmodel.get_lines()
@@ -49,14 +44,9 @@ def identical():
 		"line 2 here",
 	]
 
-	file2 = [
-		"line 1 here",
-		"line 2 here",
-	]
-
 	diff = []
 
-	unifieddiffparser = UnifiedDiffParser( file1, file2, diff )
+	unifieddiffparser = UnifiedDiffParser( file1, diff )
 	diffmodel = DiffModel( unifieddiffparser )
 
 	lines = diffmodel.get_lines()
@@ -78,13 +68,6 @@ def diff_then_same():
 		"line 4 here",
 	]
 
-	file2 = [
-		"line 1 here different",
-		"line 2 here different",
-		"line 3 here",
-		"line 4 here",
-	]
-
 	diff = [
 		"--- test/file1.txt	2009-03-27 21:06:15.000000000 +0000",
 		"+++ test/file2.txt	2009-03-27 21:11:54.000000000 +0000",
@@ -97,7 +80,7 @@ def diff_then_same():
 		" line 4 here",
 	]
 
-	unifieddiffparser = UnifiedDiffParser( file1, file2, diff )
+	unifieddiffparser = UnifiedDiffParser( file1, diff )
 	diffmodel = DiffModel( unifieddiffparser )
 
 	lines = diffmodel.get_lines()
@@ -127,13 +110,6 @@ def same_then_diff():
 		"line 4 here",
 	]
 
-	file2 = [
-		"line 1 here",
-		"line 2 here",
-		"line 3 here different",
-		"line 4 here different",
-	]
-
 	diff = [
 		"--- test/file1.txt	2009-03-27 21:06:15.000000000 +0000",
 		"+++ test/file2.txt	2009-03-27 21:19:51.000000000 +0000",
@@ -146,7 +122,7 @@ def same_then_diff():
 		"+line 4 here different",
 	]
 
-	unifieddiffparser = UnifiedDiffParser( file1, file2, diff )
+	unifieddiffparser = UnifiedDiffParser( file1, diff )
 	diffmodel = DiffModel( unifieddiffparser )
 
 	lines = diffmodel.get_lines()
@@ -172,13 +148,6 @@ def multiple_hunks_no_deletions_or_additions():
 	for i in range( 1, 41 ):
 		file1.append( "line %d here" % i )
 
-	file2 = []
-	for line in file1:
-		file2.append( line )
-
-	for i in ( 2, 39 ):
-		file2[i-1] += " different"
-
 	diff = [
 		"--- test/file1.txt	2009-03-28 00:34:14.000000000 +0000",
 		"+++ test/file2.txt	2009-03-28 00:34:33.000000000 +0000",
@@ -198,7 +167,7 @@ def multiple_hunks_no_deletions_or_additions():
 		" line 40 here",
 	]
 
-	unifieddiffparser = UnifiedDiffParser( file1, file2, diff )
+	unifieddiffparser = UnifiedDiffParser( file1, diff )
 	diffmodel = DiffModel( unifieddiffparser )
 
 	lines = diffmodel.get_lines()
@@ -231,13 +200,6 @@ def added_at_end():
 		"line 2 here",
 	]
 
-	file2 = [
-		"line 1 here",
-		"line 2 here",
-		"line 3 here",
-		"line 4 here",
-	]
-
 	diff = [
 		"--- test/file1.txt	2009-03-28 15:18:52.000000000 +0000",
 		"+++ test/file2.txt	2009-03-28 15:19:28.000000000 +0000",
@@ -248,7 +210,7 @@ def added_at_end():
 		"+line 4 here",
 	]
 
-	unifieddiffparser = UnifiedDiffParser( file1, file2, diff )
+	unifieddiffparser = UnifiedDiffParser( file1, diff )
 	diffmodel = DiffModel( unifieddiffparser )
 
 	lines = diffmodel.get_lines()
@@ -288,25 +250,6 @@ def added_in_middle():
 		"line 16 here",
 	]
 
-	file2 = [
-		"line 1 here",
-		"line 2 here",
-		"line 3 here",
-		"line 4 here",
-		"line 5 here",
-		"line 6 here",
-		"line 7 here",
-		"line 8 here",
-		"line 9 here",
-		"line 10 here",
-		"line 11 here",
-		"line 12 here",
-		"line 13 here",
-		"line 14 here",
-		"line 15 here",
-		"line 16 here",
-	]
-
 	diff = [
 		"--- test/file1.txt	2009-03-28 15:28:21.000000000 +0000",
 		"+++ test/file2.txt	2009-03-28 15:27:50.000000000 +0000",
@@ -324,7 +267,7 @@ def added_in_middle():
 		" line 16 here",
 	]
 
-	unifieddiffparser = UnifiedDiffParser( file1, file2, diff )
+	unifieddiffparser = UnifiedDiffParser( file1, diff )
 	diffmodel = DiffModel( unifieddiffparser )
 
 	lines = diffmodel.get_lines()
@@ -357,13 +300,6 @@ def added_at_beginning():
 		"line 4 here",
 	]
 
-	file2 = [
-		"line 1 here",
-		"line 2 here",
-		"line 3 here",
-		"line 4 here",
-	]
-
 	diff = [
 		"--- test/file1.txt	2009-03-28 15:33:40.000000000 +0000",
 		"+++ test/file2.txt	2009-03-28 15:33:45.000000000 +0000",
@@ -374,7 +310,7 @@ def added_at_beginning():
 		" line 4 here",
 	]
 
-	unifieddiffparser = UnifiedDiffParser( file1, file2, diff )
+	unifieddiffparser = UnifiedDiffParser( file1, diff )
 	diffmodel = DiffModel( unifieddiffparser )
 
 	lines = diffmodel.get_lines()
@@ -404,11 +340,6 @@ def removed_at_end():
 		"line 4 here",
 	]
 
-	file2 = [
-		"line 1 here",
-		"line 2 here",
-	]
-
 	diff = [
 		"--- test/file1.txt	2009-03-28 15:39:09.000000000 +0000",
 		"+++ test/file2.txt	2009-03-28 15:39:12.000000000 +0000",
@@ -419,7 +350,7 @@ def removed_at_end():
 		"-line 4 here",
 	]
 
-	unifieddiffparser = UnifiedDiffParser( file1, file2, diff )
+	unifieddiffparser = UnifiedDiffParser( file1, diff )
 	diffmodel = DiffModel( unifieddiffparser )
 
 	lines = diffmodel.get_lines()
@@ -461,23 +392,6 @@ def removed_in_middle():
 		"line 16 here",
 	]
 
-	file2 = [
-		"line 1 here",
-		"line 3 here",
-		"line 4 here",
-		"line 5 here",
-		"line 6 here",
-		"line 7 here",
-		"line 8 here",
-		"line 9 here",
-		"line 10 here",
-		"line 11 here",
-		"line 12 here",
-		"line 13 here",
-		"line 14 here",
-		"line 16 here",
-	]
-
 	diff = [
 		"--- test/file1.txt	2009-03-28 20:29:28.000000000 +0000",
 		"+++ test/file2.txt	2009-03-28 20:29:37.000000000 +0000",
@@ -495,7 +409,7 @@ def removed_in_middle():
 		" line 16 here",
 	]
 
-	unifieddiffparser = UnifiedDiffParser( file1, file2, diff )
+	unifieddiffparser = UnifiedDiffParser( file1, diff )
 	diffmodel = DiffModel( unifieddiffparser )
 
 	lines = diffmodel.get_lines()
@@ -530,11 +444,6 @@ def removed_at_beginning():
 		"line 4 here",
 	]
 
-	file2 = [
-		"line 3 here",
-		"line 4 here",
-	]
-
 	diff = [
 		"--- test/file1.txt	2009-03-28 20:32:36.000000000 +0000",
 		"+++ test/file2.txt	2009-03-28 20:32:41.000000000 +0000",
@@ -545,7 +454,7 @@ def removed_at_beginning():
 		" line 4 here",
 	]
 
-	unifieddiffparser = UnifiedDiffParser( file1, file2, diff )
+	unifieddiffparser = UnifiedDiffParser( file1, diff )
 	diffmodel = DiffModel( unifieddiffparser )
 
 	lines = diffmodel.get_lines()
@@ -580,17 +489,6 @@ def changed_added_removed():
 		"line 10 here",
 	]
 
-	file2 = [
-		"line 1 here",
-		"line 2 here different",
-		"line 4 here",
-		"line 5 here",
-		"line 6 here",
-		"line 7 here",
-		"line 8 here",
-		"line 10 here",
-	]
-
 	diff = [
 		"--- test/file1.txt	2009-03-28 20:37:54.000000000 +0000",
 		"+++ test/file2.txt	2009-03-28 20:37:47.000000000 +0000",
@@ -608,7 +506,7 @@ def changed_added_removed():
 		" line 10 here",
 	]
 
-	unifieddiffparser = UnifiedDiffParser( file1, file2, diff )
+	unifieddiffparser = UnifiedDiffParser( file1, diff )
 	diffmodel = DiffModel( unifieddiffparser )
 
 	lines = diffmodel.get_lines()
