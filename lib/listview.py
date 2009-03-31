@@ -1,3 +1,4 @@
+import lib.difflinetypes as difflinetypes
 
 class ListView:
 	"""A simple view on a DiffModel that just lists all the lines in a file
@@ -17,7 +18,11 @@ class ListView:
 		ret = ""
 		lines = self.diffmodel.get_lines()
 		for line in lines:
-			pattern = "%%-%ds    %%s\n" % half_width
+			if line.status == difflinetypes.IDENTICAL:
+				divider = " "
+			elif line.status == difflinetypes.DIFFERENT:
+				divider = "|"
+			pattern = "%%-%ds %s  %%s\n" % ( half_width, divider )
 			ret += pattern % ( line.left, line.right )
 		return ret
 
