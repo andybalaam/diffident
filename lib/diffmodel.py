@@ -1,4 +1,10 @@
 
+def strip_newline( line ):
+	if line is not None and len( line ) > 0 and line[-1] == "\n":
+		return line[:-1]
+	else:
+		return line
+
 class DiffModel:
 	"""An abstract model of the differences between 2 files."""
 
@@ -32,5 +38,6 @@ class DiffModel:
 	def line_callback( self, left, right, status ):
 		"""Receive a callback from the parser saying that we have received a
 		line."""
-		self.lines.append( DiffModel.DiffLine( left, right, status ) )
+		self.lines.append( DiffModel.DiffLine( strip_newline( left ),
+			strip_newline( right ), status ) )
 

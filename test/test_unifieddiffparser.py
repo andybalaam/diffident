@@ -30,12 +30,12 @@ def just_differences():
 
 	lines = diffmodel.get_lines()
 
-	assert_strings_equal( lines[0].left,  "line 1 here\n" )
-	assert_strings_equal( lines[0].right, "line 1 here different\n" )
+	assert_strings_equal( lines[0].left,  "line 1 here" )
+	assert_strings_equal( lines[0].right, "line 1 here different" )
 	assert( lines[0].status == difflinetypes.DIFFERENT )
 
-	assert_strings_equal( lines[1].left,  "line 2 here\n" )
-	assert_strings_equal( lines[1].right, "line 2 here different\n" )
+	assert_strings_equal( lines[1].left,  "line 2 here" )
+	assert_strings_equal( lines[1].right, "line 2 here different" )
 	assert( lines[1].status == difflinetypes.DIFFERENT )
 
 def identical():
@@ -51,12 +51,12 @@ def identical():
 
 	lines = diffmodel.get_lines()
 
-	assert_strings_equal( lines[0].left,  "line 1 here\n" )
-	assert_strings_equal( lines[0].right, "line 1 here\n" )
+	assert_strings_equal( lines[0].left,  "line 1 here" )
+	assert_strings_equal( lines[0].right, "line 1 here" )
 	assert( lines[0].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[1].left,  "line 2 here\n" )
-	assert_strings_equal( lines[1].right, "line 2 here\n" )
+	assert_strings_equal( lines[1].left,  "line 2 here" )
+	assert_strings_equal( lines[1].right, "line 2 here" )
 	assert( lines[1].status == difflinetypes.IDENTICAL )
 
 
@@ -85,20 +85,20 @@ def diff_then_same():
 
 	lines = diffmodel.get_lines()
 
-	assert_strings_equal( lines[0].left,  "line 1 here\n" )
-	assert_strings_equal( lines[0].right, "line 1 here different\n" )
+	assert_strings_equal( lines[0].left,  "line 1 here" )
+	assert_strings_equal( lines[0].right, "line 1 here different" )
 	assert( lines[0].status == difflinetypes.DIFFERENT )
 
-	assert_strings_equal( lines[1].left,  "line 2 here\n" )
-	assert_strings_equal( lines[1].right, "line 2 here different\n" )
+	assert_strings_equal( lines[1].left,  "line 2 here" )
+	assert_strings_equal( lines[1].right, "line 2 here different" )
 	assert( lines[1].status == difflinetypes.DIFFERENT )
 
-	assert_strings_equal( lines[2].left,  "line 3 here\n" )
-	assert_strings_equal( lines[2].right, "line 3 here\n" )
+	assert_strings_equal( lines[2].left,  "line 3 here" )
+	assert_strings_equal( lines[2].right, "line 3 here" )
 	assert( lines[2].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[3].left,  "line 4 here\n" )
-	assert_strings_equal( lines[3].right, "line 4 here\n" )
+	assert_strings_equal( lines[3].left,  "line 4 here" )
+	assert_strings_equal( lines[3].right, "line 4 here" )
 	assert( lines[3].status == difflinetypes.IDENTICAL )
 
 
@@ -127,20 +127,20 @@ def same_then_diff():
 
 	lines = diffmodel.get_lines()
 
-	assert_strings_equal( lines[0].left,  "line 1 here\n" )
-	assert_strings_equal( lines[0].right, "line 1 here\n" )
+	assert_strings_equal( lines[0].left,  "line 1 here" )
+	assert_strings_equal( lines[0].right, "line 1 here" )
 	assert( lines[0].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[1].left,  "line 2 here\n" )
-	assert_strings_equal( lines[1].right, "line 2 here\n" )
+	assert_strings_equal( lines[1].left,  "line 2 here" )
+	assert_strings_equal( lines[1].right, "line 2 here" )
 	assert( lines[1].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[2].left,  "line 3 here\n" )
-	assert_strings_equal( lines[2].right, "line 3 here different\n" )
+	assert_strings_equal( lines[2].left,  "line 3 here" )
+	assert_strings_equal( lines[2].right, "line 3 here different" )
 	assert( lines[2].status == difflinetypes.DIFFERENT )
 
-	assert_strings_equal( lines[3].left,  "line 4 here\n" )
-	assert_strings_equal( lines[3].right, "line 4 here different\n" )
+	assert_strings_equal( lines[3].left,  "line 4 here" )
+	assert_strings_equal( lines[3].right, "line 4 here different" )
 	assert( lines[3].status == difflinetypes.DIFFERENT )
 
 def multiple_hunks_no_deletions_or_additions():
@@ -172,25 +172,25 @@ def multiple_hunks_no_deletions_or_additions():
 
 	lines = diffmodel.get_lines()
 
-	assert_strings_equal( lines[0].left,  "line 1 here\n" )
-	assert_strings_equal( lines[0].right, "line 1 here\n" )
+	assert_strings_equal( lines[0].left,  "line 1 here" )
+	assert_strings_equal( lines[0].right, "line 1 here" )
 	assert( lines[0].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[1].left,  "line 2 here\n" )
-	assert_strings_equal( lines[1].right, "line 2 here different\n" )
+	assert_strings_equal( lines[1].left,  "line 2 here" )
+	assert_strings_equal( lines[1].right, "line 2 here different" )
 	assert( lines[1].status == difflinetypes.DIFFERENT )
 
 	for i in range( 3, 39 ):
-		assert_strings_equal( lines[i-1].left,  "line %d here\n" % i )
-		assert_strings_equal( lines[i-1].right, "line %d here\n" % i )
+		assert_strings_equal( lines[i-1].left,  "line %d here" % i )
+		assert_strings_equal( lines[i-1].right, "line %d here" % i )
 		assert( lines[i-1].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[38].left,  "line 39 here\n" )
-	assert_strings_equal( lines[38].right, "line 39 here different\n" )
+	assert_strings_equal( lines[38].left,  "line 39 here" )
+	assert_strings_equal( lines[38].right, "line 39 here different" )
 	assert( lines[38].status == difflinetypes.DIFFERENT )
 
-	assert_strings_equal( lines[39].left,  "line 40 here\n" )
-	assert_strings_equal( lines[39].right, "line 40 here\n" )
+	assert_strings_equal( lines[39].left,  "line 40 here" )
+	assert_strings_equal( lines[39].right, "line 40 here" )
 	assert( lines[39].status == difflinetypes.IDENTICAL )
 
 def added_at_end():
@@ -215,20 +215,20 @@ def added_at_end():
 
 	lines = diffmodel.get_lines()
 
-	assert_strings_equal( lines[0].left,  "line 1 here\n" )
-	assert_strings_equal( lines[0].right, "line 1 here\n" )
+	assert_strings_equal( lines[0].left,  "line 1 here" )
+	assert_strings_equal( lines[0].right, "line 1 here" )
 	assert( lines[0].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[1].left,  "line 2 here\n" )
-	assert_strings_equal( lines[1].right, "line 2 here\n" )
+	assert_strings_equal( lines[1].left,  "line 2 here" )
+	assert_strings_equal( lines[1].right, "line 2 here" )
 	assert( lines[1].status == difflinetypes.IDENTICAL )
 
 	assert( lines[2].left is None )
-	assert_strings_equal( lines[2].right, "line 3 here\n" )
+	assert_strings_equal( lines[2].right, "line 3 here" )
 	assert( lines[2].status == difflinetypes.ADD )
 
 	assert( lines[3].left is None )
-	assert_strings_equal( lines[3].right, "line 4 here\n" )
+	assert_strings_equal( lines[3].right, "line 4 here" )
 	assert( lines[3].status == difflinetypes.ADD )
 
 def added_in_middle():
@@ -272,25 +272,25 @@ def added_in_middle():
 
 	lines = diffmodel.get_lines()
 
-	assert_strings_equal( lines[0].left,  "line 1 here\n" )
-	assert_strings_equal( lines[0].right, "line 1 here\n" )
+	assert_strings_equal( lines[0].left,  "line 1 here" )
+	assert_strings_equal( lines[0].right, "line 1 here" )
 	assert( lines[0].status == difflinetypes.IDENTICAL )
 
 	assert( lines[1].left is None )
-	assert_strings_equal( lines[1].right, "line 2 here\n" )
+	assert_strings_equal( lines[1].right, "line 2 here" )
 	assert( lines[1].status == difflinetypes.ADD )
 
 	for i in range( 3, 15 ):
-		assert_strings_equal( lines[i-1].left,  "line %d here\n" % i )
-		assert_strings_equal( lines[i-1].right, "line %d here\n" % i )
+		assert_strings_equal( lines[i-1].left,  "line %d here" % i )
+		assert_strings_equal( lines[i-1].right, "line %d here" % i )
 		assert( lines[i-1].status == difflinetypes.IDENTICAL )
 
 	assert( lines[14].left is None )
-	assert_strings_equal( lines[14].right, "line 15 here\n" )
+	assert_strings_equal( lines[14].right, "line 15 here" )
 	assert( lines[14].status == difflinetypes.ADD )
 
-	assert_strings_equal( lines[15].left, "line 16 here\n" )
-	assert_strings_equal( lines[15].right, "line 16 here\n" )
+	assert_strings_equal( lines[15].left, "line 16 here" )
+	assert_strings_equal( lines[15].right, "line 16 here" )
 	assert( lines[15].status == difflinetypes.IDENTICAL )
 
 def added_at_beginning():
@@ -316,19 +316,19 @@ def added_at_beginning():
 	lines = diffmodel.get_lines()
 
 	assert( lines[0].left is None )
-	assert_strings_equal( lines[0].right, "line 1 here\n" )
+	assert_strings_equal( lines[0].right, "line 1 here" )
 	assert( lines[0].status == difflinetypes.ADD )
 
 	assert( lines[1].left is None )
-	assert_strings_equal( lines[1].right, "line 2 here\n" )
+	assert_strings_equal( lines[1].right, "line 2 here" )
 	assert( lines[1].status == difflinetypes.ADD )
 
-	assert_strings_equal( lines[2].left, "line 3 here\n" )
-	assert_strings_equal( lines[2].right, "line 3 here\n" )
+	assert_strings_equal( lines[2].left, "line 3 here" )
+	assert_strings_equal( lines[2].right, "line 3 here" )
 	assert( lines[2].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[3].left, "line 4 here\n" )
-	assert_strings_equal( lines[3].right, "line 4 here\n" )
+	assert_strings_equal( lines[3].left, "line 4 here" )
+	assert_strings_equal( lines[3].right, "line 4 here" )
 	assert( lines[3].status == difflinetypes.IDENTICAL )
 
 def removed_at_end():
@@ -355,19 +355,19 @@ def removed_at_end():
 
 	lines = diffmodel.get_lines()
 
-	assert_strings_equal( lines[0].left,  "line 1 here\n" )
-	assert_strings_equal( lines[0].right, "line 1 here\n" )
+	assert_strings_equal( lines[0].left,  "line 1 here" )
+	assert_strings_equal( lines[0].right, "line 1 here" )
 	assert( lines[0].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[1].left,  "line 2 here\n" )
-	assert_strings_equal( lines[1].right, "line 2 here\n" )
+	assert_strings_equal( lines[1].left,  "line 2 here" )
+	assert_strings_equal( lines[1].right, "line 2 here" )
 	assert( lines[1].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[2].left, "line 3 here\n" )
+	assert_strings_equal( lines[2].left, "line 3 here" )
 	assert( lines[2].right is None )
 	assert( lines[2].status == difflinetypes.REMOVE )
 
-	assert_strings_equal( lines[3].left, "line 4 here\n" )
+	assert_strings_equal( lines[3].left, "line 4 here" )
 	assert( lines[3].right is None )
 	assert( lines[3].status == difflinetypes.REMOVE )
 
@@ -414,25 +414,25 @@ def removed_in_middle():
 
 	lines = diffmodel.get_lines()
 
-	assert_strings_equal( lines[0].left,  "line 1 here\n" )
-	assert_strings_equal( lines[0].right, "line 1 here\n" )
+	assert_strings_equal( lines[0].left,  "line 1 here" )
+	assert_strings_equal( lines[0].right, "line 1 here" )
 	assert( lines[0].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[1].left, "line 2 here\n" )
+	assert_strings_equal( lines[1].left, "line 2 here" )
 	assert( lines[1].right is None )
 	assert( lines[1].status == difflinetypes.REMOVE )
 
 	for i in range( 3, 15 ):
-		assert_strings_equal( lines[i-1].left,  "line %d here\n" % i )
-		assert_strings_equal( lines[i-1].right, "line %d here\n" % i )
+		assert_strings_equal( lines[i-1].left,  "line %d here" % i )
+		assert_strings_equal( lines[i-1].right, "line %d here" % i )
 		assert( lines[i-1].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[14].left, "line 15 here\n" )
+	assert_strings_equal( lines[14].left, "line 15 here" )
 	assert( lines[14].right is None )
 	assert( lines[14].status == difflinetypes.REMOVE )
 
-	assert_strings_equal( lines[15].left, "line 16 here\n" )
-	assert_strings_equal( lines[15].right, "line 16 here\n" )
+	assert_strings_equal( lines[15].left, "line 16 here" )
+	assert_strings_equal( lines[15].right, "line 16 here" )
 	assert( lines[15].status == difflinetypes.IDENTICAL )
 
 def removed_at_beginning():
@@ -459,20 +459,20 @@ def removed_at_beginning():
 
 	lines = diffmodel.get_lines()
 
-	assert_strings_equal( lines[0].left, "line 1 here\n" )
+	assert_strings_equal( lines[0].left, "line 1 here" )
 	assert( lines[0].right is None )
 	assert( lines[0].status == difflinetypes.REMOVE )
 
-	assert_strings_equal( lines[1].left, "line 2 here\n" )
+	assert_strings_equal( lines[1].left, "line 2 here" )
 	assert( lines[1].right is None )
 	assert( lines[1].status == difflinetypes.REMOVE )
 
-	assert_strings_equal( lines[2].left, "line 3 here\n" )
-	assert_strings_equal( lines[2].right, "line 3 here\n" )
+	assert_strings_equal( lines[2].left, "line 3 here" )
+	assert_strings_equal( lines[2].right, "line 3 here" )
 	assert( lines[2].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[3].left, "line 4 here\n" )
-	assert_strings_equal( lines[3].right, "line 4 here\n" )
+	assert_strings_equal( lines[3].left, "line 4 here" )
+	assert_strings_equal( lines[3].right, "line 4 here" )
 	assert( lines[3].status == difflinetypes.IDENTICAL )
 
 def changed_added_removed():
@@ -511,44 +511,44 @@ def changed_added_removed():
 
 	lines = diffmodel.get_lines()
 
-	assert_strings_equal( lines[0].left, "line 1 here\n" )
-	assert_strings_equal( lines[0].right, "line 1 here\n" )
+	assert_strings_equal( lines[0].left, "line 1 here" )
+	assert_strings_equal( lines[0].right, "line 1 here" )
 	assert( lines[0].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[1].left, "line 2 here\n" )
-	assert_strings_equal( lines[1].right, "line 2 here different\n" )
+	assert_strings_equal( lines[1].left, "line 2 here" )
+	assert_strings_equal( lines[1].right, "line 2 here different" )
 	assert( lines[1].status == difflinetypes.DIFFERENT )
 
-	assert_strings_equal( lines[2].left, "line 3 here\n" )
+	assert_strings_equal( lines[2].left, "line 3 here" )
 	assert( lines[2].right is None )
 	assert( lines[2].status == difflinetypes.REMOVE )
 
-	assert_strings_equal( lines[3].left, "line 4 here\n" )
-	assert_strings_equal( lines[3].right, "line 4 here\n" )
+	assert_strings_equal( lines[3].left, "line 4 here" )
+	assert_strings_equal( lines[3].right, "line 4 here" )
 	assert( lines[3].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[4].left, "line 5 here\n" )
-	assert_strings_equal( lines[4].right, "line 5 here\n" )
+	assert_strings_equal( lines[4].left, "line 5 here" )
+	assert_strings_equal( lines[4].right, "line 5 here" )
 	assert( lines[4].status == difflinetypes.IDENTICAL )
 
 	assert( lines[5].left is None )
-	assert_strings_equal( lines[5].right, "line 6 here\n" )
+	assert_strings_equal( lines[5].right, "line 6 here" )
 	assert( lines[5].status == difflinetypes.ADD )
 
-	assert_strings_equal( lines[6].left, "line 7 here\n" )
-	assert_strings_equal( lines[6].right, "line 7 here\n" )
+	assert_strings_equal( lines[6].left, "line 7 here" )
+	assert_strings_equal( lines[6].right, "line 7 here" )
 	assert( lines[6].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[7].left, "line 8 here\n" )
-	assert_strings_equal( lines[7].right, "line 8 here\n" )
+	assert_strings_equal( lines[7].left, "line 8 here" )
+	assert_strings_equal( lines[7].right, "line 8 here" )
 	assert( lines[7].status == difflinetypes.IDENTICAL )
 
-	assert_strings_equal( lines[8].left, "line 9 here\n" )
+	assert_strings_equal( lines[8].left, "line 9 here" )
 	assert( lines[8].right is None )
 	assert( lines[8].status == difflinetypes.REMOVE )
 
-	assert_strings_equal( lines[9].left, "line 10 here\n" )
-	assert_strings_equal( lines[9].right, "line 10 here\n" )
+	assert_strings_equal( lines[9].left, "line 10 here" )
+	assert_strings_equal( lines[9].right, "line 10 here" )
 	assert( lines[9].status == difflinetypes.IDENTICAL )
 
 def run():
