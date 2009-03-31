@@ -96,6 +96,26 @@ END`
 	listview_matches_diff "$FILE1" "$FILE2" listview_matches_diff_removes
 }
 
+# Disabled since we show whole line and diff truncates.
+#function listview_matches_diff_longline()
+#{
+#	FILE1=`cat <<END
+#line 1
+#12345678901234567890123456789012345678901234567890
+#line 3
+#
+#END`
+#
+#	FILE2=`cat <<END
+#line 1
+#line 2
+#line 3
+#END`
+#
+#	listview_matches_diff "$FILE1" "$FILE2" listview_matches_diff_longline
+#}
+
+
 listview_matches_diff_nochanges
 listview_matches_diff_changes
 listview_matches_diff_adds
