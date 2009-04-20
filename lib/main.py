@@ -3,6 +3,7 @@ import os
 from lib.unifieddiffparser import UnifiedDiffParser
 from lib.diffmodel import DiffModel
 from lib.listview import ListView
+from lib.ncursesview import NCursesView
 
 def diff_2_files( filename1, filename2, launch_viewer ):
 
@@ -31,7 +32,7 @@ def print_listview( diffmodel ):
 	listview = ListView( diffmodel )
 	print listview.get_string(),
 
-def run_ncursesview( model ):
+def run_ncursesview( diffmodel ):
 	ncursesview = NCursesView( diffmodel )
 	ncursesview.show()
 
