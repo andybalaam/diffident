@@ -18,7 +18,7 @@ function listview_matches_diff()
 	echo "$1" > file1.tmptxt
 	echo "$2" > file2.tmptxt
 
-	./diffident.py file1.tmptxt file2.tmptxt > output-diffident.tmptxt
+	./diffident.py --view=list file1.tmptxt file2.tmptxt > output-diffident.tmptxt
 	assert_retval_is_zero $? $3-diffident
 
 	diff --side-by-side --width=80 --expand-tabs file1.tmptxt file2.tmptxt > output-diff.tmptxt
