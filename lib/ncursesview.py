@@ -6,6 +6,8 @@ class NCursesView( object ):
 
 	LEFT  = 0
 	RIGHT = 1
+	UP    = 2
+	DOWN  = 3
 
 	class Cursor( object ):
 		def __init__( self, lr, line_num ):
@@ -27,7 +29,6 @@ class NCursesView( object ):
 
 		self.make_color_pairs()
 
-
 		( win_height, win_width ) = self.stdscr.getmaxyx()
 
 		self.bot_line = self.top_line + win_height
@@ -37,9 +38,46 @@ class NCursesView( object ):
 		self.mid_col     = self.left_width + 1
 		self.right_start = self.left_width + 3
 
+		self.stdscr.bkgd( ord( " " ), self.BLACK )
+
+		#self.lines = self.diffmodel.get_lines( self.bot_line, self.top_line )
+		self.lines = self.diffmodel.get_lines()
+
 		self.draw_screen()
 
-		self.stdscr.getch()
+		self.main_loop()
+
+	def main_loop( self ):
+
+		keep_going = True
+		while keep_going:
+			key = self.stdscr.getch()
+
+			if key == ord( "q" ):
+				keep_going = False
+			elif key == ord( "h" ) or key == curses.KEY_LEFT:
+				self.move_cursor( NCursesView.LEFT )
+			elif key == ord( "l" ) or key == curses.KEY_RIGHT:
+				self.move_cursor( NCursesView.RIGHT )
+			elif key == ord( "j" ) or key == curses.KEY_DOWN:
+				self.move_cursor( NCursesView.DOWN )
+			elif key == ord( "k" ) or key == curses.KEY_UP:
+				self.move_cursor( NCursesView.UP )
+
+	def move_cursor( self, dr ):
+		if dr == NCursesView.LEFT and self.mycursor.lr == NCursesView.RIGHT:
+			self.mycursor.lr = NCursesView.LEFT
+			self.draw_screen()
+		elif dr == NCursesView.RIGHT and self.mycursor.lr == NCursesView.LEFT:
+			self.mycursor.lr = NCursesView.RIGHT
+			self.draw_screen()
+		elif dr == NCursesView.UP and self.mycursor.line_num > 0:
+			self.mycursor.line_num -= 1
+			self.draw_screen()
+		elif dr == NCursesView.DOWN and (
+				self.mycursor.line_num < ( self.bot_line - 1 ) ):
+			self.mycursor.line_num += 1
+			self.draw_screen()
 
 	def make_color_pairs( self ):
 		curses.use_default_colors()
@@ -57,15 +95,11 @@ class NCursesView( object ):
 		return curses.color_pair( pair_num )
 
 	def draw_screen( self ):
-
-		self.stdscr.bkgd( ord( " " ), self.BLACK )
 		self.stdscr.clear()
 
-		#lines = self.diffmodel.get_lines( self.bot_line, self.top_line )
-		lines = self.diffmodel.get_lines()
-
-		#for ln in lines:
-		for line_num, ln in enumerate( lines[ self.top_line : self.bot_line ] ):
+		#for ln in self.lines:
+		for line_num, ln in enumerate( self.lines[
+				self.top_line : self.bot_line ] ):
 			self.draw_line( ln, line_num )
 
 		self.stdscr.refresh()
@@ -90,6 +124,12 @@ class NCursesView( object ):
 			mid_char = ord( "-" )
 		else:
 			raise Exception( "Unknown line type %d." % ln.status )
+
+		if self.mycursor.line_num == line_num:
+			if self.mycursor.lr == NCursesView.LEFT:
+				left_colour_pair  |= curses.A_REVERSE
+			else:
+				right_colour_pair |= curses.A_REVERSE
 
 		left  = self.spaces_if_none( ln.left, self.left_width )
 		right = self.spaces_if_none( ln.right, self.right_width )
