@@ -1,20 +1,10 @@
 from test.asserts import assert_strings_equal
 
+from testlib.fakediffline import FakeDiffLine
+from testlib.fakediffmodel import FakeDiffModel
+
 import lib.difflinetypes as difflinetypes
 from lib.listview import ListView
-
-class FakeDiffModel:
-	def __init__( self ):
-		self.lines = []
-
-	def get_lines( self ):
-		return self.lines
-
-class FakeDiffLine:
-	def __init__( self, left, right, status ):
-		self.left = left
-		self.right = right
-		self.status = status
 
 def same():
 
