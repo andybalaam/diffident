@@ -24,7 +24,7 @@ line 2 here                               line 2 here
 """ )
 
 
-def just_differences():
+def differences():
 
 	diffmodel = FakeDiffModel()
 	diffmodel.lines = [
@@ -50,8 +50,46 @@ line 2 here                            |  line 2 here different
 line 2 here                  |  line 2 here different
 """ )
 
+def adds():
+
+	diffmodel = FakeDiffModel()
+	diffmodel.lines = [
+		FakeDiffLine( None, "line 1 here", difflinetypes.ADD ),
+		FakeDiffLine( None, "line 2 here", difflinetypes.ADD ),
+		]
+
+	listview = ListView( diffmodel )
+
+	listview.set_columns( 80 )
+
+	assert_strings_equal( listview.get_string(),
+"""                                       >  line 1 here
+                                       >  line 2 here
+""" )
+
+
+def removes():
+
+	diffmodel = FakeDiffModel()
+	diffmodel.lines = [
+		FakeDiffLine( "line 1 here", None, difflinetypes.REMOVE ),
+		FakeDiffLine( "line 2 here", None, difflinetypes.REMOVE ),
+		]
+
+	listview = ListView( diffmodel )
+
+	listview.set_columns( 80 )
+
+	assert_strings_equal( listview.get_string(),
+"""line 1 here                            <
+line 2 here                            <
+""" )
+
+
 
 def run():
 	same()
-	just_differences()
+	differences()
+	adds()
+	removes()
 
