@@ -2,11 +2,13 @@ import os
 
 import test_listview
 import test_diffmodel
+import test_ncursesview
 import test_unifieddiffparser
 
 def run_quick_tests():
 	test_listview.run()
 	test_diffmodel.run()
+	test_ncursesview.run()
 	test_unifieddiffparser.run()
 
 def test_quick():

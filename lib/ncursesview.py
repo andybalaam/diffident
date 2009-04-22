@@ -18,23 +18,29 @@ class NCursesView( object ):
 		self.diffmodel = diffmodel
 		self.top_line = 0
 		self.mycursor = NCursesView.Cursor( NCursesView.LEFT, 0 )
+		self.win_height = None # Modify these in test code
+		self.win_width = None  #
 
-	def show( self ):
-		curses.wrapper( self.show_impl )
+	def show( self, debug_actions=None ):
+		return curses.wrapper( self.show_impl, debug_actions )
 
-	def show_impl( self, stdscr ):
+	def show_impl( self, stdscr, debug_actions ):
 		self.stdscr = stdscr
 
 		curses.curs_set( 0 )
 
 		self.make_color_pairs()
 
-		( win_height, win_width ) = self.stdscr.getmaxyx()
+		# If we are in test code and have modified these, leave them.
+		# Otherwise, get them from the environment
+		if self.win_height is None:
+			( self.win_height, self.win_width ) = self.stdscr.getmaxyx()
 
-		self.bot_line = self.top_line + win_height
+		self.bot_line = self.top_line + self.win_height
 
-		self.left_width  = ( win_width - 3 ) / 2
-		self.right_width = self.left_width
+		win_width_without_mid_col = self.win_width - 3
+		self.left_width  = win_width_without_mid_col / 2
+		self.right_width = win_width_without_mid_col - self.left_width
 		self.mid_col     = self.left_width + 1
 		self.right_start = self.left_width + 3
 
@@ -45,7 +51,15 @@ class NCursesView( object ):
 
 		self.draw_screen()
 
-		self.main_loop()
+		#self.main_loop()
+
+		# If debug_actions is None we wait for user input
+		if debug_actions is None:
+			self.main_loop()
+		else:
+			# Otherwise we have a list of things to do and then
+			# take a screenshot and return it
+			return self.take_screenshot()
 
 	def main_loop( self ):
 
@@ -131,8 +145,8 @@ class NCursesView( object ):
 			else:
 				right_colour_pair |= curses.A_REVERSE
 
-		left  = self.spaces_if_none( ln.left, self.left_width )
-		right = self.spaces_if_none( ln.right, self.right_width )
+		left  = self.pad_to_width( ln.left, self.left_width )
+		right = self.pad_to_width( ln.right, self.right_width )
 
 		self.stdscr.addnstr( line_num, 0, left, self.left_width,
 			left_colour_pair )
@@ -140,10 +154,46 @@ class NCursesView( object ):
 			self.right_width, right_colour_pair )
 		self.stdscr.addch( line_num, self.mid_col, mid_char )
 
-	def spaces_if_none( self, string, width ):
+	def pad_to_width( self, string, width ):
 		if string is None:
-			return " " * width
+			string = " "
+		return string + ( " " * ( width - len( string ) ) )
+
+	# Testing code
+
+	def attr_to_string( self, attr ):
+		if attr == 1:
+			attr_str = "n"
+		elif attr == 2:
+			attr_str = "d"
+		elif attr == 3:
+			attr_str = "a"
+		elif attr == 5:
+			attr_str = "m"
+		elif attr == 1025:
+			attr_str = "ni"
+		elif attr == 1026:
+			attr_str = "di"
+		elif attr == 1029:
+			attr_str = "mi"
 		else:
-			return string
+			attr_str = str( attr )
+
+		return "[%s]" % attr_str
+
+	def take_screenshot( self ):
+		ret = ""
+		prev_attr = -1
+		for y in xrange( self.win_height ):
+			for x in xrange( self.win_width ):
+				ch_plus_attrs = self.stdscr.inch( y, x )
+				ch = chr( ch_plus_attrs & 0xFF )
+				attr = ch_plus_attrs >> 8
+				if attr != prev_attr:
+					prev_attr = attr
+					ret += self.attr_to_string( attr )
+				ret += ch
+			ret += "\n"
+		return ret
 
 
