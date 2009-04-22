@@ -1,18 +1,27 @@
 Next:
 
-- Ignore lines that do not start with a space in unified diffs
-- Basic ncurses interface:
- - Title line showing pretty names
- - Side-by side differences with dividing column
- - Status line saying "Press h for help"
-- Moveable cursor
-- Scrolling when cursor is moved
-- Can copy from one side to the other
-- Help page
-- Can see long lines word-wrapped at bottom? (not short lines)
-- Can edit lines
-- Can scroll to the right to see long lines
-- Can edit long lines because they wrap
++ ncurses: Basic ncurses startup, exit
++ ncurses: Moveable cursor
+- ncurses: Can take a screenshot for testing
+
+- unified diffs: Ignore lines that do not start with a space in unified diffs
+
+- ncurses: Scrolling when cursor is moved
+- ncurses: Support for PageUp, PageDown
+- ncurses: Jump to next/prev different
+- ncurses: Select multiple lines
+- ncurses: Can copy from one side to the other *
+- ncurses: Can see long lines word-wrapped at bottom? (not short lines)
+- ncurses: Can edit lines
+- ncurses: Can scroll to the right to see long lines
+- ncurses: Can edit long lines because they wrap
+- ncurses: Help page
+
+    * All edits go in a queue of undoable changes in EditableDiffModel.
+      The last savepoint is a pointer to somewhere in the queue.  When we
+      ask the EditableDiffModel for lines, it gets the original DiffModel
+      lines and applies the changes in order.  Any change that occurs after
+      the savepoint makes the line be marked as changed (visible in UI).
 
 Big:
 
