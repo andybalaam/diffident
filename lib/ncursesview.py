@@ -225,7 +225,8 @@ class NCursesView( object ):
 
 	def pad_to_width( self, string, width ):
 		if string is None:
-			string = " "
+			string = ""
+		string = string.expandtabs()
 		return string + ( " " * ( width - len( string ) ) )
 
 	# Testing code

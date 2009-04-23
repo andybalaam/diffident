@@ -8,6 +8,7 @@ Next:
 + ncurses: Support for PageUp, PageDown
 + ncurses: Don't redraw whole screen when we have only moved the cursor
 + admin: Include COPYING file containing GPL2
++ ncurses: fix bug with files containing tabs
 - admin: Put GPL2 boilerplate in all source files.
 - ncurses: Jump to next/prev difference
 - ncurses: Select multiple lines
@@ -18,6 +19,8 @@ Next:
 - ncurses: Can edit long lines because they wrap
 - ncurses: Help page
 - ncurses: Handle screen resizes - can crash it by making screen smaller
+- git: create a script suitable for use as GIT_EXTERNAL_DIFF
+- diffmodel: allow locking one or both files as non-writeable
 
     * All edits go in a queue of undoable changes in EditableDiffModel.
       The last savepoint is a pointer to somewhere in the queue.  When we
@@ -27,15 +30,18 @@ Next:
 
 Big:
 
-- Make the parser able to accept a line-number range so we can handle
-  big files.  DiffModel would only cache a certain number of lines, and call
-  into the parser whenever it needed to get some other lines.
+- Make the diffmodel able to accept a line-number range so we can
+  handle big files.  DiffModel would only cache a certain number of lines,
+  and call into the parser whenever it needed to get some other lines.
 
 - Don't use unified diffs internally since they are not quite as reliable
   as context diffs?  (Because of +++ line problem.)
 
+- Support "align manually" on diffs
+
 Unimportant:
 
+- ncurses: Allow specifying tab width
 - unified diffs: Ignore lines that do not start with a space in unified diffs
 - ncurses: Don't redraw whole screen when we are only scrolling one line
 - unified diffs: Treat lines beginning +++ that are not hunk beginnings
