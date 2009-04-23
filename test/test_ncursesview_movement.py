@@ -8,16 +8,7 @@ from testlib.fakediffmodel import FakeDiffModel
 import lib.difflinetypes as difflinetypes
 from lib.ncursesview import NCursesView
 
-def pad_to_width():
-	diffmodel = FakeDiffModel()
-	view = NCursesView( diffmodel )
-
-	assert_strings_equal( view.pad_to_width( None, 5 ), "     " )
-	assert_strings_equal( view.pad_to_width( "d f", 5 ), "d f  " )
-	assert_strings_equal( view.pad_to_width( "d fffffffff", 5 ), "d fffffffff" )
-
-def _right( key ):
-
+def _make_view():
 	diffmodel = FakeDiffModel()
 	diffmodel.lines = [
 		FakeDiffLine( "line 1 here", "line 1 here", difflinetypes.IDENTICAL ),
@@ -28,8 +19,11 @@ def _right( key ):
 	view.win_width  = 40
 	view.win_height = 2
 
-	actions = [ key ]
+	return view
 
+def _right( key ):
+	view = _make_view()
+	actions = [ key ]
 	assert_strings_equal( view.show( actions ),
 """[n]line 1 here          [ni]line 1 here        
 [n]line 2 here          line 2 here        
@@ -43,16 +37,7 @@ def right_l():
 
 
 def _left( key ):
-
-	diffmodel = FakeDiffModel()
-	diffmodel.lines = [
-		FakeDiffLine( "line 1 here", "line 1 here", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 2 here", "line 2 here", difflinetypes.IDENTICAL ),
-		]
-
-	view = NCursesView( diffmodel )
-	view.win_width  = 40
-	view.win_height = 2
+	view = _make_view()
 
 	# Go right and then left - back to where we started
 	actions = [ curses.KEY_RIGHT, key ]
@@ -62,7 +47,6 @@ def _left( key ):
 line 2 here          line 2 here        
 """ )
 
-
 def left_arrow():
 	_left( curses.KEY_LEFT )
 
@@ -70,9 +54,48 @@ def left_h():
 	_left( "h" )
 
 
+def _down( key ):
+	view = _make_view()
+
+	actions = [ key ]
+
+	assert_strings_equal( view.show( actions ),
+"""[n]line 1 here          line 1 here        
+[ni]line 2 here       [n]   line 2 here        
+""" )
+
+def down_arrow():
+	_down( curses.KEY_DOWN )
+
+def down_j():
+	_down( "j" )
+
+
+def _up( key ):
+	view = _make_view()
+
+	# Go down and then up - back to where we started
+	actions = [ curses.KEY_DOWN, key ]
+
+	assert_strings_equal( view.show( actions ),
+"""[ni]line 1 here       [n]   line 1 here        
+line 2 here          line 2 here        
+""" )
+
+def up_arrow():
+	_up( curses.KEY_UP )
+
+def up_k():
+	_up( "k" )
+
+
 def run():
 	right_arrow()
 	right_l()
 	left_arrow()
 	left_h()
+	down_arrow()
+	down_j()
+	up_arrow()
+	up_k()
 
