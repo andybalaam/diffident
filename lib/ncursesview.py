@@ -39,7 +39,7 @@ class NCursesView( object ):
 		self.bot_line = self.top_line + self.win_height
 
 		win_width_without_mid_col = self.win_width - 3
-		self.left_width  = win_width_without_mid_col / 2
+		self.left_width  = win_width_without_mid_col // 2
 		self.right_width = win_width_without_mid_col - self.left_width
 		self.mid_col     = self.left_width + 1
 		self.right_start = self.left_width + 3
@@ -163,17 +163,23 @@ class NCursesView( object ):
 
 	def attr_to_string( self, attr ):
 		if attr == 1:
-			attr_str = "n"
+			attr_str = "n" # Normal
 		elif attr == 2:
-			attr_str = "d"
+			attr_str = "d" # Different
 		elif attr == 3:
-			attr_str = "a"
+			attr_str = "a" # Add
+		elif attr == 4:
+			attr_str = "r" # Remove
 		elif attr == 5:
-			attr_str = "m"
+			attr_str = "m" # Missing
 		elif attr == 1025:
-			attr_str = "ni"
+			attr_str = "ni" # Normal-Inverse
 		elif attr == 1026:
-			attr_str = "di"
+			attr_str = "di" # etc...
+		elif attr == 1027:
+			attr_str = "ai"
+		elif attr == 1028:
+			attr_str = "ri"
 		elif attr == 1029:
 			attr_str = "mi"
 		else:

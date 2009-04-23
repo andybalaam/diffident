@@ -85,9 +85,67 @@ def adds():
                                         
 """ )
 
+def removes():
+
+	diffmodel = FakeDiffModel()
+	diffmodel.lines = [
+		FakeDiffLine( "line 1 here", None,
+			difflinetypes.REMOVE ),
+		FakeDiffLine( "line 2 here", None,
+			difflinetypes.REMOVE ),
+		]
+
+	view = NCursesView( diffmodel )
+	view.win_width  = 39
+	view.win_height = 5
+
+	actions = []
+
+	assert_strings_equal( view.show( actions ),
+"""[ri]line 1 here       [n] - [m]                  
+[r]line 2 here       [n] - [m]                  
+[n]                                       
+                                       
+                                       
+""" )
+
+
+
+
+def mixture():
+
+	diffmodel = FakeDiffModel()
+	diffmodel.lines = [
+		FakeDiffLine( "line 1 here", "line 1 here", difflinetypes.IDENTICAL ),
+		FakeDiffLine( None, "line 2 here",
+			difflinetypes.ADD ),
+		FakeDiffLine( "line 3 here", "line 3 here", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "line 4 here", "line 4 here different",
+			difflinetypes.DIFFERENT ),
+		FakeDiffLine( "line 5 here", None,
+			difflinetypes.REMOVE ),
+		FakeDiffLine( "line 6 here", "line 6 here", difflinetypes.IDENTICAL ),
+		]
+
+	view = NCursesView( diffmodel )
+	view.win_width  = 40
+	view.win_height = 5
+
+	actions = []
+
+	assert_strings_equal( view.show( actions ),
+"""[ni]line 1 here       [n]   line 1 here        
+[m]                  [n] + [a]line 2 here        
+[n]line 3 here          line 3 here        
+[d]line 4 here       [n] * [d]line 4 here differe
+[r]line 5 here       [n] - [m]                   
+""" )
+
 def run():
 	pad_to_width()
 	same()
 	differences()
 	adds()
+	removes()
+	mixture()
 
