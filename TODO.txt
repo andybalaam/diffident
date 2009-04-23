@@ -4,10 +4,9 @@ Next:
 + ncurses: Moveable cursor
 + ncurses: Can take a screenshot for testing
 + ncurses: Unit tests for existing functionality
-
 + ncurses: Scrolling when cursor is moved
 + ncurses: Support for PageUp, PageDown
-- ncurses: Don't redraw whole screen when we have only moved the cursor
++ ncurses: Don't redraw whole screen when we have only moved the cursor
 - ncurses: Jump to next/prev difference
 - ncurses: Select multiple lines
 - ncurses: Can copy from one side to the other *
