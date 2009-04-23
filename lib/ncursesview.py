@@ -97,7 +97,6 @@ class NCursesView( object ):
 		return keep_going
 
 	def move_cursor( self, dr ):
-		# TODO: don't redraw whole screen when just moving cursor
 		# TODO: don't redraw whole screen when scrolling?
 
 		redraw = False
@@ -114,19 +113,23 @@ class NCursesView( object ):
 					self.set_top_line( self.top_line - 1 )
 					redraw = True
 			else:
-				self.mycursor.line_num -= 1
-				redraw = True
+				self.add_to_cursor_and_refresh( -1 )
 		elif dr == NCursesView.DOWN:
 			if self.mycursor.line_num == ( self.win_height - 1 ):
 				if self.bot_line < self.diffmodel.get_num_lines():
 					self.set_top_line( self.top_line + 1 )
 					redraw = True
 			else:
-				self.mycursor.line_num += 1
-				redraw = True
-
+				self.add_to_cursor_and_refresh( 1 )
 		if redraw:
 			self.draw_screen()
+
+	def add_to_cursor_and_refresh( self, direction ):
+		old_line_num = self.mycursor.line_num
+		self.mycursor.line_num += direction
+		self.draw_single_line( old_line_num )
+		self.draw_single_line( self.mycursor.line_num )
+		self.stdscr.refresh()
 
 	def change_page( self, direction ):
 		top_line = self.top_line
@@ -175,11 +178,16 @@ class NCursesView( object ):
 		#for ln in self.lines:
 		for line_num, ln in enumerate( self.lines[
 				self.top_line : self.bot_line ] ):
-			self.draw_line( ln, line_num )
+			self.write_line( ln, line_num )
 
 		self.stdscr.refresh()
 
-	def draw_line( self, ln, line_num ):
+	def draw_single_line( self, line_num ):
+		#ln = self.lines[line_num]
+		ln = self.lines[self.top_line + line_num]
+		self.write_line( ln, line_num )
+
+	def write_line( self, ln, line_num ):
 
 		if ln.status == difflinetypes.IDENTICAL:
 			left_colour_pair  = self.BLACK
