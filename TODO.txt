@@ -4,12 +4,10 @@ Next:
 + ncurses: Moveable cursor
 + ncurses: Can take a screenshot for testing
 + ncurses: Unit tests for existing functionality
-- ncurses: Don't redraw whole screen when we have only moved the cursor
 
-- unified diffs: Ignore lines that do not start with a space in unified diffs
-
-- ncurses: Scrolling when cursor is moved
++ ncurses: Scrolling when cursor is moved
 + ncurses: Support for PageUp, PageDown
+- ncurses: Don't redraw whole screen when we have only moved the cursor
 - ncurses: Jump to next/prev difference
 - ncurses: Select multiple lines
 - ncurses: Can copy from one side to the other *
@@ -18,6 +16,7 @@ Next:
 - ncurses: Can scroll to the right to see long lines
 - ncurses: Can edit long lines because they wrap
 - ncurses: Help page
+- ncurses: Handle screen resizes - can crash it by making screen smaller
 
     * All edits go in a queue of undoable changes in EditableDiffModel.
       The last savepoint is a pointer to somewhere in the queue.  When we
@@ -31,9 +30,15 @@ Big:
   big files.  DiffModel would only cache a certain number of lines, and call
   into the parser whenever it needed to get some other lines.
 
+- Don't use unified diffs internally since they are not quite as reliable
+  as context diffs?  (Because of +++ line problem.)
+
 Unimportant:
 
-- Treat lines beginning +++ that are not hunk beginnings (i.e. don't match
-  exactly the +++ file-name date-format regular expression) as + lines
-- Make ListView write lines one by one instead of returning a string
+- unified diffs: Ignore lines that do not start with a space in unified diffs
+- ncurses: Don't redraw whole screen when we are only scrolling one line
+- unified diffs: Treat lines beginning +++ that are not hunk beginnings
+  (i.e. don't match exactly the +++ file-name date-format regular
+  expression) as + lines
+- listview: write lines one by one instead of returning a string
 
