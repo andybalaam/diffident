@@ -59,6 +59,10 @@ class NCursesView( object ):
 		else:
 			# Otherwise we have a list of things to do and then
 			# take a screenshot and return it
+			for action in debug_actions:
+				if isinstance( action, str ):
+					action = ord( action )
+				self.process_keypress( action )
 			return self.take_screenshot()
 
 	def main_loop( self ):
@@ -66,17 +70,19 @@ class NCursesView( object ):
 		keep_going = True
 		while keep_going:
 			key = self.stdscr.getch()
+			keep_going = self.process_keypress( key )
 
-			if key == ord( "q" ):
-				keep_going = False
-			elif key == ord( "h" ) or key == curses.KEY_LEFT:
-				self.move_cursor( NCursesView.LEFT )
-			elif key == ord( "l" ) or key == curses.KEY_RIGHT:
-				self.move_cursor( NCursesView.RIGHT )
-			elif key == ord( "j" ) or key == curses.KEY_DOWN:
-				self.move_cursor( NCursesView.DOWN )
-			elif key == ord( "k" ) or key == curses.KEY_UP:
-				self.move_cursor( NCursesView.UP )
+	def process_keypress( self, key ):
+		if key == ord( "q" ):
+			keep_going = False
+		elif key == ord( "h" ) or key == curses.KEY_LEFT:
+			self.move_cursor( NCursesView.LEFT )
+		elif key == ord( "l" ) or key == curses.KEY_RIGHT:
+			self.move_cursor( NCursesView.RIGHT )
+		elif key == ord( "j" ) or key == curses.KEY_DOWN:
+			self.move_cursor( NCursesView.DOWN )
+		elif key == ord( "k" ) or key == curses.KEY_UP:
+			self.move_cursor( NCursesView.UP )
 
 	def move_cursor( self, dr ):
 		if dr == NCursesView.LEFT and self.mycursor.lr == NCursesView.RIGHT:

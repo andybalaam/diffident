@@ -20,18 +20,25 @@ def main():
 
 	parser.add_option("", "--test", dest="test",
 		default=False, action="store_true",
-		help="Run the quick unit test suite." )
+		help="Run the ncurses and super-fast unit tests." )
+
+	parser.add_option("", "--test-quick", dest="test_quick",
+		default=False, action="store_true",
+		help="Run only super-fast unit tests." )
 
 	parser.add_option("", "--test-slow", dest="test_slow",
 		default=False, action="store_true",
-		help="Run the slow and quick unit test suites." )
+		help="Run the slow, medium and quick unit tests."
+			+ "  The slow tests involve e.g. disk access and shell commands.")
 
 	( options, args ) = parser.parse_args()
 
 	if options.test_slow:
 		return test.test_all.test_slow()
-	elif options.test:
+	elif options.test_quick:
 		return test.test_all.test_quick()
+	elif options.test:
+		return test.test_all.test_medium()
 
 	if len( args ) != 2:
 		parser.error( "You must supply 2 files to compare." )
