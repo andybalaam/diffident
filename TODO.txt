@@ -2,13 +2,15 @@ Next:
 
 + ncurses: Basic ncurses startup, exit
 + ncurses: Moveable cursor
-- ncurses: Can take a screenshot for testing
++ ncurses: Can take a screenshot for testing
++ ncurses: Unit tests for existing functionality
+- ncurses: Don't redraw whole screen when we have only moved the cursor
 
 - unified diffs: Ignore lines that do not start with a space in unified diffs
 
 - ncurses: Scrolling when cursor is moved
-- ncurses: Support for PageUp, PageDown
-- ncurses: Jump to next/prev different
++ ncurses: Support for PageUp, PageDown
+- ncurses: Jump to next/prev difference
 - ncurses: Select multiple lines
 - ncurses: Can copy from one side to the other *
 - ncurses: Can see long lines word-wrapped at bottom? (not short lines)
