@@ -92,6 +92,28 @@ def down_arrow():
 def down_j():
 	_down( "j" )
 
+def down_twice():
+	view = _make_view()
+
+	actions = [ curses.KEY_DOWN, curses.KEY_DOWN, curses.KEY_DOWN,
+		curses.KEY_DOWN, curses.KEY_DOWN, curses.KEY_DOWN, curses.KEY_DOWN,
+		curses.KEY_DOWN, curses.KEY_DOWN, curses.KEY_DOWN, curses.KEY_DOWN ]
+
+	assert_strings_equal( view.show( actions ),
+"""[n]line 5 here          line 5 here        
+[ni]line 6 here       [n]   line 6 here        
+""" )
+
+def down_scroll():
+	view = _make_view()
+
+	actions = [ curses.KEY_DOWN, curses.KEY_DOWN ]
+
+	assert_strings_equal( view.show( actions ),
+"""[n]line 2 here          line 2 here        
+[ni]line 3 here       [n]   line 3 here        
+""" )
+
 
 def _up( key ):
 	view = _make_view()
@@ -119,6 +141,19 @@ def up_twice():
 """[ni]line 1 here       [n]   line 1 here        
 line 2 here          line 2 here        
 """ )
+
+def up_scroll():
+	view = _make_view()
+
+	# Down x 4, Up x 3
+	actions = [ curses.KEY_DOWN, curses.KEY_DOWN, curses.KEY_DOWN,
+		curses.KEY_DOWN, curses.KEY_UP, curses.KEY_UP, curses.KEY_UP ]
+
+	assert_strings_equal( view.show( actions ),
+"""[ni]line 2 here       [n]   line 2 here        
+line 3 here          line 3 here        
+""" )
+
 
 def _page_down( key ):
 	view = _make_view()
@@ -239,10 +274,12 @@ def run():
 	left_twice()
 	down_arrow()
 	down_j()
-	#down_twice() requires scrolling support
+	down_twice()
+	down_scroll()
 	up_arrow()
 	up_k()
 	up_twice()
+	up_scroll()
 
 	page_down_pagedown()
 	page_down_cursor_preserved()

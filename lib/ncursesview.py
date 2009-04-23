@@ -97,18 +97,35 @@ class NCursesView( object ):
 		return keep_going
 
 	def move_cursor( self, dr ):
+		# TODO: don't redraw whole screen when just moving cursor
+		# TODO: don't redraw whole screen when scrolling?
+
+		redraw = False
+
 		if dr == NCursesView.LEFT and self.mycursor.lr == NCursesView.RIGHT:
 			self.mycursor.lr = NCursesView.LEFT
-			self.draw_screen()
+			redraw = True
 		elif dr == NCursesView.RIGHT and self.mycursor.lr == NCursesView.LEFT:
 			self.mycursor.lr = NCursesView.RIGHT
-			self.draw_screen()
-		elif dr == NCursesView.UP and self.mycursor.line_num > 0:
-			self.mycursor.line_num -= 1
-			self.draw_screen()
-		elif dr == NCursesView.DOWN and (
-				self.mycursor.line_num < ( self.win_height - 1 ) ):
-			self.mycursor.line_num += 1
+			redraw = True
+		elif dr == NCursesView.UP:
+			if self.mycursor.line_num == 0:
+				if self.top_line > 0:
+					self.set_top_line( self.top_line - 1 )
+					redraw = True
+			else:
+				self.mycursor.line_num -= 1
+				redraw = True
+		elif dr == NCursesView.DOWN:
+			if self.mycursor.line_num == ( self.win_height - 1 ):
+				if self.bot_line < self.diffmodel.get_num_lines():
+					self.set_top_line( self.top_line + 1 )
+					redraw = True
+			else:
+				self.mycursor.line_num += 1
+				redraw = True
+
+		if redraw:
 			self.draw_screen()
 
 	def change_page( self, direction ):
