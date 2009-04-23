@@ -13,6 +13,10 @@ def _make_view():
 	diffmodel.lines = [
 		FakeDiffLine( "line 1 here", "line 1 here", difflinetypes.IDENTICAL ),
 		FakeDiffLine( "line 2 here", "line 2 here", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "line 3 here", "line 3 here", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "line 4 here", "line 4 here", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "line 5 here", "line 5 here", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "line 6 here", "line 6 here", difflinetypes.IDENTICAL ),
 		]
 
 	view = NCursesView( diffmodel )
@@ -35,6 +39,15 @@ def right_arrow():
 def right_l():
 	_right( "l" )
 
+def right_twice():
+	view = _make_view()
+	actions = [ curses.KEY_RIGHT, curses.KEY_RIGHT ]
+	assert_strings_equal( view.show( actions ),
+"""[n]line 1 here          [ni]line 1 here        
+[n]line 2 here          line 2 here        
+""" )
+
+
 
 def _left( key ):
 	view = _make_view()
@@ -53,6 +66,15 @@ def left_arrow():
 def left_h():
 	_left( "h" )
 
+def left_twice():
+	view = _make_view()
+
+	actions = [ curses.KEY_LEFT, curses.KEY_LEFT ]
+
+	assert_strings_equal( view.show( actions ),
+"""[ni]line 1 here       [n]   line 1 here        
+line 2 here          line 2 here        
+""" )
 
 def _down( key ):
 	view = _make_view()
@@ -88,14 +110,146 @@ def up_arrow():
 def up_k():
 	_up( "k" )
 
+def up_twice():
+	view = _make_view()
+
+	actions = [ curses.KEY_UP, curses.KEY_UP ]
+
+	assert_strings_equal( view.show( actions ),
+"""[ni]line 1 here       [n]   line 1 here        
+line 2 here          line 2 here        
+""" )
+
+def _page_down( key ):
+	view = _make_view()
+
+	actions = [ key ]
+
+	assert_strings_equal( view.show( actions ),
+"""[ni]line 3 here       [n]   line 3 here        
+line 4 here          line 4 here        
+""" )
+
+def page_down_pagedown():
+	_page_down( curses.KEY_NPAGE )
+
+
+def _page_up( key ):
+	view = _make_view()
+
+	actions = [ curses.KEY_NPAGE, key ]
+
+	assert_strings_equal( view.show( actions ),
+"""[ni]line 1 here       [n]   line 1 here        
+line 2 here          line 2 here        
+""" )
+
+def page_up_pageup():
+	_page_up( curses.KEY_PPAGE )
+
+
+def page_down_cursor_preserved():
+	view = _make_view()
+	view.win_height = 3
+
+	# Right, Down, PageDown
+	actions = [ curses.KEY_RIGHT, curses.KEY_DOWN, curses.KEY_NPAGE ]
+
+	assert_strings_equal( view.show( actions ),
+"""[n]line 4 here          line 4 here        
+line 5 here          [ni]line 5 here        
+[n]line 6 here          line 6 here        
+""" )
+
+def page_up_cursor_preserved():
+	view = _make_view()
+	view.win_height = 3
+
+	# Right, Down, PageDown, PageUp
+	actions = [ curses.KEY_RIGHT, curses.KEY_DOWN, curses.KEY_NPAGE,
+		curses.KEY_PPAGE ]
+
+	assert_strings_equal( view.show( actions ),
+"""[n]line 1 here          line 1 here        
+line 2 here          [ni]line 2 here        
+[n]line 3 here          line 3 here        
+""" )
+
+def page_down_cursor_to_bottom():
+	view = _make_view()
+	view.win_height = 3
+
+	# Right, PageDown, PageDown
+	actions = [ curses.KEY_RIGHT, curses.KEY_NPAGE,
+		curses.KEY_NPAGE ]
+
+	assert_strings_equal( view.show( actions ),
+"""[n]line 4 here          line 4 here        
+line 5 here          line 5 here        
+line 6 here          [ni]line 6 here        
+""" )
+	
+def page_down_twice():
+	view = _make_view()
+	view.win_height = 3
+
+	# PageDown, PageDown, PageDown
+	actions = [curses.KEY_NPAGE, curses.KEY_NPAGE, curses.KEY_NPAGE ]
+
+	assert_strings_equal( view.show( actions ),
+"""[n]line 4 here          line 4 here        
+line 5 here          line 5 here        
+[ni]line 6 here       [n]   line 6 here        
+""" )
+
+
+def page_up_cursor_to_top():
+	view = _make_view()
+	view.win_height = 3
+
+	# Right, Down, PageUp
+	actions = [ curses.KEY_RIGHT, curses.KEY_DOWN, curses.KEY_PPAGE ]
+
+	assert_strings_equal( view.show( actions ),
+"""[n]line 1 here          [ni]line 1 here        
+[n]line 2 here          line 2 here        
+line 3 here          line 3 here        
+""" )
+
+def page_up_twice():
+	view = _make_view()
+	view.win_height = 3
+
+	# PageUp, PageUp
+	actions = [ curses.KEY_PPAGE, curses.KEY_PPAGE ]
+
+	assert_strings_equal( view.show( actions ),
+"""[ni]line 1 here       [n]   line 1 here        
+line 2 here          line 2 here        
+line 3 here          line 3 here        
+""" )
+
 
 def run():
 	right_arrow()
 	right_l()
+	right_twice()
 	left_arrow()
 	left_h()
+	left_twice()
 	down_arrow()
 	down_j()
+	#down_twice() requires scrolling support
 	up_arrow()
 	up_k()
+	up_twice()
+
+	page_down_pagedown()
+	page_down_cursor_preserved()
+	page_down_cursor_to_bottom()
+	page_down_twice()
+	page_up_pageup()
+	page_up_cursor_preserved()
+	page_up_cursor_to_top()
+	page_up_twice()
 

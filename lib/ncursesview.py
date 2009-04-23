@@ -16,7 +16,8 @@ class NCursesView( object ):
 
 	def __init__( self, diffmodel ):
 		self.diffmodel = diffmodel
-		self.top_line = 0
+		self.top_line = None
+		self.bot_line = None
 		self.mycursor = NCursesView.Cursor( NCursesView.LEFT, 0 )
 		self.win_height = None # Modify these in test code
 		self.win_width = None  #
@@ -35,8 +36,9 @@ class NCursesView( object ):
 		# Otherwise, get them from the environment
 		if self.win_height is None:
 			( self.win_height, self.win_width ) = self.stdscr.getmaxyx()
+			self.win_width -= 1
 
-		self.bot_line = self.top_line + self.win_height
+		self.set_top_line( 0 )
 
 		win_width_without_mid_col = self.win_width - 3
 		self.left_width  = win_width_without_mid_col // 2
@@ -65,6 +67,10 @@ class NCursesView( object ):
 				self.process_keypress( action )
 			return self.take_screenshot()
 
+	def set_top_line( self, top_line ):
+		self.top_line = top_line
+		self.bot_line = self.top_line + self.win_height
+
 	def main_loop( self ):
 
 		keep_going = True
@@ -73,6 +79,7 @@ class NCursesView( object ):
 			keep_going = self.process_keypress( key )
 
 	def process_keypress( self, key ):
+		keep_going = True
 		if key == ord( "q" ):
 			keep_going = False
 		elif key == ord( "h" ) or key == curses.KEY_LEFT:
@@ -83,6 +90,11 @@ class NCursesView( object ):
 			self.move_cursor( NCursesView.DOWN )
 		elif key == ord( "k" ) or key == curses.KEY_UP:
 			self.move_cursor( NCursesView.UP )
+		elif key == curses.KEY_NPAGE:
+			self.change_page( 1 )
+		elif key == curses.KEY_PPAGE:
+			self.change_page( -1 )
+		return keep_going
 
 	def move_cursor( self, dr ):
 		if dr == NCursesView.LEFT and self.mycursor.lr == NCursesView.RIGHT:
@@ -95,8 +107,34 @@ class NCursesView( object ):
 			self.mycursor.line_num -= 1
 			self.draw_screen()
 		elif dr == NCursesView.DOWN and (
-				self.mycursor.line_num < ( self.bot_line - 1 ) ):
+				self.mycursor.line_num < ( self.win_height - 1 ) ):
 			self.mycursor.line_num += 1
+			self.draw_screen()
+
+	def change_page( self, direction ):
+		top_line = self.top_line
+		top_line += direction * self.win_height
+		if top_line < 0:
+			top_line = 0
+		elif top_line > self.diffmodel.get_num_lines() - self.win_height:
+			top_line = self.diffmodel.get_num_lines() - self.win_height
+
+		redraw = False
+		if top_line != self.top_line:
+			# Normal case - move down a page and don't move the cursor
+			self.set_top_line( top_line )
+			redraw = True
+		elif top_line == 0 and self.mycursor.line_num != 0:
+			# We hit the top - move the cursor up to the top
+			self.mycursor.line_num = 0
+			redraw = True
+		elif ( self.bot_line == self.diffmodel.get_num_lines() and
+				self.mycursor.line_num != self.win_height - 1 ):
+			# We hit the bottom - move the cursor down to the bottom
+			self.mycursor.line_num = self.win_height - 1
+			redraw = True
+
+		if redraw:
 			self.draw_screen()
 
 	def make_color_pairs( self ):
