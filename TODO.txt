@@ -7,6 +7,8 @@ Next:
 + ncurses: Scrolling when cursor is moved
 + ncurses: Support for PageUp, PageDown
 + ncurses: Don't redraw whole screen when we have only moved the cursor
++ admin: Include COPYING file containing GPL2
+- admin: Put GPL2 boilerplate in all source files.
 - ncurses: Jump to next/prev difference
 - ncurses: Select multiple lines
 - ncurses: Can copy from one side to the other *
