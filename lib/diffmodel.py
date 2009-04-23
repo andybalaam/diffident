@@ -35,6 +35,9 @@ class DiffModel:
 		self.parser.parse_lines( self.line_callback )
 		return self.lines
 
+	def get_num_lines( self ):
+		return len( self.lines )
+
 	def line_callback( self, left, right, status ):
 		"""Receive a callback from the parser saying that we have received a
 		line."""
