@@ -15,12 +15,15 @@ Next:
 - ncurses: Jump to next/prev difference
 - ncurses: Select multiple lines
 - ncurses: Can copy from one side to the other *
-- ncurses: Can see long lines word-wrapped at bottom? (not short lines)
+- ncurses: Can see long lines at bottom? (not short lines)
+- ncurses: Long lines at bottom are scrollable
 - ncurses: Can edit lines
 - ncurses: Can scroll to the right to see long lines
 - ncurses: Can edit long lines because they wrap
 - ncurses: Help page
 - ncurses: Handle screen resizes - can crash it by making screen smaller
+- ncurses: header showing names of files
+- ncurses: status line
 - git: create a script suitable for use as GIT_EXTERNAL_DIFF
 - diffmodel: allow locking one or both files as non-writeable
 
