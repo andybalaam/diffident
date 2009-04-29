@@ -38,18 +38,15 @@ class NCursesView( object ):
 			( self.win_height, self.win_width ) = self.stdscr.getmaxyx()
 			self.win_width -= 1
 
-		self.set_top_line( 0 )
-
 		win_width_without_mid_col = self.win_width - 3
 		self.left_width  = win_width_without_mid_col // 2
 		self.right_width = win_width_without_mid_col - self.left_width
 		self.mid_col     = self.left_width + 1
 		self.right_start = self.left_width + 3
 
-		self.stdscr.bkgd( ord( " " ), self.BLACK )
+		self.set_top_line( 0 )
 
-		#self.lines = self.diffmodel.get_lines( self.bot_line, self.top_line )
-		self.lines = self.diffmodel.get_lines()
+		self.stdscr.bkgd( ord( " " ), self.BLACK )
 
 		self.draw_screen()
 
@@ -70,6 +67,7 @@ class NCursesView( object ):
 	def set_top_line( self, top_line ):
 		self.top_line = top_line
 		self.bot_line = self.top_line + self.win_height
+		self.lines = self.diffmodel.get_lines( self.top_line, self.bot_line )
 
 	def main_loop( self ):
 
@@ -175,16 +173,13 @@ class NCursesView( object ):
 	def draw_screen( self ):
 		self.stdscr.clear()
 
-		#for ln in self.lines:
-		for line_num, ln in enumerate( self.lines[
-				self.top_line : self.bot_line ] ):
+		for line_num, ln in enumerate( self.lines ):
 			self.write_line( ln, line_num )
 
 		self.stdscr.refresh()
 
 	def draw_single_line( self, line_num ):
-		#ln = self.lines[line_num]
-		ln = self.lines[self.top_line + line_num]
+		ln = self.lines[line_num]
 		self.write_line( ln, line_num )
 
 	def write_line( self, ln, line_num ):
