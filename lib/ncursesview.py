@@ -94,9 +94,9 @@ class NCursesView( object ):
 			self.change_page( 1 )
 		elif key == curses.KEY_PPAGE:
 			self.change_page( -1 )
-		elif key == ord( "n" ): # Next difference
+		elif key == ord( "n" ) or key == curses.KEY_F8: # Next difference
 			self.next_difference( 1 )
-		elif key == ord( "p" ): # Previous difference
+		elif key == ord( "p" ) or key == curses.KEY_F7: # Previous difference
 			self.next_difference( -1 )
 		return keep_going
 
