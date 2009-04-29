@@ -9,6 +9,8 @@ Next:
 + ncurses: Don't redraw whole screen when we have only moved the cursor
 + admin: Include COPYING file containing GPL2
 + ncurses: fix bug with files containing tabs
++ ncurses: only request the lines we need to display now
+- ncurses: choose key shortcuts for pagedown and pageup
 - admin: Put GPL2 boilerplate in all source files.
 - ncurses: Jump to next/prev difference
 - ncurses: Select multiple lines
@@ -27,6 +29,9 @@ Next:
       ask the EditableDiffModel for lines, it gets the original DiffModel
       lines and applies the changes in order.  Any change that occurs after
       the savepoint makes the line be marked as changed (visible in UI).
+
+Next:
+- ncurses: Support different colour schemes: white-on-black, black-on-white, others?
 
 Big:
 
@@ -48,4 +53,5 @@ Unimportant:
   (i.e. don't match exactly the +++ file-name date-format regular
   expression) as + lines
 - listview: write lines one by one instead of returning a string
+- ncurses: redefine keys?
 
