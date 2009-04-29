@@ -48,7 +48,7 @@ class NCursesView( object ):
 
 		self.set_top_line( 0 )
 
-		self.stdscr.bkgd( ord( " " ), self.BLACK )
+		self.stdscr.bkgd( ord( " " ), self.CP_NORMAL )
 
 		self.draw_screen()
 
@@ -191,13 +191,16 @@ class NCursesView( object ):
 	def make_color_pairs( self ):
 		curses.use_default_colors()
 
-		self.BLACK = self.create_color_pair( 1, curses.COLOR_BLACK, -1 )
-		self.CYAN  = self.create_color_pair( 2, curses.COLOR_CYAN,  -1 )
-		self.GREEN = self.create_color_pair( 3, curses.COLOR_GREEN, -1 )
-		self.RED   = self.create_color_pair( 4, curses.COLOR_RED,   -1 )
-
-		self.BLACK_ON_WHITE = self.create_color_pair( 5, curses.COLOR_BLACK,
-			curses.COLOR_WHITE )
+		self.CP_NORMAL = self.create_color_pair(
+			1, curses.COLOR_BLACK, curses.COLOR_WHITE )
+		self.CP_DIFFERENT  = self.create_color_pair(
+			2, curses.COLOR_BLUE,  curses.COLOR_WHITE )
+		self.CP_ADD = self.create_color_pair(
+			3, curses.COLOR_GREEN, curses.COLOR_WHITE )
+		self.CP_REMOVE = self.create_color_pair(
+			4, curses.COLOR_RED, curses.COLOR_WHITE )
+		self.CP_MISSING = self.create_color_pair(
+			5, curses.COLOR_YELLOW, curses.COLOR_WHITE )
 
 	def create_color_pair( self, pair_num, fore, back ):
 		curses.init_pair( pair_num, fore, back )
@@ -218,20 +221,20 @@ class NCursesView( object ):
 	def write_line( self, ln, line_num ):
 
 		if ln.status == difflinetypes.IDENTICAL:
-			left_colour_pair  = self.BLACK
-			right_colour_pair = self.BLACK
+			left_colour_pair  = self.CP_NORMAL
+			right_colour_pair = self.CP_NORMAL
 			mid_char = ord( " " )
 		elif ln.status == difflinetypes.DIFFERENT:
-			left_colour_pair  = self.CYAN
-			right_colour_pair = self.CYAN
+			left_colour_pair  = self.CP_DIFFERENT
+			right_colour_pair = self.CP_DIFFERENT
 			mid_char = ord( "*" )
 		elif ln.status == difflinetypes.ADD:
-			left_colour_pair  = self.BLACK_ON_WHITE
-			right_colour_pair = self.GREEN
+			left_colour_pair  = self.CP_MISSING
+			right_colour_pair = self.CP_ADD
 			mid_char = ord( "+" )
 		elif ln.status == difflinetypes.REMOVE:
-			left_colour_pair  = self.RED
-			right_colour_pair = self.BLACK_ON_WHITE
+			left_colour_pair  = self.CP_REMOVE
+			right_colour_pair = self.CP_MISSING
 			mid_char = ord( "-" )
 		else:
 			raise Exception( "Unknown line type %d." % ln.status )
@@ -253,7 +256,7 @@ class NCursesView( object ):
 
 	def pad_to_width( self, string, width ):
 		if string is None:
-			string = ""
+			return "." * width
 		string = string.expandtabs()
 		return string + ( " " * ( width - len( string ) ) )
 
