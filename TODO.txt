@@ -29,6 +29,7 @@ Next:
 - ncurses: status line
 - git: create a script suitable for use as GIT_EXTERNAL_DIFF
 - diffmodel: allow locking one or both files as non-writeable
+- general: return the correct values as used by git?
 
     * All edits go in a queue of undoable changes in EditableDiffModel.
       The last savepoint is a pointer to somewhere in the queue.  When we
