@@ -4,6 +4,7 @@ import test_listview
 import test_diffmodel
 import test_ncursesview
 import test_ncursesview_movement
+import test_ncursesview_nextdiff
 import test_unifieddiffparser
 
 def run_quick_tests():
@@ -14,6 +15,7 @@ def run_quick_tests():
 def run_medium_tests():
 	test_ncursesview.run()
 	test_ncursesview_movement.run()
+	test_ncursesview_nextdiff.run()
 
 def test_quick():
 	run_quick_tests()

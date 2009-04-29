@@ -2,6 +2,8 @@ import curses
 
 import difflinetypes
 
+NEXT_DIFF_MARGIN = 3
+
 class NCursesView( object ):
 
 	LEFT  = 0
@@ -78,7 +80,7 @@ class NCursesView( object ):
 
 	def process_keypress( self, key ):
 		keep_going = True
-		if key == ord( "q" ):
+		if key == ord( "q" ): # Quit
 			keep_going = False
 		elif key == ord( "h" ) or key == curses.KEY_LEFT:
 			self.move_cursor( NCursesView.LEFT )
@@ -92,6 +94,8 @@ class NCursesView( object ):
 			self.change_page( 1 )
 		elif key == curses.KEY_PPAGE:
 			self.change_page( -1 )
+		elif key == ord( "n" ): # Next difference
+			self.next_difference()
 		return keep_going
 
 	def move_cursor( self, dr ):
@@ -154,6 +158,35 @@ class NCursesView( object ):
 
 		if redraw:
 			self.draw_screen()
+
+	def next_difference( self ):
+		current_pos = self.top_line + self.mycursor.line_num
+
+		# Skip the difference we are in
+		line = self.diffmodel.get_line( current_pos )
+		while ( line is not None and
+				line.status != difflinetypes.IDENTICAL ):
+			current_pos += 1
+			line = self.diffmodel.get_line( current_pos )
+
+		# Find the next difference
+		while ( line is not None and
+			line.status == difflinetypes.IDENTICAL ):
+			current_pos += 1
+			line = self.diffmodel.get_line( current_pos )
+
+		if line is not None:
+			top_line = current_pos - NEXT_DIFF_MARGIN
+			curs_pos = NEXT_DIFF_MARGIN
+			if top_line < 0:
+				curs_pos += top_line
+				top_line = 0
+			self.set_top_line( top_line )
+			self.mycursor.line_num = curs_pos
+
+			self.draw_screen()
+		else:
+			pass # TODO: status line message
 
 	def make_color_pairs( self ):
 		curses.use_default_colors()
