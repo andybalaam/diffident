@@ -66,10 +66,26 @@ line 13    line 13
                     
 """ )
 
+def next_diff_end():
+
+	view = _make_view()
+
+	actions = [ "n", "n", "n", "n", "n" ]
+
+	assert_strings_equal( view.show( actions ),
+"""[d]line 11 [n] * [d]line 11 d
+[n]line 12    line 12  
+line 13    line 13  
+[mi]........[n] + [a]line 14  
+[n]line 15    line 15  
+                    
+                    
+""" )
 
 
 
 def run():
 	next_diff_different()
 	next_diff_several()
+	next_diff_end()
 
