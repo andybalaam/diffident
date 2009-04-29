@@ -12,7 +12,10 @@ Next:
 + ncurses: only request the lines we need to display now
 - ncurses: choose key shortcuts for pagedown and pageup
 - admin: Put GPL2 boilerplate in all source files.
-- ncurses: Jump to next/prev difference
++ ncurses: Jump to next/prev difference
+- ncurses: fix bug where pressing nnnnnnPAGEDOWN jumps your cursor
+           upwards (if the last difference is near the end)
+- ncurses: alternatively, make n never scroll you off the bottom
 - ncurses: Select multiple lines
 - ncurses: Can copy from one side to the other *
 - ncurses: Can see long lines at bottom? (not short lines)
