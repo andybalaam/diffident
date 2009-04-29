@@ -10,7 +10,7 @@ def pad_to_width():
 	diffmodel = FakeDiffModel()
 	view = NCursesView( diffmodel )
 
-	assert_strings_equal( view.pad_to_width( None, 5 ), "     " )
+	assert_strings_equal( view.pad_to_width( None, 5 ), "....." )
 	assert_strings_equal( view.pad_to_width( "d f", 5 ), "d f  " )
 	assert_strings_equal( view.pad_to_width( "d fffffffff", 5 ), "d fffffffff" )
 
@@ -78,8 +78,8 @@ def adds():
 	actions = []
 
 	assert_strings_equal( view.show( actions ),
-"""[mi]                  [n] + [a]line 1 here        
-[m]                  [n] + [a]line 2 here        
+"""[mi]..................[n] + [a]line 1 here        
+[m]..................[n] + [a]line 2 here        
 [n]                                        
                                         
                                         
@@ -102,8 +102,8 @@ def removes():
 	actions = []
 
 	assert_strings_equal( view.show( actions ),
-"""[ri]line 1 here       [n] - [m]                  
-[r]line 2 here       [n] - [m]                  
+"""[ri]line 1 here       [n] - [m]..................
+[r]line 2 here       [n] - [m]..................
 [n]                                       
                                        
                                        
@@ -135,10 +135,10 @@ def mixture():
 
 	assert_strings_equal( view.show( actions ),
 """[ni]line 1 here       [n]   line 1 here        
-[m]                  [n] + [a]line 2 here        
+[m]..................[n] + [a]line 2 here        
 [n]line 3 here          line 3 here        
 [d]line 4 here       [n] * [d]line 4 here differe
-[r]line 5 here       [n] - [m]                   
+[r]line 5 here       [n] - [m]...................
 """ )
 
 def run():
