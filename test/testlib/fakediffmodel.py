@@ -10,9 +10,9 @@ class FakeDiffModel:
 			return self.lines[start:end]
 
 	def get_line( self, line_num ):
-		try:
+		if 0 <= line_num < len( self.lines ):
 			return self.lines[line_num]
-		except IndexError:
+		else:
 			return None
 
 	def get_num_lines( self ):

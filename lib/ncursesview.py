@@ -95,7 +95,9 @@ class NCursesView( object ):
 		elif key == curses.KEY_PPAGE:
 			self.change_page( -1 )
 		elif key == ord( "n" ): # Next difference
-			self.next_difference()
+			self.next_difference( 1 )
+		elif key == ord( "p" ): # Previous difference
+			self.next_difference( -1 )
 		return keep_going
 
 	def move_cursor( self, dr ):
@@ -163,21 +165,32 @@ class NCursesView( object ):
 		if redraw:
 			self.draw_screen()
 
-	def next_difference( self ):
+	def next_difference( self, direction ):
 		current_pos = self.top_line + self.mycursor.line_num
 
 		# Skip the difference we are in
 		line = self.diffmodel.get_line( current_pos )
 		while ( line is not None and
 				line.status != difflinetypes.IDENTICAL ):
-			current_pos += 1
+			current_pos += direction
 			line = self.diffmodel.get_line( current_pos )
 
 		# Find the next difference
 		while ( line is not None and
-			line.status == difflinetypes.IDENTICAL ):
-			current_pos += 1
+				line.status == difflinetypes.IDENTICAL ):
+			current_pos += direction
 			line = self.diffmodel.get_line( current_pos )
+
+		# Go to the beginning of the found difference
+		if line is not None and direction == -1:
+			prev_line = line
+			while( prev_line is not None and
+					prev_line.status != difflinetypes.IDENTICAL ):
+				line = prev_line
+				current_pos += direction
+				prev_line = self.diffmodel.get_line( current_pos )
+			# current_pos overshot by 1 - correct it
+			current_pos -= direction
 
 		if line is not None:
 			top_line = current_pos - NEXT_DIFF_MARGIN

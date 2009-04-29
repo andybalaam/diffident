@@ -44,9 +44,9 @@ class DiffModel:
 		if len( self.lines ) == 0:
 			self.parser.parse_lines( self.line_callback )
 
-		try:
+		if 0 <= line_num < len( self.lines ):
 			return self.lines[line_num]
-		except IndexError:
+		else:
 			return None
 
 	def get_num_lines( self ):
