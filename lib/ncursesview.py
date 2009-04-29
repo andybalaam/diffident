@@ -105,10 +105,10 @@ class NCursesView( object ):
 
 		if dr == NCursesView.LEFT and self.mycursor.lr == NCursesView.RIGHT:
 			self.mycursor.lr = NCursesView.LEFT
-			redraw = True
+			self.refresh_cursor_line()
 		elif dr == NCursesView.RIGHT and self.mycursor.lr == NCursesView.LEFT:
 			self.mycursor.lr = NCursesView.RIGHT
-			redraw = True
+			self.refresh_cursor_line()
 		elif dr == NCursesView.UP:
 			if self.mycursor.line_num == 0:
 				if self.top_line > 0:
@@ -130,6 +130,10 @@ class NCursesView( object ):
 		old_line_num = self.mycursor.line_num
 		self.mycursor.line_num += direction
 		self.draw_single_line( old_line_num )
+		self.draw_single_line( self.mycursor.line_num )
+		self.stdscr.refresh()
+
+	def refresh_cursor_line( self ):
 		self.draw_single_line( self.mycursor.line_num )
 		self.stdscr.refresh()
 
