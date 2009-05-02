@@ -6,7 +6,7 @@ Next:
 + ncurses: Middle column is inverse when there is a difference
 + ncurses: Use yellow for a different line, and magenta for a missing line
 + ncurses: Don't refresh whole screen when pageup or n only moves cursor
-- ncurses: Make n never scroll you off the bottom
++ ncurses: Make n never scroll you off the bottom
 - ncurses: Select multiple lines
 - ncurses: Can copy from one side to the other *
 - ncurses: Can see long lines at bottom? (not short lines)
@@ -31,6 +31,7 @@ Next:
 - ncurses: Support different colour schemes: white-on-black, black-on-white, others?
 - ncurses: Special characters to indicate the line continues to the left or right
 - ncurses: Highlight added and removed parts of the line in a DIFFERENT row.
+- ncurses: Should n scroll so often, or not scroll if it doesn't need to?
 
 Big:
 

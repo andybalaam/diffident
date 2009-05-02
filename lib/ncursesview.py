@@ -266,6 +266,13 @@ class NCursesView( object ):
 			old_top_line = self.top_line
 			top_line = current_pos - NEXT_DIFF_MARGIN
 			curs_pos = NEXT_DIFF_MARGIN
+
+			max_top_line = self.diffmodel.get_num_lines() - self.win_height
+			if top_line > max_top_line:
+				adjustment = max_top_line - top_line
+				top_line += adjustment
+				curs_pos -= adjustment
+
 			if top_line < 0:
 				curs_pos += top_line
 				top_line = 0

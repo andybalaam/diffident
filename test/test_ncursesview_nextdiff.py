@@ -74,13 +74,13 @@ def next_diff_several():
 	actions = [ curses.KEY_RIGHT, "n", "n" ]
 
 	assert_strings_equal( view.show( actions ),
-"""[d]line 11 [di] * [d]line 11 d
+"""[n]line 09    line 09  
+[d]line 10 [di] * [d]line 10 d
+line 11 [di] * [d]line 11 d
 [n]line 12    line 12  
 line 13    line 13  
 [m]........[ai] + line 14  
 [m]........[ai] + [a]line 15  
-[n]                    
-                    
 """ )
 
 def next_diff_end():
@@ -90,13 +90,13 @@ def next_diff_end():
 	actions = [ "n", "n", "n", "n", "n" ]
 
 	assert_strings_equal( view.show( actions ),
-"""[d]line 11 [di] * [d]line 11 d
+"""[n]line 09    line 09  
+[d]line 10 [di] * [d]line 10 d
+line 11 [di] * [d]line 11 d
 [n]line 12    line 12  
 line 13    line 13  
 [mi]........[ai] + [a]line 14  
 [m]........[ai] + [a]line 15  
-[n]                    
-                    
 """ )
 
 def previous_diff():
