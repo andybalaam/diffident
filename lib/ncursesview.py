@@ -108,9 +108,9 @@ class NCursesView( object ):
 			self.move_cursor( NCursesView.DOWN )
 		elif key == ord( "k" ) or key == curses.KEY_UP:
 			self.move_cursor( NCursesView.UP )
-		elif key == curses.KEY_NPAGE:
+		elif key == ord( "." ) or key == curses.KEY_NPAGE: # Page down
 			self.change_page( 1 )
-		elif key == curses.KEY_PPAGE:
+		elif key == ord( "," ) or key == curses.KEY_PPAGE: # Page up
 			self.change_page( -1 )
 		elif key == ord( "n" ) or key == curses.KEY_F8: # Next difference
 			self.next_difference( 1 )
