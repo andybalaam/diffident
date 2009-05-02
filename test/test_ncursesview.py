@@ -74,8 +74,8 @@ def differences():
 	actions = []
 
 	assert_strings_equal( view.show( actions ),
-"""[di]line 1 here       [n] * [d]line 1 here differe
-line 2 here       [n] * [d]line 2 here differe
+"""[di]line 1 here        * [d]line 1 here differe
+line 2 here       [di] * [d]line 2 here differe
 [n]                                        
                                         
                                         
@@ -98,8 +98,8 @@ def adds():
 	actions = []
 
 	assert_strings_equal( view.show( actions ),
-"""[mi]..................[n] + [a]line 1 here        
-[m]..................[n] + [a]line 2 here        
+"""[mi]..................[ai] + [a]line 1 here        
+[m]..................[ai] + [a]line 2 here        
 [n]                                        
                                         
                                         
@@ -122,8 +122,8 @@ def removes():
 	actions = []
 
 	assert_strings_equal( view.show( actions ),
-"""[ri]line 1 here       [n] - [m]..................
-[r]line 2 here       [n] - [m]..................
+"""[ri]line 1 here        - [m]..................
+[r]line 2 here       [ri] - [m]..................
 [n]                                       
                                        
                                        
@@ -155,10 +155,10 @@ def mixture():
 
 	assert_strings_equal( view.show( actions ),
 """[ni]line 1 here       [n]   line 1 here        
-[m]..................[n] + [a]line 2 here        
+[m]..................[ai] + [a]line 2 here        
 [n]line 3 here          line 3 here        
-[d]line 4 here       [n] * [d]line 4 here differe
-[r]line 5 here       [n] - [m]...................
+[d]line 4 here       [di] * [d]line 4 here differe
+[r]line 5 here       [ri] - [m]...................
 """ )
 
 def run():

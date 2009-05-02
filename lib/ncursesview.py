@@ -61,7 +61,7 @@ class NCursesView( object ):
 		win_width_without_mid_col = self.win_width - 3
 		self.left_width  = win_width_without_mid_col // 2
 		self.right_width = win_width_without_mid_col - self.left_width
-		self.mid_col     = self.left_width + 1
+		self.mid_col     = self.left_width
 		self.right_start = self.left_width + 3
 
 		self.set_top_line( 0 )
@@ -308,19 +308,23 @@ class NCursesView( object ):
 		if ln.status == difflinetypes.IDENTICAL:
 			left_colour_pair  = self.CP_NORMAL
 			right_colour_pair = self.CP_NORMAL
-			mid_char = ord( " " )
+			mid_colour_pair = self.CP_NORMAL
+			mid_char = " "
 		elif ln.status == difflinetypes.DIFFERENT:
 			left_colour_pair  = self.CP_DIFFERENT
 			right_colour_pair = self.CP_DIFFERENT
-			mid_char = ord( "*" )
+			mid_colour_pair = self.CP_DIFFERENT | curses.A_REVERSE
+			mid_char = "*"
 		elif ln.status == difflinetypes.ADD:
 			left_colour_pair  = self.CP_MISSING
 			right_colour_pair = self.CP_ADD
-			mid_char = ord( "+" )
+			mid_colour_pair = self.CP_ADD | curses.A_REVERSE
+			mid_char = "+"
 		elif ln.status == difflinetypes.REMOVE:
 			left_colour_pair  = self.CP_REMOVE
 			right_colour_pair = self.CP_MISSING
-			mid_char = ord( "-" )
+			mid_colour_pair = self.CP_REMOVE | curses.A_REVERSE
+			mid_char = "-"
 		else:
 			raise Exception( "Unknown line type %d." % ln.status )
 
@@ -337,7 +341,8 @@ class NCursesView( object ):
 			left_colour_pair )
 		self.stdscr.addnstr( line_num, self.right_start, right,
 			self.right_width, right_colour_pair )
-		self.stdscr.addch( line_num, self.mid_col, mid_char )
+		self.stdscr.addnstr( line_num, self.mid_col,
+			" %s " % mid_char, 3, mid_colour_pair )
 
 	def pad_to_width( self, string, first_col, width ):
 		if string is None:

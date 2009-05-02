@@ -61,8 +61,8 @@ def next_diff_different():
 """[n]line 07    line 07  
 line 08    line 08  
 line 09    line 09  
-[di]line 10 [n] * [d]line 10 d
-line 11 [n] * [d]line 11 d
+[di]line 10  * [d]line 10 d
+line 11 [di] * [d]line 11 d
 [n]line 12    line 12  
 line 13    line 13  
 """ )
@@ -74,11 +74,11 @@ def next_diff_several():
 	actions = [ curses.KEY_RIGHT, "n", "n" ]
 
 	assert_strings_equal( view.show( actions ),
-"""[d]line 11 [n] * [d]line 11 d
+"""[d]line 11 [di] * [d]line 11 d
 [n]line 12    line 12  
 line 13    line 13  
-[m]........[n] + [ai]line 14  
-[m]........[n] + [a]line 15  
+[m]........[ai] + line 14  
+[m]........[ai] + [a]line 15  
 [n]                    
                     
 """ )
@@ -90,11 +90,11 @@ def next_diff_end():
 	actions = [ "n", "n", "n", "n", "n" ]
 
 	assert_strings_equal( view.show( actions ),
-"""[d]line 11 [n] * [d]line 11 d
+"""[d]line 11 [di] * [d]line 11 d
 [n]line 12    line 12  
 line 13    line 13  
-[mi]........[n] + [a]line 14  
-[m]........[n] + [a]line 15  
+[mi]........[ai] + [a]line 14  
+[m]........[ai] + [a]line 15  
 [n]                    
                     
 """ )
@@ -109,8 +109,8 @@ def previous_diff():
 """[n]line 07    line 07  
 line 08    line 08  
 line 09    line 09  
-[di]line 10 [n] * [d]line 10 d
-line 11 [n] * [d]line 11 d
+[di]line 10  * [d]line 10 d
+line 11 [di] * [d]line 11 d
 [n]line 12    line 12  
 line 13    line 13  
 """ )
@@ -150,9 +150,9 @@ def previous_diff_to_beginning():
 	actions = [ "n", "n", "p" ]
 
 	assert_strings_equal( view.show( actions ),
-"""[di]line 01 [n] * [d]line 01 d
-line 02 [n] * [d]line 02 d
-line 03 [n] * [d]line 03 d
+"""[di]line 01  * [d]line 01 d
+line 02 [di] * [d]line 02 d
+line 03 [di] * [d]line 03 d
 """ )
 
 def previous_diff_to_beginning_twice():
@@ -164,9 +164,9 @@ def previous_diff_to_beginning_twice():
 	actions = [ "n", "n", "p", "p" ]
 
 	assert_strings_equal( view.show( actions ),
-"""[di]line 01 [n] * [d]line 01 d
-line 02 [n] * [d]line 02 d
-line 03 [n] * [d]line 03 d
+"""[di]line 01  * [d]line 01 d
+line 02 [di] * [d]line 02 d
+line 03 [di] * [d]line 03 d
 """ )
 
 def run():

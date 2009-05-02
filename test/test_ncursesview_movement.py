@@ -308,7 +308,7 @@ def page_right():
 
 	assert_strings_equal( view.show( actions ),
 """[ni]56789abcde[n]   56789abcde
-[d]56789abcde[n] * [d]56789abcde
+[d]56789abcde[di] * [d]56789abcde
 """ )
 
 def page_right_thrice():
@@ -319,7 +319,7 @@ def page_right_thrice():
 
 	assert_strings_equal( view.show( actions ),
 """[ni]f         [n]   f         
-[d]f         [n] * [d]f plus ext
+[d]f         [di] * [d]f plus ext
 """ )
 
 def page_right_stop_at_end():
@@ -331,7 +331,7 @@ def page_right_stop_at_end():
 
 	assert_strings_equal( view.show( actions ),
 """[ni]          [n]             
-[d]          [n] * [d]r         
+[d]          [di] * [d]r         
 """ )
 
 def page_left():
@@ -342,7 +342,7 @@ def page_left():
 
 	assert_strings_equal( view.show( actions ),
 """[ni]0-23456789[n]   0-23456789
-[d]1-23456789[n] * [d]1-23456789
+[d]1-23456789[di] * [d]1-23456789
 """ )
 
 def page_left_stop_at_beginning():
@@ -353,7 +353,7 @@ def page_left_stop_at_beginning():
 
 	assert_strings_equal( view.show( actions ),
 """[ni]0-23456789[n]   0-23456789
-[d]1-23456789[n] * [d]1-23456789
+[d]1-23456789[di] * [d]1-23456789
 """ )
 
 def page_right_page_down():
@@ -364,8 +364,8 @@ def page_right_page_down():
 		"x", curses.KEY_NPAGE ]
 
 	assert_strings_equal( view.show( actions ),
-"""[m]..........[n] + [a]56789abcde
-[r]56789abcde[n] - [mi]..........
+"""[m]..........[ai] + [a]56789abcde
+[r]56789abcde[ri] - [mi]..........
 """ )
 
 def page_right_page_down_shorter_lines():
@@ -378,7 +378,7 @@ def page_right_page_down_shorter_lines():
 
 	assert_strings_equal( view.show( actions ),
 """[ni]          [n]             
-[d]          [n] * [d]s ext     
+[d]          [di] * [d]s ext     
 """ )
 
 def run():
