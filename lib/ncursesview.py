@@ -198,6 +198,10 @@ class NCursesView( object ):
 		self.draw_single_line( self.mycursor.line_num )
 		self.stdscr.refresh()
 
+	def move_cursor_and_refresh( self, line_num ):
+		self.add_to_cursor_and_refresh(
+			line_num - self.mycursor.line_num )
+
 	def refresh_cursor_line( self ):
 		self.draw_single_line( self.mycursor.line_num )
 		self.stdscr.refresh()
@@ -212,18 +216,16 @@ class NCursesView( object ):
 
 		redraw = False
 		if top_line != self.top_line:
-			# Normal case - move down a page and don't move the cursor
+			# Normal case - move up/down a page and don't move the cursor
 			self.set_top_line( top_line )
 			redraw = True
 		elif top_line == 0 and self.mycursor.line_num != 0:
 			# We hit the top - move the cursor up to the top
-			self.mycursor.line_num = 0
-			redraw = True
+			self.move_cursor_and_refresh( 0 )
 		elif ( self.bot_line == self.diffmodel.get_num_lines() and
 				self.mycursor.line_num != self.win_height - 1 ):
 			# We hit the bottom - move the cursor down to the bottom
-			self.mycursor.line_num = self.win_height - 1
-			redraw = True
+			self.move_cursor_and_refresh( self.win_height - 1 )
 
 		if redraw:
 			while self.scrolled_off_right():
@@ -261,15 +263,21 @@ class NCursesView( object ):
 			current_pos -= direction
 
 		if line is not None:
+			old_top_line = self.top_line
 			top_line = current_pos - NEXT_DIFF_MARGIN
 			curs_pos = NEXT_DIFF_MARGIN
 			if top_line < 0:
 				curs_pos += top_line
 				top_line = 0
-			self.set_top_line( top_line )
-			self.mycursor.line_num = curs_pos
 
-			self.draw_screen()
+			if old_top_line != top_line:
+				# Normal case - we have scrolled
+				self.set_top_line( top_line )
+				self.mycursor.line_num = curs_pos
+				self.draw_screen()
+			else:
+				# If we didn't scroll at all, just move cursor
+				self.move_cursor_and_refresh( curs_pos )
 		else:
 			pass # TODO: status line message
 

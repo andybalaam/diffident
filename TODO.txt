@@ -5,6 +5,7 @@ Next:
 + ncurses: Remove white background
 + ncurses: Middle column is inverse when there is a difference
 + ncurses: Use yellow for a different line, and magenta for a missing line
++ ncurses: Don't refresh whole screen when pageup or n only moves cursor
 - ncurses: Make n never scroll you off the bottom
 - ncurses: Select multiple lines
 - ncurses: Can copy from one side to the other *
