@@ -1,20 +1,10 @@
 Next:
 
-+ ncurses: Basic ncurses startup, exit
-+ ncurses: Moveable cursor
-+ ncurses: Can take a screenshot for testing
-+ ncurses: Unit tests for existing functionality
-+ ncurses: Scrolling when cursor is moved
-+ ncurses: Support for PageUp, PageDown
-+ ncurses: Don't redraw whole screen when we have only moved the cursor
-+ admin: Include COPYING file containing GPL2
-+ ncurses: fix bug with files containing tabs
-+ ncurses: only request the lines we need to display now
-+ admin: Put GPL2 boilerplate in all source files.
-+ ncurses: Jump to next/prev difference
 + ncurses: Can scroll to the right to see long lines
 + ncurses: choose key shortcuts for pagedown and pageup
-- ncurses: middle column is inverse when there is a difference
++ ncurses: Remove white background
++ ncurses: Middle column is inverse when there is a difference
++ ncurses: Use yellow for a different line, and magenta for a missing line
 - ncurses: Make n never scroll you off the bottom
 - ncurses: Select multiple lines
 - ncurses: Can copy from one side to the other *

@@ -1,0 +1,15 @@
+
+diffident-0.1
+
++ ncurses: Basic ncurses startup, exit
++ ncurses: Moveable cursor
++ ncurses: Can take a screenshot for testing
++ ncurses: Unit tests for existing functionality
++ ncurses: Scrolling when cursor is moved
++ ncurses: Support for PageUp, PageDown
++ ncurses: Don't redraw whole screen when we have only moved the cursor
++ admin: Include COPYING file containing GPL2
++ ncurses: fix bug with files containing tabs
++ ncurses: only request the lines we need to display now
++ admin: Put GPL2 boilerplate in all source files.
++ ncurses: Jump to next/prev difference
