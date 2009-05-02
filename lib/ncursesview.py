@@ -123,7 +123,7 @@ class NCursesView( object ):
 		return keep_going
 
 	def get_horizontal_scroll_width( self ):
-		return ( self.left_width // 2 )
+		return 5
 
 	def scroll_horizontal( self, dr ):
 		old_first_col = self.first_col

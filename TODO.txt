@@ -7,6 +7,7 @@ Next:
 + ncurses: Use yellow for a different line, and magenta for a missing line
 + ncurses: Don't refresh whole screen when pageup or n only moves cursor
 + ncurses: Make n never scroll you off the bottom
++ ncurses: Horizontal scrolling moves 5 columns at a time
 - ncurses: Select multiple lines
 - ncurses: Can copy from one side to the other *
 - ncurses: Can see long lines at bottom? (not short lines)
