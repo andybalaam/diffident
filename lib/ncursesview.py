@@ -37,6 +37,7 @@ class NCursesView( object ):
 		self.diffmodel = diffmodel
 		self.top_line = None
 		self.bot_line = None
+		self.first_col = 0
 		self.mycursor = NCursesView.Cursor( NCursesView.LEFT, 0 )
 		self.win_height = None # Modify these in test code
 		self.win_width = None  #
@@ -115,7 +116,52 @@ class NCursesView( object ):
 			self.next_difference( 1 )
 		elif key == ord( "p" ) or key == curses.KEY_F7: # Previous difference
 			self.next_difference( -1 )
+		elif key == ord( "z" ): # Scroll left
+			self.scroll_horizontal( -1 )
+		elif key == ord( "x" ): # Scroll right
+			self.scroll_horizontal( 1 )
 		return keep_going
+
+	def get_horizontal_scroll_width( self ):
+		return ( self.left_width // 2 )
+
+	def scroll_horizontal( self, dr ):
+		old_first_col = self.first_col
+		scroll_width = self.get_horizontal_scroll_width()
+		self.first_col += ( dr * scroll_width )
+		if self.first_col < 0:
+			self.first_col = 0
+		elif self.scrolled_off_right():
+			self.first_col = old_first_col
+
+		if old_first_col != self.first_col:
+			self.draw_screen()
+
+	def line_visible_horizontally( self, linestr ):
+		"""Return True if this line is long enough to show up
+		at the current horizontal scroll position."""
+		return ( linestr is not None and
+			len( linestr ) > self.first_col )
+
+	def scrolled_off_right( self ):
+		"""Returns true if we have scrolled so far right
+		that there is nothing on the screen."""
+
+		# If we're not scrolled right at all, this question
+		# is irrelevant
+		if self.first_col == 0:
+			return False
+
+		# If any line is long enough, we are not scrolled
+		# too far.
+		for line in self.lines:
+			if ( self.line_visible_horizontally( line.left ) or
+			     self.line_visible_horizontally( line.right ) ):
+				return False
+
+		# None of the lines were long enough, so we are
+		# scrolled too far.
+		return True
 
 	def move_cursor( self, dr ):
 		# TODO: don't redraw whole screen when scrolling?
@@ -180,6 +226,11 @@ class NCursesView( object ):
 			redraw = True
 
 		if redraw:
+			while self.scrolled_off_right():
+				self.first_col -= self.get_horizontal_scroll_width()
+				if self.first_col < 0:
+					self.first_col = 0
+
 			self.draw_screen()
 
 	def next_difference( self, direction ):
@@ -279,8 +330,8 @@ class NCursesView( object ):
 			else:
 				right_colour_pair |= curses.A_REVERSE
 
-		left  = self.pad_to_width( ln.left, self.left_width )
-		right = self.pad_to_width( ln.right, self.right_width )
+		left  = self.pad_to_width( ln.left, self.first_col, self.left_width )
+		right = self.pad_to_width( ln.right, self.first_col, self.right_width )
 
 		self.stdscr.addnstr( line_num, 0, left, self.left_width,
 			left_colour_pair )
@@ -288,10 +339,10 @@ class NCursesView( object ):
 			self.right_width, right_colour_pair )
 		self.stdscr.addch( line_num, self.mid_col, mid_char )
 
-	def pad_to_width( self, string, width ):
+	def pad_to_width( self, string, first_col, width ):
 		if string is None:
 			return "." * width
-		string = string.expandtabs()
+		string = string.expandtabs()[first_col:]
 		return string + ( " " * ( width - len( string ) ) )
 
 	# Testing code

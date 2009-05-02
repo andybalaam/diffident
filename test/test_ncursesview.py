@@ -27,9 +27,12 @@ def pad_to_width():
 	diffmodel = FakeDiffModel()
 	view = NCursesView( diffmodel )
 
-	assert_strings_equal( view.pad_to_width( None, 5 ), "....." )
-	assert_strings_equal( view.pad_to_width( "d f", 5 ), "d f  " )
-	assert_strings_equal( view.pad_to_width( "d fffffffff", 5 ), "d fffffffff" )
+	assert_strings_equal( view.pad_to_width( None, 0, 5 ), "....." )
+	assert_strings_equal( view.pad_to_width( "d f", 0, 5 ), "d f  " )
+	assert_strings_equal( view.pad_to_width( "d fffffffff", 0, 5 ),
+		"d fffffffff" )
+
+	assert_strings_equal( view.pad_to_width( "d fffffffff", 3, 5 ), "ffffffff" )
 
 def same():
 

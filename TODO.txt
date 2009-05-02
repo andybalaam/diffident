@@ -10,9 +10,11 @@ Next:
 + admin: Include COPYING file containing GPL2
 + ncurses: fix bug with files containing tabs
 + ncurses: only request the lines we need to display now
-- ncurses: choose key shortcuts for pagedown and pageup
 + admin: Put GPL2 boilerplate in all source files.
 + ncurses: Jump to next/prev difference
+- ncurses: Can scroll to the right to see long lines
+- ncurses: choose key shortcuts for pagedown and pageup
+- ncurses: middle column is inverse when there is a difference
 - ncurses: fix bug where pressing nnnnnnPAGEDOWN jumps your cursor
            upwards (if the last difference is near the end)
 - ncurses: alternatively, make n never scroll you off the bottom
@@ -21,7 +23,6 @@ Next:
 - ncurses: Can see long lines at bottom? (not short lines)
 - ncurses: Long lines at bottom are scrollable
 - ncurses: Can edit lines
-- ncurses: Can scroll to the right to see long lines
 - ncurses: Can edit long lines because they wrap
 - ncurses: Help page (including GPL2)
 - ncurses: Handle screen resizes - can crash it by making screen smaller
@@ -39,6 +40,8 @@ Next:
 
 Next:
 - ncurses: Support different colour schemes: white-on-black, black-on-white, others?
+- ncurses: Special characters to indicate the line continues to the left or right
+- ncurses: Highlight added and removed parts of the line in a DIFFERENT row.
 
 Big:
 
@@ -53,6 +56,7 @@ Big:
 
 Unimportant:
 
+- ncurses: Allow moving the vertical divider
 - ncurses: Allow specifying tab width
 - unified diffs: Ignore lines that do not start with a space in unified diffs
 - ncurses: Don't redraw whole screen when we are only scrolling one line

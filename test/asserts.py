@@ -19,10 +19,10 @@ def assert_strings_equal( str1, str2 ):
 	if str1 == str2:
 		return
 
-	str1 = str1.replace( " ", "." )
-	str2 = str2.replace( " ", "." )
+	str1trans = str1.replace( " ", "." )
+	str2trans = str2.replace( " ", "." )
 
-	print str1 + "\n!= \n" + str2
+	print str1trans + "\n!= \n" + str2trans
 
 	char = None
 	for i in xrange( min( len( str1 ),
@@ -33,11 +33,13 @@ def assert_strings_equal( str1, str2 ):
 
 	if char is None:
 		if len( str1 ) > len( str2 ):
-			print "The first one is longer."
+			print "The first one is longer.  Next char: '%s'" % str1[len(str2)]
+		elif len( str2 ) > len( str1 ):
+			print "The second one is longer.  Next char: '%s'" % str2[len(str1)]
 		else:
-			print "The second one is longer."
+			print "No different characters found, but strings compare unequal?"
 	else:
-		print "At character %d, %s != %s" % (
+		print "At character %d, '%s' != '%s'" % (
 			char, str1[char], str2[char] )
 
 	raise AssertionError()

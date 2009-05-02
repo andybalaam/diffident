@@ -281,6 +281,105 @@ line 2 here          line 2 here
 line 3 here          line 3 here        
 """ )
 
+def _make_wide_view():
+	diffmodel = FakeDiffModel()
+	diffmodel.lines = [
+		FakeDiffLine( "0-23456789abcdef", "0-23456789abcdef", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "1-23456789abcdef", "1-23456789abcdef plus extr",
+			difflinetypes.DIFFERENT ),
+		FakeDiffLine( None, "2-23456789abcdef plus extr", difflinetypes.ADD ),
+		FakeDiffLine( "3-23456789abcdef", None, difflinetypes.REMOVE ),
+		FakeDiffLine( "4-23456789abcdef", "4-23456789abcdef", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "5-23456789abcdef", "5-23456789abcdef plus ext", difflinetypes.DIFFERENT ),
+		]
+
+	view = NCursesView( diffmodel )
+	view.win_width  = 23
+	view.win_height = 2
+
+	return view
+
+
+def page_right():
+	view = _make_wide_view()
+
+	# PageRight
+	actions = [ "x" ]
+
+	assert_strings_equal( view.show( actions ),
+"""[ni]56789abcde[n]   56789abcde
+[d]56789abcde[n] * [d]56789abcde
+""" )
+
+def page_right_thrice():
+	view = _make_wide_view()
+
+	# PageRight 3 times
+	actions = [ "x", "x", "x" ]
+
+	assert_strings_equal( view.show( actions ),
+"""[ni]f         [n]   f         
+[d]f         [n] * [d]f plus ext
+""" )
+
+def page_right_stop_at_end():
+	view = _make_wide_view()
+
+	# PageRight many times - we should stop before
+	# it's just an empty screen
+	actions = [ "x", "x", "x", "x", "x", "x", "x", "x" ]
+
+	assert_strings_equal( view.show( actions ),
+"""[ni]          [n]             
+[d]          [n] * [d]r         
+""" )
+
+def page_left():
+	view = _make_wide_view()
+
+	# PageRight, PageLeft
+	actions = [ "x", "z" ]
+
+	assert_strings_equal( view.show( actions ),
+"""[ni]0-23456789[n]   0-23456789
+[d]1-23456789[n] * [d]1-23456789
+""" )
+
+def page_left_stop_at_beginning():
+	view = _make_wide_view()
+
+	# PageRight, PageLeft 3 times
+	actions = [ "x", "z", "z", "z" ]
+
+	assert_strings_equal( view.show( actions ),
+"""[ni]0-23456789[n]   0-23456789
+[d]1-23456789[n] * [d]1-23456789
+""" )
+
+def page_right_page_down():
+	view = _make_wide_view()
+
+	# Right, Down, PageRight, PageDown
+	actions = [ curses.KEY_RIGHT, curses.KEY_DOWN,
+		"x", curses.KEY_NPAGE ]
+
+	assert_strings_equal( view.show( actions ),
+"""[m]..........[n] + [a]56789abcde
+[r]56789abcde[n] - [mi]..........
+""" )
+
+def page_right_page_down_shorter_lines():
+	view = _make_wide_view()
+
+	# PageRight 5 times, PageDown twice - should jump back to
+	# a scroll position with some visible characters
+	actions = [ "x", "x", "x", "x", "x", curses.KEY_NPAGE,
+		curses.KEY_NPAGE ]
+
+	assert_strings_equal( view.show( actions ),
+"""[ni]          [n]             
+[d]          [n] * [d]s ext     
+""" )
 
 def run():
 	right_arrow()
@@ -306,4 +405,12 @@ def run():
 	page_up_cursor_preserved()
 	page_up_cursor_to_top()
 	page_up_twice()
+
+	page_right()
+	page_right_thrice()
+	page_right_stop_at_end()
+	page_left()
+	page_left_stop_at_beginning()
+	page_right_page_down()
+	page_right_page_down_shorter_lines()
 
