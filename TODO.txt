@@ -23,7 +23,7 @@ Next:
 - ncurses: Can edit lines
 - ncurses: Can scroll to the right to see long lines
 - ncurses: Can edit long lines because they wrap
-- ncurses: Help page
+- ncurses: Help page (including GPL2)
 - ncurses: Handle screen resizes - can crash it by making screen smaller
 - ncurses: header showing names of files
 - ncurses: status line
