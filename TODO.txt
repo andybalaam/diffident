@@ -11,7 +11,7 @@ Next:
 + ncurses: fix bug with files containing tabs
 + ncurses: only request the lines we need to display now
 - ncurses: choose key shortcuts for pagedown and pageup
-- admin: Put GPL2 boilerplate in all source files.
++ admin: Put GPL2 boilerplate in all source files.
 + ncurses: Jump to next/prev difference
 - ncurses: fix bug where pressing nnnnnnPAGEDOWN jumps your cursor
            upwards (if the last difference is near the end)
