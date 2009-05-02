@@ -277,15 +277,15 @@ class NCursesView( object ):
 		curses.use_default_colors()
 
 		self.CP_NORMAL = self.create_color_pair(
-			1, curses.COLOR_BLACK, curses.COLOR_WHITE )
+			1, -1, -1)
 		self.CP_DIFFERENT  = self.create_color_pair(
-			2, curses.COLOR_BLUE,  curses.COLOR_WHITE )
+			2, curses.COLOR_BLUE,  -1 )
 		self.CP_ADD = self.create_color_pair(
-			3, curses.COLOR_GREEN, curses.COLOR_WHITE )
+			3, curses.COLOR_GREEN, -1 )
 		self.CP_REMOVE = self.create_color_pair(
-			4, curses.COLOR_RED, curses.COLOR_WHITE )
+			4, curses.COLOR_RED, -1 )
 		self.CP_MISSING = self.create_color_pair(
-			5, curses.COLOR_YELLOW, curses.COLOR_WHITE )
+			5, curses.COLOR_YELLOW, -1 )
 
 	def create_color_pair( self, pair_num, fore, back ):
 		curses.init_pair( pair_num, fore, back )
