@@ -251,18 +251,46 @@ class NCursesView( object ):
 			current_pos += direction
 			line = self.diffmodel.get_line( current_pos )
 
-		# Go to the beginning of the found difference
-		if line is not None and direction == -1:
+		if line is None:
+			# TODO: status message
+			return
+
+		scroll = True
+		if direction > 0:
+			# If we're going forwards, find out whether we need
+			# to scroll or not
+			next_line_pos = current_pos
+			next_line = line
+			while( next_line is not None and
+				   next_line.status != difflinetypes.IDENTICAL ):
+				next_line_pos += direction
+				next_line = self.diffmodel.get_line( next_line_pos )
+			next_line_pos -= direction
+			if next_line_pos >= ( self.bot_line - 1 ):
+				scroll = True
+			else:
+				scroll = False
+				self.move_cursor_and_refresh(
+					current_pos - self.top_line )
+		else:
+			# If we're going backwards, go to the beginning of
+			# the found difference
 			prev_line = line
 			while( prev_line is not None and
-					prev_line.status != difflinetypes.IDENTICAL ):
+				   prev_line.status != difflinetypes.IDENTICAL ):
 				line = prev_line
 				current_pos += direction
 				prev_line = self.diffmodel.get_line( current_pos )
 			# current_pos overshot by 1 - correct it
 			current_pos -= direction
+			if current_pos <= self.top_line:
+				scroll = True
+			else:
+				scroll = False
+				self.move_cursor_and_refresh(
+					current_pos - self.top_line )
 
-		if line is not None:
+		if scroll:
 			old_top_line = self.top_line
 			top_line = current_pos - NEXT_DIFF_MARGIN
 			curs_pos = NEXT_DIFF_MARGIN
@@ -285,8 +313,7 @@ class NCursesView( object ):
 			else:
 				# If we didn't scroll at all, just move cursor
 				self.move_cursor_and_refresh( curs_pos )
-		else:
-			pass # TODO: status line message
+
 
 	def make_color_pairs( self ):
 		curses.use_default_colors()

@@ -106,13 +106,13 @@ def previous_diff():
 	actions = [ "n", "n", curses.KEY_DOWN, "p" ]
 
 	assert_strings_equal( view.show( actions ),
-"""[n]line 07    line 07  
-line 08    line 08  
-line 09    line 09  
+"""[n]line 09    line 09  
 [di]line 10  * [d]line 10 d
 line 11 [di] * [d]line 11 d
 [n]line 12    line 12  
 line 13    line 13  
+[m]........[ai] + [a]line 14  
+[m]........[ai] + [a]line 15  
 """ )
 
 def _make_diff_at_begin_view():
@@ -169,6 +169,89 @@ line 02 [di] * [d]line 02 d
 line 03 [di] * [d]line 03 d
 """ )
 
+def _make_manydiffs_view():
+	diffmodel = FakeDiffModel()
+	diffmodel.lines = [
+		FakeDiffLine( "line 01", "line 01", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "line 02", "diff 02", difflinetypes.DIFFERENT ),
+		FakeDiffLine( "line 03", "diff 03", difflinetypes.DIFFERENT ),
+		FakeDiffLine( "line 04", "diff 04", difflinetypes.DIFFERENT ),
+		FakeDiffLine( "line 05", "line 05", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "line 06", "diff 06", difflinetypes.DIFFERENT ),
+		FakeDiffLine( "line 07", "line 07", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "line 08", "diff 08", difflinetypes.DIFFERENT ),
+		FakeDiffLine( "line 09", "diff 09", difflinetypes.DIFFERENT ),
+		FakeDiffLine( "line 10", "diff 10", difflinetypes.DIFFERENT ),
+		FakeDiffLine( "line 11", "line 11", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "line 12", "diff 12", difflinetypes.DIFFERENT ),
+		FakeDiffLine( "line 13", "line 13", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "line 14", "line 14", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "line 15", "line 15", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "line 16", "line 16", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "line 17", "line 17", difflinetypes.IDENTICAL ),
+	]
+
+	view = NCursesView( diffmodel )
+	view.win_width = 20
+	view.win_height = 10
+
+	return view
+
+def next_diff_dontmove():
+	view = _make_manydiffs_view()
+
+	actions = [ "n", "n" ]
+
+	assert_strings_equal( view.show( actions ),
+"""[n]line 01    line 01  
+[d]line 02 [di] * [d]diff 02  
+line 03 [di] * [d]diff 03  
+line 04 [di] * [d]diff 04  
+[n]line 05    line 05  
+[di]line 06  * [d]diff 06  
+[n]line 07    line 07  
+[d]line 08 [di] * [d]diff 08  
+line 09 [di] * [d]diff 09  
+line 10 [di] * [d]diff 10  
+""" )
+
+def next_diff_domove_nearend():
+	view = _make_manydiffs_view()
+
+	actions = [ "n", "n", "n" ]
+
+	assert_strings_equal( view.show( actions ),
+"""[n]line 05    line 05  
+[d]line 06 [di] * [d]diff 06  
+[n]line 07    line 07  
+[di]line 08  * [d]diff 08  
+line 09 [di] * [d]diff 09  
+line 10 [di] * [d]diff 10  
+[n]line 11    line 11  
+[d]line 12 [di] * [d]diff 12  
+[n]line 13    line 13  
+line 14    line 14  
+""" )
+
+def previous_diff_dontmove():
+	view = _make_manydiffs_view()
+
+	actions = [ "n", "n", "n", "p" ]
+
+	assert_strings_equal( view.show( actions ),
+"""[n]line 05    line 05  
+[di]line 06  * [d]diff 06  
+[n]line 07    line 07  
+[d]line 08 [di] * [d]diff 08  
+line 09 [di] * [d]diff 09  
+line 10 [di] * [d]diff 10  
+[n]line 11    line 11  
+[d]line 12 [di] * [d]diff 12  
+[n]line 13    line 13  
+line 14    line 14  
+""" )
+
+
 def run():
 	next_diff_different()
 	next_diff_several()
@@ -176,4 +259,7 @@ def run():
 	previous_diff()
 	previous_diff_to_beginning()
 	previous_diff_to_beginning_twice()
+	next_diff_dontmove()
+	next_diff_domove_nearend()
+	previous_diff_dontmove()
 
