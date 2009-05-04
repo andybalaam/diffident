@@ -255,40 +255,37 @@ class NCursesView( object ):
 			# TODO: status message
 			return
 
-		scroll = True
-		if direction > 0:
-			# If we're going forwards, find out whether we need
-			# to scroll or not
-			next_line_pos = current_pos
-			next_line = line
-			while( next_line is not None and
-				   next_line.status != difflinetypes.IDENTICAL ):
-				next_line_pos += direction
-				next_line = self.diffmodel.get_line( next_line_pos )
-			next_line_pos -= direction
+		# If we're going forwards, find out whether we need
+		# to scroll or not.  If we're going backwards, find
+		# the beginning of this difference (that is where
+		# the cursor is going to be).
+		next_line_pos = current_pos
+		next_line = line
+		while( next_line is not None and
+			   next_line.status != difflinetypes.IDENTICAL ):
 			if next_line_pos >= ( self.bot_line - 1 ):
-				scroll = True
-			else:
-				scroll = False
-				self.move_cursor_and_refresh(
-					current_pos - self.top_line )
-		else:
-			# If we're going backwards, go to the beginning of
-			# the found difference
-			prev_line = line
-			while( prev_line is not None and
-				   prev_line.status != difflinetypes.IDENTICAL ):
-				line = prev_line
-				current_pos += direction
-				prev_line = self.diffmodel.get_line( current_pos )
-			# current_pos overshot by 1 - correct it
-			current_pos -= direction
+				# If we've gone off the bottom, there's no point
+				# going on - we definitely need to scroll
+				next_line_pos += direction # Add this as it's
+				                           # about to be minused
+				break
+			next_line_pos += direction
+			next_line = self.diffmodel.get_line( next_line_pos )
+
+		next_line_pos -= direction
+		if direction < 0:
+			# If we're going backwards, we jump to the
+			# beginning of this difference
+			current_pos = next_line_pos
 			if current_pos <= self.top_line:
 				scroll = True
 			else:
 				scroll = False
-				self.move_cursor_and_refresh(
-					current_pos - self.top_line )
+		else:
+			if next_line_pos >= ( self.bot_line - 1 ):
+				scroll = True
+			else:
+				scroll = False
 
 		if scroll:
 			old_top_line = self.top_line
@@ -313,6 +310,8 @@ class NCursesView( object ):
 			else:
 				# If we didn't scroll at all, just move cursor
 				self.move_cursor_and_refresh( curs_pos )
+		else:
+			self.move_cursor_and_refresh( current_pos - self.top_line )
 
 
 	def make_color_pairs( self ):
