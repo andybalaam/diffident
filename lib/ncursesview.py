@@ -33,8 +33,10 @@ class NCursesView( object ):
 			self.lr = lr
 			self.line_num = line_num
 
-	def __init__( self, diffmodel ):
+	def __init__( self, diffmodel, filename1 = None, filename2 = None ):
 		self.diffmodel = diffmodel
+		self.filename1 = filename1
+		self.filename2 = filename2
 		self.top_line = None
 		self.bot_line = None
 		self.first_col = 0
@@ -46,19 +48,24 @@ class NCursesView( object ):
 		return curses.wrapper( self.show_impl, debug_actions )
 
 	def show_impl( self, stdscr, debug_actions ):
-		( whole_screen_height, whole_screen_width ) = stdscr.getmaxyx()
+		# If we are in test code and have modified these, leave them.
+		# Otherwise, get them from the environment
+		if self.win_height is None:
+			( self.win_height, self.win_width ) = stdscr.getmaxyx()
+			self.win_height -= 2
+			self.win_width -= 1
+
 		self.textwindow = curses.newwin(
-			whole_screen_height - 2, whole_screen_width, 1, 0 )
+			self.win_height, self.win_width + 1, 1, 0 )
+
+		self.headerwindow = curses.newwin( 1, self.win_width + 1, 0, 0 )
+
+		self.statuswindow = curses.newwin(
+			1, self.win_width + 1, self.win_height - 1, 0 )
 
 		curses.curs_set( 0 )
 
 		self.make_color_pairs()
-
-		# If we are in test code and have modified these, leave them.
-		# Otherwise, get them from the environment
-		if self.win_height is None:
-			( self.win_height, self.win_width ) = self.textwindow.getmaxyx()
-			self.win_width -= 1
 
 		win_width_without_mid_col = self.win_width - 3
 		self.left_width  = win_width_without_mid_col // 2
@@ -66,13 +73,13 @@ class NCursesView( object ):
 		self.mid_col     = self.left_width
 		self.right_start = self.left_width + 3
 
+		self.draw_header_window()
+
 		self.set_top_line( 0 )
 
 		self.textwindow.bkgd( ord( " " ), self.CP_NORMAL )
 
 		self.draw_screen()
-
-		#self.main_loop()
 
 		# If debug_actions is None we wait for user input
 		if debug_actions is None:
@@ -160,7 +167,7 @@ class NCursesView( object ):
 		# too far.
 		for line in self.lines:
 			if ( self.line_visible_horizontally( line.left ) or
-			     self.line_visible_horizontally( line.right ) ):
+					self.line_visible_horizontally( line.right ) ):
 				return False
 
 		# None of the lines were long enough, so we are
@@ -355,6 +362,22 @@ class NCursesView( object ):
 		curses.init_pair( pair_num, fore, back )
 		return curses.color_pair( pair_num )
 
+	def draw_header_window( self ):
+		self.headerwindow.bkgd( ord( " " ),
+			self.CP_NORMAL | curses.A_REVERSE )
+
+		left  = self.pad_to_width( self.filename1,
+			self.first_col, self.left_width )
+		right = self.pad_to_width( self.filename2,
+			self.first_col, self.right_width )
+
+		self.headerwindow.addnstr( 0, 0,
+			left, self.left_width )
+		self.headerwindow.addnstr( 0, self.right_start,
+			right, self.right_width )
+
+		self.headerwindow.refresh()
+
 	def draw_screen( self ):
 		self.textwindow.clear()
 
@@ -442,12 +465,14 @@ class NCursesView( object ):
 
 		return "[%s]" % attr_str
 
-	def screenshot_textwindow( self ):
+	def build_screenshot( self, window ):
+		height, width = window.getmaxyx()
+		width -= 1
 		ret = ""
 		prev_attr = -1
-		for y in xrange( self.win_height ):
-			for x in xrange( self.win_width ):
-				ch_plus_attrs = self.textwindow.inch( y, x )
+		for y in xrange( height ):
+			for x in xrange( width ):
+				ch_plus_attrs = window.inch( y, x )
 				ch = chr( ch_plus_attrs & 0xFF )
 				attr = ch_plus_attrs >> 8
 				if attr != prev_attr:
@@ -457,9 +482,12 @@ class NCursesView( object ):
 			ret += "\n"
 		return ret
 
+	def screenshot_textwindow( self ):
+		return self.build_screenshot( self.textwindow )
+
 	def screenshot_header( self ):
-		return None
+		return self.build_screenshot( self.headerwindow )
 
 	def screenshot_status( self ):
-		return None
+		return self.build_screenshot( self.statuswindow )
 

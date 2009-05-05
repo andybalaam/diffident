@@ -38,19 +38,19 @@ def diff_2_files( filename1, filename2, launch_viewer ):
 	diffparser = UnifiedDiffParser( left_file, diff_file )
 	diffmodel = DiffModel( diffparser )
 
-	launch_viewer( diffmodel )
+	launch_viewer( diffmodel, filename1, filename2 )
 
 	left_file.close()
 	diff_file.close()
 
 	os.remove( diff_filename )
 
-def print_listview( diffmodel ):
+def print_listview( diffmodel, filename1, filename2 ):
 	listview = ListView( diffmodel )
 	print listview.get_string(),
 
-def run_ncursesview( diffmodel ):
-	ncursesview = NCursesView( diffmodel )
+def run_ncursesview( diffmodel, filename1, filename2 ):
+	ncursesview = NCursesView( diffmodel, filename1, filename2 )
 	ncursesview.show()
 
 def emulate_diff_minus_y( filename1, filename2 ):
