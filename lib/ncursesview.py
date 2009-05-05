@@ -46,7 +46,9 @@ class NCursesView( object ):
 		return curses.wrapper( self.show_impl, debug_actions )
 
 	def show_impl( self, stdscr, debug_actions ):
-		self.stdscr = stdscr
+		( whole_screen_height, whole_screen_width ) = stdscr.getmaxyx()
+		self.textwindow = curses.newwin(
+			whole_screen_height - 2, whole_screen_width, 1, 0 )
 
 		curses.curs_set( 0 )
 
@@ -55,7 +57,7 @@ class NCursesView( object ):
 		# If we are in test code and have modified these, leave them.
 		# Otherwise, get them from the environment
 		if self.win_height is None:
-			( self.win_height, self.win_width ) = self.stdscr.getmaxyx()
+			( self.win_height, self.win_width ) = self.textwindow.getmaxyx()
 			self.win_width -= 1
 
 		win_width_without_mid_col = self.win_width - 3
@@ -66,7 +68,7 @@ class NCursesView( object ):
 
 		self.set_top_line( 0 )
 
-		self.stdscr.bkgd( ord( " " ), self.CP_NORMAL )
+		self.textwindow.bkgd( ord( " " ), self.CP_NORMAL )
 
 		self.draw_screen()
 
@@ -93,7 +95,7 @@ class NCursesView( object ):
 
 		keep_going = True
 		while keep_going:
-			key = self.stdscr.getch()
+			key = self.textwindow.getch()
 			keep_going = self.process_keypress( key )
 
 	def process_keypress( self, key ):
@@ -196,7 +198,7 @@ class NCursesView( object ):
 		self.mycursor.line_num += direction
 		self.draw_single_line( old_line_num )
 		self.draw_single_line( self.mycursor.line_num )
-		self.stdscr.refresh()
+		self.textwindow.refresh()
 
 	def move_cursor_and_refresh( self, line_num ):
 		self.add_to_cursor_and_refresh(
@@ -204,7 +206,7 @@ class NCursesView( object ):
 
 	def refresh_cursor_line( self ):
 		self.draw_single_line( self.mycursor.line_num )
-		self.stdscr.refresh()
+		self.textwindow.refresh()
 
 	def change_page( self, direction ):
 		top_line = self.top_line
@@ -352,12 +354,12 @@ class NCursesView( object ):
 		return curses.color_pair( pair_num )
 
 	def draw_screen( self ):
-		self.stdscr.clear()
+		self.textwindow.clear()
 
 		for line_num, ln in enumerate( self.lines ):
 			self.write_line( ln, line_num )
 
-		self.stdscr.refresh()
+		self.textwindow.refresh()
 
 	def draw_single_line( self, line_num ):
 		ln = self.lines[line_num]
@@ -397,11 +399,11 @@ class NCursesView( object ):
 		left  = self.pad_to_width( ln.left, self.first_col, self.left_width )
 		right = self.pad_to_width( ln.right, self.first_col, self.right_width )
 
-		self.stdscr.addnstr( line_num, 0, left, self.left_width,
+		self.textwindow.addnstr( line_num, 0, left, self.left_width,
 			left_colour_pair )
-		self.stdscr.addnstr( line_num, self.right_start, right,
+		self.textwindow.addnstr( line_num, self.right_start, right,
 			self.right_width, right_colour_pair )
-		self.stdscr.addnstr( line_num, self.mid_col,
+		self.textwindow.addnstr( line_num, self.mid_col,
 			" %s " % mid_char, 3, mid_colour_pair )
 
 	def pad_to_width( self, string, first_col, width ):
@@ -443,7 +445,7 @@ class NCursesView( object ):
 		prev_attr = -1
 		for y in xrange( self.win_height ):
 			for x in xrange( self.win_width ):
-				ch_plus_attrs = self.stdscr.inch( y, x )
+				ch_plus_attrs = self.textwindow.inch( y, x )
 				ch = chr( ch_plus_attrs & 0xFF )
 				attr = ch_plus_attrs >> 8
 				if attr != prev_attr:
