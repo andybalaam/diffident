@@ -45,7 +45,7 @@ def _make_view():
 def _right( key ):
 	view = _make_view()
 	actions = [ key ]
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 1 here          [ni]line 1 here        
 [n]line 2 here          line 2 here        
 """ )
@@ -59,7 +59,7 @@ def right_l():
 def right_twice():
 	view = _make_view()
 	actions = [ curses.KEY_RIGHT, curses.KEY_RIGHT ]
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 1 here          [ni]line 1 here        
 [n]line 2 here          line 2 here        
 """ )
@@ -72,7 +72,7 @@ def _left( key ):
 	# Go right and then left - back to where we started
 	actions = [ curses.KEY_RIGHT, key ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[ni]line 1 here       [n]   line 1 here        
 line 2 here          line 2 here        
 """ )
@@ -88,7 +88,7 @@ def left_twice():
 
 	actions = [ curses.KEY_LEFT, curses.KEY_LEFT ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[ni]line 1 here       [n]   line 1 here        
 line 2 here          line 2 here        
 """ )
@@ -98,7 +98,7 @@ def _down( key ):
 
 	actions = [ key ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 1 here          line 1 here        
 [ni]line 2 here       [n]   line 2 here        
 """ )
@@ -116,7 +116,7 @@ def down_twice():
 		curses.KEY_DOWN, curses.KEY_DOWN, curses.KEY_DOWN, curses.KEY_DOWN,
 		curses.KEY_DOWN, curses.KEY_DOWN, curses.KEY_DOWN, curses.KEY_DOWN ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 5 here          line 5 here        
 [ni]line 6 here       [n]   line 6 here        
 """ )
@@ -126,7 +126,7 @@ def down_scroll():
 
 	actions = [ curses.KEY_DOWN, curses.KEY_DOWN ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 2 here          line 2 here        
 [ni]line 3 here       [n]   line 3 here        
 """ )
@@ -138,7 +138,7 @@ def _up( key ):
 	# Go down and then up - back to where we started
 	actions = [ curses.KEY_DOWN, key ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[ni]line 1 here       [n]   line 1 here        
 line 2 here          line 2 here        
 """ )
@@ -154,7 +154,7 @@ def up_twice():
 
 	actions = [ curses.KEY_UP, curses.KEY_UP ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[ni]line 1 here       [n]   line 1 here        
 line 2 here          line 2 here        
 """ )
@@ -166,7 +166,7 @@ def up_scroll():
 	actions = [ curses.KEY_DOWN, curses.KEY_DOWN, curses.KEY_DOWN,
 		curses.KEY_DOWN, curses.KEY_UP, curses.KEY_UP, curses.KEY_UP ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[ni]line 2 here       [n]   line 2 here        
 line 3 here          line 3 here        
 """ )
@@ -177,7 +177,7 @@ def _page_down( key ):
 
 	actions = [ key ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[ni]line 3 here       [n]   line 3 here        
 line 4 here          line 4 here        
 """ )
@@ -191,7 +191,7 @@ def _page_up( key ):
 
 	actions = [ curses.KEY_NPAGE, key ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[ni]line 1 here       [n]   line 1 here        
 line 2 here          line 2 here        
 """ )
@@ -207,7 +207,7 @@ def page_down_cursor_preserved():
 	# Right, Down, PageDown
 	actions = [ curses.KEY_RIGHT, curses.KEY_DOWN, curses.KEY_NPAGE ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 4 here          line 4 here        
 line 5 here          [ni]line 5 here        
 [n]line 6 here          line 6 here        
@@ -221,7 +221,7 @@ def page_up_cursor_preserved():
 	actions = [ curses.KEY_RIGHT, curses.KEY_DOWN, curses.KEY_NPAGE,
 		curses.KEY_PPAGE ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 1 here          line 1 here        
 line 2 here          [ni]line 2 here        
 [n]line 3 here          line 3 here        
@@ -235,7 +235,7 @@ def page_down_cursor_to_bottom():
 	actions = [ curses.KEY_RIGHT, curses.KEY_NPAGE,
 		curses.KEY_NPAGE ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 4 here          line 4 here        
 line 5 here          line 5 here        
 line 6 here          [ni]line 6 here        
@@ -248,7 +248,7 @@ def page_down_twice():
 	# PageDown, PageDown, PageDown
 	actions = [curses.KEY_NPAGE, curses.KEY_NPAGE, curses.KEY_NPAGE ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 4 here          line 4 here        
 line 5 here          line 5 here        
 [ni]line 6 here       [n]   line 6 here        
@@ -262,7 +262,7 @@ def page_up_cursor_to_top():
 	# Right, Down, PageUp
 	actions = [ curses.KEY_RIGHT, curses.KEY_DOWN, curses.KEY_PPAGE ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 1 here          [ni]line 1 here        
 [n]line 2 here          line 2 here        
 line 3 here          line 3 here        
@@ -275,7 +275,7 @@ def page_up_twice():
 	# PageUp, PageUp
 	actions = [ curses.KEY_PPAGE, curses.KEY_PPAGE ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[ni]line 1 here       [n]   line 1 here        
 line 2 here          line 2 here        
 line 3 here          line 3 here        
@@ -306,7 +306,7 @@ def page_right():
 	# PageRight
 	actions = [ "x" ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[ni]56789abcde[n]   56789abcde
 [d]56789abcde[di] * [d]56789abcde
 """ )
@@ -317,7 +317,7 @@ def page_right_thrice():
 	# PageRight 3 times
 	actions = [ "x", "x", "x" ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[ni]f         [n]   f         
 [d]f         [di] * [d]f plus ext
 """ )
@@ -329,7 +329,7 @@ def page_right_stop_at_end():
 	# it's just an empty screen
 	actions = [ "x", "x", "x", "x", "x", "x", "x", "x" ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[ni]          [n]             
 [d]          [di] * [d]r         
 """ )
@@ -340,7 +340,7 @@ def page_left():
 	# PageRight, PageLeft
 	actions = [ "x", "z" ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[ni]0-23456789[n]   0-23456789
 [d]1-23456789[di] * [d]1-23456789
 """ )
@@ -351,7 +351,7 @@ def page_left_stop_at_beginning():
 	# PageRight, PageLeft 3 times
 	actions = [ "x", "z", "z", "z" ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[ni]0-23456789[n]   0-23456789
 [d]1-23456789[di] * [d]1-23456789
 """ )
@@ -363,7 +363,7 @@ def page_right_page_down():
 	actions = [ curses.KEY_RIGHT, curses.KEY_DOWN,
 		"x", curses.KEY_NPAGE ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[m]..........[ai] + [a]56789abcde
 [r]56789abcde[ri] - [mi]..........
 """ )
@@ -376,7 +376,7 @@ def page_right_page_down_shorter_lines():
 	actions = [ "x", "x", "x", "x", "x", curses.KEY_NPAGE,
 		curses.KEY_NPAGE ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[ni]          [n]             
 [d]          [di] * [d]s ext     
 """ )

@@ -84,7 +84,9 @@ class NCursesView( object ):
 				if isinstance( action, str ):
 					action = ord( action )
 				self.process_keypress( action )
-			return self.screenshot_textwindow()
+			return ( self.screenshot_textwindow(),
+				self.screenshot_header(),
+				self.screenshot_status() )
 
 	def set_top_line( self, top_line ):
 		self.top_line = top_line
@@ -455,4 +457,9 @@ class NCursesView( object ):
 			ret += "\n"
 		return ret
 
+	def screenshot_header( self ):
+		return None
+
+	def screenshot_status( self ):
+		return None
 

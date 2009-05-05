@@ -57,7 +57,7 @@ def next_diff_different():
 
 	actions = [ "n" ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 07    line 07  
 line 08    line 08  
 line 09    line 09  
@@ -73,7 +73,7 @@ def next_diff_several():
 
 	actions = [ curses.KEY_RIGHT, "n", "n" ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 09    line 09  
 [d]line 10 [di] * [d]line 10 d
 line 11 [di] * [d]line 11 d
@@ -89,7 +89,7 @@ def next_diff_end():
 
 	actions = [ "n", "n", "n", "n", "n" ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 09    line 09  
 [d]line 10 [di] * [d]line 10 d
 line 11 [di] * [d]line 11 d
@@ -105,7 +105,7 @@ def previous_diff():
 
 	actions = [ "n", "n", curses.KEY_DOWN, "p" ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 09    line 09  
 [di]line 10  * [d]line 10 d
 line 11 [di] * [d]line 11 d
@@ -149,7 +149,7 @@ def previous_diff_to_beginning():
 
 	actions = [ "n", "n", "p" ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[di]line 01  * [d]line 01 d
 line 02 [di] * [d]line 02 d
 line 03 [di] * [d]line 03 d
@@ -163,7 +163,7 @@ def previous_diff_to_beginning_twice():
 
 	actions = [ "n", "n", "p", "p" ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[di]line 01  * [d]line 01 d
 line 02 [di] * [d]line 02 d
 line 03 [di] * [d]line 03 d
@@ -202,7 +202,7 @@ def next_diff_dontmove():
 
 	actions = [ "n", "n" ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 01    line 01  
 [d]line 02 [di] * [d]diff 02  
 line 03 [di] * [d]diff 03  
@@ -220,7 +220,7 @@ def next_diff_domove_nearend():
 
 	actions = [ "n", "n", "n" ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 05    line 05  
 [d]line 06 [di] * [d]diff 06  
 [n]line 07    line 07  
@@ -238,7 +238,7 @@ def previous_diff_dontmove():
 
 	actions = [ "n", "n", "n", "p" ]
 
-	assert_strings_equal( view.show( actions ),
+	assert_strings_equal( view.show( actions )[0],
 """[n]line 05    line 05  
 [di]line 06  * [d]diff 06  
 [n]line 07    line 07  
