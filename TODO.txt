@@ -9,7 +9,7 @@ Next:
 + ncurses: Make n never scroll you off the bottom
 + ncurses: Horizontal scrolling moves 5 columns at a time
 + ncurses: Only scroll when we need to when you press n **
-- ncurses: header showing names of files
++ ncurses: header showing names of files
 - ncurses: Select multiple lines
 
     ** If the whole diff section is visible (plus one line to
