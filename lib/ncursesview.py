@@ -84,7 +84,7 @@ class NCursesView( object ):
 				if isinstance( action, str ):
 					action = ord( action )
 				self.process_keypress( action )
-			return self.take_screenshot()
+			return self.screenshot_textwindow()
 
 	def set_top_line( self, top_line ):
 		self.top_line = top_line
@@ -440,7 +440,7 @@ class NCursesView( object ):
 
 		return "[%s]" % attr_str
 
-	def take_screenshot( self ):
+	def screenshot_textwindow( self ):
 		ret = ""
 		prev_attr = -1
 		for y in xrange( self.win_height ):
