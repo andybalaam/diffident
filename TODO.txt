@@ -10,11 +10,8 @@ Next:
 + ncurses: Horizontal scrolling moves 5 columns at a time
 + ncurses: Only scroll when we need to when you press n **
 + ncurses: header showing names of files
+- ncurses: status line
 - ncurses: Select multiple lines
-
-    ** If the whole diff section is visible (plus one line to
-       spare) don't scroll.  Otherwise, do what we do now.
-
 - ncurses: Can copy from one side to the other *
 - ncurses: Can see long lines at bottom? (not short lines)
 - ncurses: Long lines at bottom are scrollable
@@ -22,7 +19,6 @@ Next:
 - ncurses: Can edit long lines because they wrap or scroll
 - ncurses: Help page (including GPL2)
 - ncurses: Handle screen resizes - can crash it by making screen smaller
-- ncurses: status line
 - git: create a script suitable for use as GIT_EXTERNAL_DIFF
 - diffmodel: allow locking one or both files as non-writeable
 - general: return the correct values as used by git?
