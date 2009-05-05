@@ -52,7 +52,7 @@ def long_names():
 	actions = []
 
 	assert_strings_equal( view.show( actions )[1],
-"""[ni]dir1/file1.txt       dir2/file2.txt     
+"""[ni].../dir5/file1.txt   ...d/dire/file2.txt
 """ )
 
 

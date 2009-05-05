@@ -362,14 +362,20 @@ class NCursesView( object ):
 		curses.init_pair( pair_num, fore, back )
 		return curses.color_pair( pair_num )
 
+	def format_filename( self, filename, width ):
+		if filename is None:
+			return ""
+		elif len( filename ) > width:
+			return "..." + filename[len(filename)-(width-3):]
+		else:
+			return filename
+
 	def draw_header_window( self ):
 		self.headerwindow.bkgd( ord( " " ),
 			self.CP_NORMAL | curses.A_REVERSE )
 
-		left  = self.pad_to_width( self.filename1,
-			self.first_col, self.left_width )
-		right = self.pad_to_width( self.filename2,
-			self.first_col, self.right_width )
+		left  = self.format_filename( self.filename1, self.left_width )
+		right = self.format_filename( self.filename2, self.right_width )
 
 		self.headerwindow.addnstr( 0, 0,
 			left, self.left_width )
