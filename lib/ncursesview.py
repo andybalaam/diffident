@@ -235,7 +235,7 @@ class NCursesView( object ):
 
 			self.draw_screen()
 
-	def next_difference( self, direction ):
+	def get_line_of_next_diff( self, direction ):
 		current_pos = self.top_line + self.mycursor.line_num
 
 		# Skip the difference we are in
@@ -251,14 +251,14 @@ class NCursesView( object ):
 			current_pos += direction
 			line = self.diffmodel.get_line( current_pos )
 
-		if line is None:
-			# TODO: status message
-			return
+		return line, current_pos
 
-		# If we're going forwards, find out whether we need
-		# to scroll or not.  If we're going backwards, find
-		# the beginning of this difference (that is where
-		# the cursor is going to be).
+	def get_line_of_end_of_diff( self, direction, line, current_pos ):
+		"""If we're going forwards, find out whether we need
+		to scroll or not.  If we're going backwards, find
+		the beginning of this difference (that is where
+		the cursor is going to be)."""
+
 		next_line_pos = current_pos
 		next_line = line
 		while( next_line is not None and
@@ -273,6 +273,46 @@ class NCursesView( object ):
 			next_line = self.diffmodel.get_line( next_line_pos )
 
 		next_line_pos -= direction
+
+		return next_line_pos
+
+	def scroll_to_line( self, current_pos ):
+		old_top_line = self.top_line
+		top_line = current_pos - NEXT_DIFF_MARGIN
+		curs_pos = NEXT_DIFF_MARGIN
+
+		max_top_line = self.diffmodel.get_num_lines() - self.win_height
+		if top_line > max_top_line:
+			adjustment = max_top_line - top_line
+			top_line += adjustment
+			curs_pos -= adjustment
+
+		if top_line < 0:
+			curs_pos += top_line
+			top_line = 0
+
+		if old_top_line != top_line:
+			# Normal case - we have scrolled
+			self.set_top_line( top_line )
+			self.mycursor.line_num = curs_pos
+			self.draw_screen()
+		else:
+			# If we didn't scroll at all, just move cursor
+			self.move_cursor_and_refresh( curs_pos )
+
+	def next_difference( self, direction ):
+
+		line, current_pos = self.get_line_of_next_diff( direction )
+
+		# If there are no more differences, we have
+		# nothing to do
+		if line is None:
+			# TODO: status message
+			return
+
+		next_line_pos = self.get_line_of_end_of_diff(
+			direction, line, current_pos )
+
 		if direction < 0:
 			# If we're going backwards, we jump to the
 			# beginning of this difference
@@ -288,28 +328,7 @@ class NCursesView( object ):
 				scroll = False
 
 		if scroll:
-			old_top_line = self.top_line
-			top_line = current_pos - NEXT_DIFF_MARGIN
-			curs_pos = NEXT_DIFF_MARGIN
-
-			max_top_line = self.diffmodel.get_num_lines() - self.win_height
-			if top_line > max_top_line:
-				adjustment = max_top_line - top_line
-				top_line += adjustment
-				curs_pos -= adjustment
-
-			if top_line < 0:
-				curs_pos += top_line
-				top_line = 0
-
-			if old_top_line != top_line:
-				# Normal case - we have scrolled
-				self.set_top_line( top_line )
-				self.mycursor.line_num = curs_pos
-				self.draw_screen()
-			else:
-				# If we didn't scroll at all, just move cursor
-				self.move_cursor_and_refresh( curs_pos )
+			self.scroll_to_line( current_pos )
 		else:
 			self.move_cursor_and_refresh( current_pos - self.top_line )
 
