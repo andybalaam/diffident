@@ -63,7 +63,7 @@ class NCursesView( object ):
 		self.headerwindow = curses.newwin( 1, self.win_width + 1, 0, 0 )
 
 		self.statuswindow = curses.newwin(
-			1, self.win_width + 1, self.win_height - 1, 0 )
+			1, self.win_width + 1, self.win_height + 1, 0 )
 
 		curses.curs_set( 0 )
 
@@ -377,9 +377,6 @@ class NCursesView( object ):
 			return filename
 
 	def draw_header_window( self ):
-		self.headerwindow.bkgd( ord( " " ),
-			self.CP_NORMAL | curses.A_REVERSE )
-
 		left  = self.format_filename( self.filename1, self.left_width )
 		right = self.format_filename( self.filename2, self.right_width )
 
