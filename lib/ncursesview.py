@@ -102,7 +102,7 @@ class NCursesView( object ):
 			self.CP_NORMAL | curses.A_REVERSE )
 
 		self.draw_header_window()
-		self.set_status_line( DEFAULT_STATUS_MESSAGE )
+		self.set_status_line( DEFAULT_STATUS_MESSAGE, False )
 
 		self.set_top_line( 0 )
 		self.draw_screen()
@@ -134,35 +134,47 @@ class NCursesView( object ):
 			keep_going = self.process_keypress( key )
 
 	def process_keypress( self, key, wait_for_input=True ):
+
+		status_line = -1
+
 		keep_going = True
+
 		if key == ord( "q" ): # Quit
 			keep_going = False
 		elif key == ord( "h" ) or key == curses.KEY_LEFT:
-			self.move_cursor( NCursesView.LEFT )
+			status_line = self.move_cursor( NCursesView.LEFT )
 		elif key == ord( "l" ) or key == curses.KEY_RIGHT:
-			self.move_cursor( NCursesView.RIGHT )
+			status_line = self.move_cursor( NCursesView.RIGHT )
 		elif key == ord( "j" ) or key == curses.KEY_DOWN:
-			self.move_cursor( NCursesView.DOWN )
+			status_line = self.move_cursor( NCursesView.DOWN )
 		elif key == ord( "k" ) or key == curses.KEY_UP:
-			self.move_cursor( NCursesView.UP )
+			status_line = self.move_cursor( NCursesView.UP )
 		elif key == ord( "." ) or key == curses.KEY_NPAGE: # Page down
-			self.change_page( 1 )
+			status_line = self.change_page( 1 )
 		elif key == ord( "," ) or key == curses.KEY_PPAGE: # Page up
-			self.change_page( -1 )
+			status_line = self.change_page( -1 )
 		elif key == ord( "n" ) or key == curses.KEY_F8: # Next difference
-			self.next_difference( 1 )
+			status_line = self.next_difference( 1 )
 		elif key == ord( "p" ) or key == curses.KEY_F7: # Previous difference
-			self.next_difference( -1 )
+			status_line = self.next_difference( -1 )
 		elif key == ord( "z" ): # Scroll left
-			self.scroll_horizontal( -1 )
+			status_line = self.scroll_horizontal( -1 )
 		elif key == ord( "x" ): # Scroll right
-			self.scroll_horizontal( 1 )
+			status_line = self.scroll_horizontal( 1 )
 		elif key == ord( "H" ): # Help
-			self.show_help( wait_for_input )
+			status_line = self.show_help( wait_for_input )
+
+		if status_line is None:
+			self.set_status_line( DEFAULT_STATUS_MESSAGE, False )
+		elif status_line == -1:
+			pass # An unused key was pressed
+		else:
+			self.set_status_line( status_line )
+
 		return keep_going
 
 	def show_help( self, wait_for_input ):
-		self.set_status_line( _("Press any key to continue") )
+		self.set_status_line( _("Press any key to continue"), False )
 
 		self.textwindow.erase()
 
@@ -184,7 +196,7 @@ class NCursesView( object ):
 		self.textwindow.refresh()
 		if wait_for_input:
 			self.textwindow.getch()
-			self.set_status_line( DEFAULT_STATUS_MESSAGE )
+			self.set_status_line( DEFAULT_STATUS_MESSAGE, False )
 			self.draw_screen()
 
 	def get_horizontal_scroll_width( self ):
@@ -277,23 +289,28 @@ class NCursesView( object ):
 	def change_page( self, direction ):
 		top_line = self.top_line
 		top_line += direction * self.win_height
+		if top_line > self.diffmodel.get_num_lines() - self.win_height:
+			top_line = self.diffmodel.get_num_lines() - self.win_height
 		if top_line < 0:
 			top_line = 0
-		elif top_line > self.diffmodel.get_num_lines() - self.win_height:
-			top_line = self.diffmodel.get_num_lines() - self.win_height
 
 		redraw = False
 		if top_line != self.top_line:
 			# Normal case - move up/down a page and don't move the cursor
 			self.set_top_line( top_line )
 			redraw = True
-		elif top_line == 0 and self.mycursor.line_num != 0:
+		elif top_line == 0 and self.mycursor.line_num != 0 and direction < 0:
 			# We hit the top - move the cursor up to the top
 			self.move_cursor_and_refresh( 0 )
 		elif ( self.bot_line == self.diffmodel.get_num_lines() and
 				self.mycursor.line_num != self.win_height - 1 ):
 			# We hit the bottom - move the cursor down to the bottom
 			self.move_cursor_and_refresh( self.win_height - 1 )
+		elif ( direction > 0 and
+				self.diffmodel.get_num_lines() - self.top_line
+					< self.win_height ):
+			self.move_cursor_and_refresh( self.diffmodel.get_num_lines()
+				- self.top_line - 1 )
 
 		if redraw:
 			while self.scrolled_off_right():
@@ -375,8 +392,17 @@ class NCursesView( object ):
 		# If there are no more differences, we have
 		# nothing to do
 		if line is None:
-			# TODO: status message
-			return
+			this_line_status = self.lines[self.mycursor.line_num].status
+			if direction > 0:
+				if this_line_status == difflinetypes.IDENTICAL:
+					return _("After last difference")
+				else:
+					return _("At last difference")
+			else:
+				if this_line_status == difflinetypes.IDENTICAL:
+					return _("Before first difference")
+				else:
+					return _("At first difference")
 
 		next_line_pos = self.get_line_of_end_of_diff(
 			direction, line, current_pos )
@@ -438,9 +464,13 @@ class NCursesView( object ):
 
 		self.headerwindow.refresh()
 
-	def set_status_line( self, message ):
+	def set_status_line( self, message, special=True ):
+		if special:
+			colour = self.CP_MISSING | curses.A_REVERSE
+		else:
+			colour = self.CP_NORMAL | curses.A_REVERSE
 		message = message.center( self.win_width )
-		self.statuswindow.addnstr( 0, 0, message, self.win_width )
+		self.statuswindow.addnstr( 0, 0, message, self.win_width, colour )
 		self.statuswindow.refresh()
 
 	def draw_screen( self ):

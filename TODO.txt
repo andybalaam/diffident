@@ -12,7 +12,7 @@ Next:
 + ncurses: Header showing names of files
 + ncurses: Status line
 + ncurses: Help page (including GPL2)
-- ncurses: Status line indicates when there are no more differences**
++ ncurses: Status line indicates when there are no more differences**
 
  ** The next and previous buttons indicate "No more differences"
     or something like that when they are not going to do anything.

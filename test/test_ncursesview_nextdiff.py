@@ -89,7 +89,9 @@ def next_diff_end():
 
 	actions = [ "n", "n", "n", "n", "n" ]
 
-	assert_strings_equal( view.show( actions )[0],
+	txt, header, status = view.show( actions )
+
+	assert_strings_equal( txt,
 """[n]line 09    line 09  
 [d]line 10 [di] * [d]line 10 d
 line 11 [di] * [d]line 11 d
@@ -98,6 +100,33 @@ line 13    line 13
 [mi]........[ai] + [a]line 14  
 [m]........[ai] + [a]line 15  
 """ )
+
+	assert_strings_equal( status,
+"""[mi] At last difference 
+""" )
+
+def next_diff_end_pagedown():
+
+	view = _make_view()
+
+	actions = [ "n", "n", "n", "n", "n", curses.KEY_NPAGE ]
+
+	txt, header, status = view.show( actions )
+
+	assert_strings_equal( txt,
+"""[n]line 09    line 09  
+[d]line 10 [di] * [d]line 10 d
+line 11 [di] * [d]line 11 d
+[n]line 12    line 12  
+line 13    line 13  
+[m]........[ai] + [a]line 14  
+[mi]........[ai] + [a]line 15  
+""" )
+
+	assert_strings_equal( status,
+"""[ni]Press SHIFT-H for he
+""" )
+
 
 def previous_diff():
 
@@ -113,6 +142,28 @@ line 11 [di] * [d]line 11 d
 line 13    line 13  
 [m]........[ai] + [a]line 14  
 [m]........[ai] + [a]line 15  
+""" )
+
+def previous_diff_before_any():
+
+	view = _make_view()
+
+	actions = [ "p" ]
+
+	txt, header, status = view.show( actions )
+
+	assert_strings_equal( txt,
+"""[ni]line 01 [n]   line 01  
+line 02    line 02  
+line 03    line 03  
+line 04    line 04  
+line 05    line 05  
+line 06    line 06  
+line 07    line 07  
+""" )
+
+	assert_strings_equal( status,
+"""[mi]Before first differe
 """ )
 
 def _make_diff_at_begin_view():
@@ -136,9 +187,28 @@ def _make_diff_at_begin_view():
 
 	view = NCursesView( diffmodel )
 	view.win_width = 20
-	view.win_height = 3
+	view.win_height = 4
 
 	return view
+
+def next_diff_from_beginning():
+
+	view = _make_diff_at_begin_view()
+
+	actions = [ "n" ]
+
+	txt, header, status = view.show( actions )
+
+	assert_strings_equal( txt,
+"""[n]line 07    line 07  
+line 08    line 08  
+line 09    line 09  
+[di]line 10  * [d]line 10 d
+""" )
+
+	assert_strings_equal( status,
+"""[ni]Press SHIFT-H for he
+""" )
 
 
 def previous_diff_to_beginning():
@@ -149,10 +219,36 @@ def previous_diff_to_beginning():
 
 	actions = [ "n", "n", "p" ]
 
-	assert_strings_equal( view.show( actions )[0],
+	txt, header, status = view.show( actions )
+
+	assert_strings_equal( txt,
 """[di]line 01  * [d]line 01 d
 line 02 [di] * [d]line 02 d
 line 03 [di] * [d]line 03 d
+[n]line 04    line 04  
+""" )
+
+	assert_strings_equal( status,
+"""[ni]Press SHIFT-H for he
+""" )
+
+def next_diff_after_last():
+
+	view = _make_diff_at_begin_view()
+
+	actions = [ "n", curses.KEY_DOWN, curses.KEY_DOWN, "n" ]
+
+	txt, header, status = view.show( actions )
+
+	assert_strings_equal( txt,
+"""[n]line 09    line 09  
+[d]line 10 [di] * [d]line 10 d
+line 11 [di] * [d]line 11 d
+[ni]line 12 [n]   line 12  
+""" )
+
+	assert_strings_equal( status,
+"""[mi]After last differenc
 """ )
 
 def previous_diff_to_beginning_twice():
@@ -163,10 +259,17 @@ def previous_diff_to_beginning_twice():
 
 	actions = [ "n", "n", "p", "p" ]
 
-	assert_strings_equal( view.show( actions )[0],
+	txt, header, status = view.show( actions )
+
+	assert_strings_equal( txt,
 """[di]line 01  * [d]line 01 d
 line 02 [di] * [d]line 02 d
 line 03 [di] * [d]line 03 d
+[n]line 04    line 04  
+""" )
+
+	assert_strings_equal( status,
+"""[mi]At first difference 
 """ )
 
 def _make_manydiffs_view():
@@ -257,9 +360,14 @@ def run():
 	next_diff_several()
 	next_diff_end()
 	previous_diff()
+	next_diff_from_beginning()
 	previous_diff_to_beginning()
 	previous_diff_to_beginning_twice()
 	next_diff_dontmove()
 	next_diff_domove_nearend()
 	previous_diff_dontmove()
+	previous_diff_before_any()
+	next_diff_after_last()
+	next_diff_end_pagedown()
+
 

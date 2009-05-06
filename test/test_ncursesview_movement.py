@@ -403,6 +403,53 @@ def page_right_page_down_shorter_lines():
 [d]          [di] * [d]s ext     
 """ )
 
+def _make_short_diff_view():
+	diffmodel = FakeDiffModel()
+	diffmodel.lines = [
+		FakeDiffLine( "line 01", "line 01", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "line 02", "line 02", difflinetypes.IDENTICAL ),
+	]
+
+	view = NCursesView( diffmodel )
+	view.win_width = 20
+	view.win_height = 4
+
+	return view
+
+def page_down_short_diff():
+	view = _make_short_diff_view()
+	actions = [ curses.KEY_NPAGE ]
+
+	assert_strings_equal( view.show( actions )[0],
+"""[n]line 01    line 01  
+[ni]line 02 [n]   line 02  
+                    
+                    
+""" )
+
+def page_down_twice_short_diff():
+	view = _make_short_diff_view()
+	actions = [ curses.KEY_NPAGE, curses.KEY_NPAGE ]
+
+	assert_strings_equal( view.show( actions )[0],
+"""[n]line 01    line 01  
+[ni]line 02 [n]   line 02  
+                    
+                    
+""" )
+
+def page_up_short_diff():
+	view = _make_short_diff_view()
+	actions = [ curses.KEY_PPAGE ]
+
+	assert_strings_equal( view.show( actions )[0],
+"""[ni]line 01 [n]   line 01  
+line 02    line 02  
+                    
+                    
+""" )
+
+
 def run():
 	right_arrow()
 	right_l()
@@ -428,6 +475,9 @@ def run():
 	page_up_cursor_preserved()
 	page_up_cursor_to_top()
 	page_up_twice()
+	page_down_short_diff()
+	page_down_twice_short_diff()
+	page_up_short_diff()
 
 	page_right()
 	page_right_thrice()
