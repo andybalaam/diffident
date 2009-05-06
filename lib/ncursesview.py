@@ -393,7 +393,7 @@ class NCursesView( object ):
 		self.statuswindow.refresh()
 
 	def draw_screen( self ):
-		self.textwindow.clear()
+		self.textwindow.erase()
 
 		for line_num, ln in enumerate( self.lines ):
 			self.write_line( ln, line_num )
