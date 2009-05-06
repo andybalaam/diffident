@@ -28,10 +28,12 @@ For full usage information:
 Keyboard shortcuts
 ------------------
 
-Quit                  - q
-Move around           - Arrow keys or hjkl
-Page Up/Down          - PageUp, PageDown
-Next/Prev difference  - n, p or F8, F7
+              Help - SHIFT-H
+              Quit - q                                    
+              Move - hjkl or Arrow Keys                   
+     Next/Previous - n/p or F8/F7                         
+      Page Up/Down - ,/. or PageUp/Down                   
+ Scroll Left/Right - z/x                                  
 
 Code
 ----
