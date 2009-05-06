@@ -125,7 +125,7 @@ class UnifiedDiffParser:
 			hunk_left_begin = self.parse_hunk_line( diff_line )
 			# If it is, we must stop because we have finsished with the
 			# previous hunk
-			if hunk_left_begin > 0:
+			if hunk_left_begin >= 0:
 				break
 
 			# Look for each type of line.  We maintain a list of lines
@@ -182,7 +182,7 @@ class UnifiedDiffParser:
 			hunk_left_begin = self.parse_hunk_line( diff_line )
 			while True:
 				# If this line was beginning a hunk, read the hunk
-				if hunk_left_begin > 0:
+				if hunk_left_begin >= 0:
 					self.read_left_to_linenum( line_callback, hunk_left_begin, left_iter )
 					try:
 						hunk_left_begin = self.read_diff_to_end_of_hunk(

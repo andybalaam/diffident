@@ -248,6 +248,34 @@ def added_at_end():
 	assert_strings_equal( lines[3].right, "line 4 here" )
 	assert( lines[3].status == difflinetypes.ADD )
 
+def empty_file():
+
+	file1 = [
+	]
+
+	diff = [
+		"--- test/file1.txt	2009-03-28 15:18:52.000000000 +0000\n",
+		"+++ test/file2.txt	2009-03-28 15:19:28.000000000 +0000\n",
+		"@@ -0,0 +1,1 @@\n",
+		"+line 1 here\n",
+		"+line 2 here\n",
+	]
+
+	unifieddiffparser = UnifiedDiffParser( file1, diff )
+	diffmodel = DiffModel( unifieddiffparser )
+
+	lines = diffmodel.get_lines()
+
+	assert( len( lines ) == 2 )
+
+	assert_strings_equal( lines[0].left,  None )
+	assert_strings_equal( lines[0].right, "line 1 here" )
+	assert( lines[0].status == difflinetypes.ADD )
+
+	assert_strings_equal( lines[1].left,  None )
+	assert_strings_equal( lines[1].right, "line 2 here" )
+	assert( lines[1].status == difflinetypes.ADD )
+
 def added_in_middle():
 
 	file1 = [
@@ -586,4 +614,6 @@ def run():
 	removed_at_beginning()
 
 	changed_added_removed()
+
+	empty_file()
 
