@@ -67,7 +67,7 @@ def status_default():
 	actions = []
 
 	assert_strings_equal( view.show( actions )[2],
-"""[ni]            Press h for help            
+"""[ni]         Press SHIFT-H for help         
 """ )
 
 

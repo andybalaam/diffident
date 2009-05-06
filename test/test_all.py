@@ -23,6 +23,7 @@ import test_ncursesview
 import test_ncursesview_movement
 import test_ncursesview_nextdiff
 import test_ncursesview_header
+import test_ncursesview_helpscreen
 import test_unifieddiffparser
 
 def run_quick_tests():
@@ -31,6 +32,7 @@ def run_quick_tests():
 	test_unifieddiffparser.run()
 
 def run_medium_tests():
+	test_ncursesview_helpscreen.run()
 	test_ncursesview_header.run()
 	test_ncursesview.run()
 	test_ncursesview_movement.run()

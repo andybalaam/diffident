@@ -23,6 +23,26 @@ from translation import _
 
 NEXT_DIFF_MARGIN = 3
 
+DEFAULT_STATUS_MESSAGE = _("Press SHIFT-H for help")
+
+HELP_MESSAGES = [
+	"",
+	_("Diffident Help"),
+	"",
+	( _("Quit"), _("q") ),
+	( _("Move"), _("hjkl or Arrow Keys") ),
+	( _("Next/Previous"), _("n/p or F8/F7") ),
+	( _("Page Up/Down"), _(",/. or PageUp/Down") ),
+	( _("Scroll Left/Right"), _("z/x") ),
+]
+
+COPYRIGHT_MESSAGES = [
+	"Diffident is Copyright (C) 2009 Andy Balaam and the Diffident developers.",
+	"Diffident comes with ABSOLUTELY NO WARRANTY.",
+	"This is free software, and you are welcome to redistribute it under certain",
+	"conditions; see the file COPYING for details, or gnu.org/licenses/gpl-2.0.txt",
+]
+
 class NCursesView( object ):
 
 	LEFT  = 0
@@ -82,7 +102,7 @@ class NCursesView( object ):
 			self.CP_NORMAL | curses.A_REVERSE )
 
 		self.draw_header_window()
-		self.set_status_line( _("Press h for help") )
+		self.set_status_line( DEFAULT_STATUS_MESSAGE )
 
 		self.set_top_line( 0 )
 		self.draw_screen()
@@ -96,7 +116,7 @@ class NCursesView( object ):
 			for action in debug_actions:
 				if isinstance( action, str ):
 					action = ord( action )
-				self.process_keypress( action )
+				self.process_keypress( action, False )
 			return ( self.screenshot_textwindow(),
 				self.screenshot_header(),
 				self.screenshot_status() )
@@ -113,7 +133,7 @@ class NCursesView( object ):
 			key = self.textwindow.getch()
 			keep_going = self.process_keypress( key )
 
-	def process_keypress( self, key ):
+	def process_keypress( self, key, wait_for_input=True ):
 		keep_going = True
 		if key == ord( "q" ): # Quit
 			keep_going = False
@@ -137,7 +157,35 @@ class NCursesView( object ):
 			self.scroll_horizontal( -1 )
 		elif key == ord( "x" ): # Scroll right
 			self.scroll_horizontal( 1 )
+		elif key == ord( "H" ): # Help
+			self.show_help( wait_for_input )
 		return keep_going
+
+	def show_help( self, wait_for_input ):
+		self.set_status_line( _("Press any key to continue") )
+
+		self.textwindow.erase()
+
+		line_num = self.win_height - 4
+		for line in COPYRIGHT_MESSAGES:
+			self.textwindow.addnstr( line_num, 0,
+				line, self.win_width, self.CP_NORMAL )
+			line_num += 1
+
+		for line_num, line in enumerate( HELP_MESSAGES ):
+			if isinstance( line, str ):
+				newline = line.center( self.win_width )
+			else:
+				newline = "%%0%ds - %%s" % ( self.win_width // 2 )
+				newline = newline % ( line[0], line[1] )
+			self.textwindow.addnstr( line_num, 0,
+				newline, self.win_width, self.CP_NORMAL )
+
+		self.textwindow.refresh()
+		if wait_for_input:
+			self.textwindow.getch()
+			self.set_status_line( DEFAULT_STATUS_MESSAGE )
+			self.draw_screen()
 
 	def get_horizontal_scroll_width( self ):
 		return 5
