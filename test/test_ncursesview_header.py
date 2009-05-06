@@ -23,7 +23,7 @@ from testlib.fakediffmodel import FakeDiffModel
 import lib.difflinetypes as difflinetypes
 from lib.ncursesview import NCursesView
 
-def short_names():
+def header_short_names():
 
 	diffmodel = FakeDiffModel()
 	diffmodel.lines = []
@@ -39,7 +39,7 @@ def short_names():
 """[ni]dir1/file1.txt       dir2/file2.txt     
 """ )
 
-def long_names():
+def header_long_names():
 
 	diffmodel = FakeDiffModel()
 	diffmodel.lines = []
@@ -55,8 +55,23 @@ def long_names():
 """[ni].../dir5/file1.txt   ...d/dire/file2.txt
 """ )
 
+def status_default():
+
+	diffmodel = FakeDiffModel()
+	diffmodel.lines = []
+
+	view = NCursesView( diffmodel )
+	view.win_width  = 40
+	view.win_height = 5
+
+	actions = []
+
+	assert_strings_equal( view.show( actions )[2],
+"""[ni]            Press h for help            
+""" )
+
 
 def run():
-	short_names()
-	long_names()
-
+	header_short_names()
+	header_long_names()
+	status_default()

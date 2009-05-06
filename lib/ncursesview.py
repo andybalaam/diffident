@@ -19,6 +19,8 @@ import curses
 
 import difflinetypes
 
+from translation import _
+
 NEXT_DIFF_MARGIN = 3
 
 class NCursesView( object ):
@@ -73,12 +75,16 @@ class NCursesView( object ):
 		self.mid_col     = self.left_width
 		self.right_start = self.left_width + 3
 
+		self.textwindow.bkgd( ord( " " ), self.CP_NORMAL )
+		self.headerwindow.bkgd( ord( " " ),
+			self.CP_NORMAL | curses.A_REVERSE )
+		self.statuswindow.bkgd( ord( " " ),
+			self.CP_NORMAL | curses.A_REVERSE )
+
 		self.draw_header_window()
+		self.set_status_line( _("Press h for help") )
 
 		self.set_top_line( 0 )
-
-		self.textwindow.bkgd( ord( " " ), self.CP_NORMAL )
-
 		self.draw_screen()
 
 		# If debug_actions is None we wait for user input
@@ -383,6 +389,11 @@ class NCursesView( object ):
 			right, self.right_width )
 
 		self.headerwindow.refresh()
+
+	def set_status_line( self, message ):
+		message = message.center( self.win_width )
+		self.statuswindow.addnstr( 0, 0, message, self.win_width )
+		self.statuswindow.refresh()
 
 	def draw_screen( self ):
 		self.textwindow.clear()
