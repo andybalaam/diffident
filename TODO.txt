@@ -9,9 +9,18 @@ Next:
 + ncurses: Make n never scroll you off the bottom
 + ncurses: Horizontal scrolling moves 5 columns at a time
 + ncurses: Only scroll when we need to when you press n **
-+ ncurses: header showing names of files
-+ ncurses: status line
++ ncurses: Header showing names of files
++ ncurses: Status line
 + ncurses: Help page (including GPL2)
+- ncurses: Status line indicates when there are no more differences**
+
+ ** The next and previous buttons indicate "No more differences"
+    or something like that when they are not going to do anything.
+    Think about any other places where a message would be useful.
+    Reset status message to default when you do anything else.
+
+- general: Make a release
+
 - ncurses: Select multiple lines
 - ncurses: Can copy from one side to the other *
 - ncurses: Can see long lines at bottom? (not short lines)
@@ -36,8 +45,7 @@ Next:
 
 Big:
 
-- Make the diffmodel able to accept a line-number range so we can
-  handle big files.  DiffModel would only cache a certain number of lines,
+- Make scalable to big files.  DiffModel would only cache a certain number of lines,
   and call into the parser whenever it needed to get some other lines.
 
 - Don't use unified diffs internally since they are not quite as reliable
@@ -47,6 +55,7 @@ Big:
 
 Unimportant:
 
+- ncurses: Show line number in status bar?
 - ncurses: Allow moving the vertical divider
 - ncurses: Allow specifying tab width
 - unified diffs: Ignore lines that do not start with a space in unified diffs
