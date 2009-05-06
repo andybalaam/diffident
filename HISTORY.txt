@@ -1,5 +1,21 @@
 
-diffident-0.1
+=== diffident-0.2 ===
+
++ ncurses: Can scroll to the right to see long lines
++ ncurses: choose key shortcuts for pagedown and pageup
++ ncurses: Remove white background
++ ncurses: Middle column is inverse when there is a difference
++ ncurses: Use yellow for a different line, and magenta for a missing line
++ ncurses: Don't refresh whole screen when pageup or n only moves cursor
++ ncurses: Make n never scroll you off the bottom
++ ncurses: Horizontal scrolling moves 5 columns at a time
++ ncurses: Only scroll when we need to when you press n **
++ ncurses: Header showing names of files
++ ncurses: Status line
++ ncurses: Help page (including GPL2)
++ ncurses: Status line indicates when there are no more differences
+
+=== diffident-0.1 ===
 
 + ncurses: Basic ncurses startup, exit
 + ncurses: Moveable cursor
@@ -13,3 +29,4 @@ diffident-0.1
 + ncurses: only request the lines we need to display now
 + admin: Put GPL2 boilerplate in all source files.
 + ncurses: Jump to next/prev difference
+

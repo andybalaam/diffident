@@ -1,26 +1,5 @@
 Next:
 
-+ ncurses: Can scroll to the right to see long lines
-+ ncurses: choose key shortcuts for pagedown and pageup
-+ ncurses: Remove white background
-+ ncurses: Middle column is inverse when there is a difference
-+ ncurses: Use yellow for a different line, and magenta for a missing line
-+ ncurses: Don't refresh whole screen when pageup or n only moves cursor
-+ ncurses: Make n never scroll you off the bottom
-+ ncurses: Horizontal scrolling moves 5 columns at a time
-+ ncurses: Only scroll when we need to when you press n **
-+ ncurses: Header showing names of files
-+ ncurses: Status line
-+ ncurses: Help page (including GPL2)
-+ ncurses: Status line indicates when there are no more differences**
-
- ** The next and previous buttons indicate "No more differences"
-    or something like that when they are not going to do anything.
-    Think about any other places where a message would be useful.
-    Reset status message to default when you do anything else.
-
-- general: Make a release
-
 - ncurses: Select multiple lines
 - ncurses: Can copy from one side to the other *
 - ncurses: Can see long lines at bottom? (not short lines)
