@@ -70,6 +70,8 @@ class NCursesView( object ):
 		return curses.wrapper( self.show_impl, debug_actions )
 
 	def show_impl( self, stdscr, debug_actions ):
+		self.stdscr = stdscr
+		self.stdscr.refresh()
 		# If we are in test code and have modified these, leave them.
 		# Otherwise, get them from the environment
 		if self.win_height is None:
@@ -130,7 +132,7 @@ class NCursesView( object ):
 
 		keep_going = True
 		while keep_going:
-			key = self.textwindow.getch()
+			key = self.stdscr.getch()
 			keep_going = self.process_keypress( key )
 
 	def process_keypress( self, key, wait_for_input=True ):
