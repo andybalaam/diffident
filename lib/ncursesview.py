@@ -199,10 +199,13 @@ class NCursesView( object ):
 			else:
 				self.add_to_cursor_and_refresh( -1 )
 		elif dr == NCursesView.DOWN:
+			num_model_lines = self.diffmodel.get_num_lines()
 			if self.mycursor.line_num == ( self.win_height - 1 ):
-				if self.bot_line < self.diffmodel.get_num_lines():
+				if self.bot_line < num_model_lines:
 					self.set_top_line( self.top_line + 1 )
 					redraw = True
+			elif self.mycursor.line_num + self.top_line == num_model_lines - 1:
+				pass # We are at the bottom of the diff.  Don't move down.
 			else:
 				self.add_to_cursor_and_refresh( 1 )
 		if redraw:

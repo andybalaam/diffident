@@ -121,6 +121,28 @@ def down_twice():
 [ni]line 6 here       [n]   line 6 here        
 """ )
 
+def down_emptyfile():
+	diffmodel = FakeDiffModel()
+	diffmodel.lines = [
+		FakeDiffLine( None, "line 1 here", difflinetypes.ADD ),
+		FakeDiffLine( None, "line 2 here", difflinetypes.ADD ),
+		]
+
+	view = NCursesView( diffmodel )
+	view.win_width  = 40
+	view.win_height = 3
+
+	actions = [ curses.KEY_DOWN, curses.KEY_DOWN, curses.KEY_DOWN,
+		curses.KEY_DOWN, curses.KEY_DOWN, curses.KEY_DOWN, curses.KEY_DOWN,
+		curses.KEY_DOWN, curses.KEY_DOWN, curses.KEY_DOWN, curses.KEY_DOWN ]
+
+	assert_strings_equal( view.show( actions )[0],
+"""[m]..................[ai] + [a]line 1 here        
+[mi]..................[ai] + [a]line 2 here        
+[n]                                        
+""" )
+
+
 def down_scroll():
 	view = _make_view()
 
@@ -392,6 +414,7 @@ def run():
 	down_j()
 	down_twice()
 	down_scroll()
+	down_emptyfile()
 	up_arrow()
 	up_k()
 	up_twice()
