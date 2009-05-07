@@ -30,10 +30,13 @@ HELP_MESSAGES = [
 	_("Diffident Help"),
 	"",
 	( _("Quit"), _("q") ),
-	( _("Move"), _("hjkl or Arrow Keys") ),
-	( _("Next/Previous"), _("n/p or F8/F7") ),
-	( _("Page Up/Down"), _(",/. or PageUp/Down") ),
-	( _("Scroll Left/Right"), _("z/x") ),
+	( _("Move left/right"), _("h/l or Arrow Keys") ),
+	( _("Move up/down"), _("k/j or Arrow Keys") ),
+	( _("Select line up/down"), _("K/J") ),
+	( _("Next/Previous difference"), _("n/p or F8/F7") ),
+	( _("Page up/down"), _(",/. or PageUp/Down") ),
+	( _("Select page up/down"), _("</>") ),
+	( _("Scroll left/right"), _("z/x") ),
 ]
 
 COPYRIGHT_MESSAGES = [
@@ -214,8 +217,9 @@ class NCursesView( object ):
 
 		line_num = self.win_height - 4
 		for line in COPYRIGHT_MESSAGES:
+			newline = line.center( self.win_width )
 			self.textwindow.addnstr( line_num, 0,
-				line, self.win_width, self.CP_NORMAL )
+				newline, self.win_width, self.CP_NORMAL )
 			line_num += 1
 
 		for line_num, line in enumerate( HELP_MESSAGES ):

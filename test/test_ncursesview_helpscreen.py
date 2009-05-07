@@ -46,22 +46,22 @@ def normal():
                                  Diffident Help                                 
                                                                                 
                                     Quit - q                                    
-                                    Move - hjkl or Arrow Keys                   
-                           Next/Previous - n/p or F8/F7                         
-                            Page Up/Down - ,/. or PageUp/Down                   
-                       Scroll Left/Right - z/x                                  
+                         Move left/right - h/l or Arrow Keys                    
+                            Move up/down - k/j or Arrow Keys                    
+                     Select line up/down - K/J                                  
+                Next/Previous difference - n/p or F8/F7                         
+                            Page up/down - ,/. or PageUp/Down                   
+                     Select page up/down - </>                                  
+                       Scroll left/right - z/x                                  
                                                                                 
                                                                                 
                                                                                 
                                                                                 
                                                                                 
-                                                                                
-                                                                                
-                                                                                
-Diffident is Copyright (C) 2009 Andy Balaam and the Diffident developers.       
-Diffident comes with ABSOLUTELY NO WARRANTY.                                    
-This is free software, and you are welcome to redistribute it under certain     
-conditions; see the file COPYING for details, or gnu.org/licenses/gpl-2.0.txt   
+   Diffident is Copyright (C) 2009 Andy Balaam and the Diffident developers.    
+                  Diffident comes with ABSOLUTELY NO WARRANTY.                  
+  This is free software, and you are welcome to redistribute it under certain   
+ conditions; see the file COPYING for details, or gnu.org/licenses/gpl-2.0.txt  
 """ )
 
 def run():
