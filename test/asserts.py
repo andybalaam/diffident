@@ -39,8 +39,13 @@ def assert_strings_equal( str1, str2 ):
 		else:
 			print "No different characters found, but strings compare unequal?"
 	else:
+		char -= 4
+		if char < 0:
+			char = 0
+		lastchar = char + 8
+
 		print "At character %d, '%s' != '%s'" % (
-			char, str1[char], str2[char] )
+			char, str1[char:lastchar], str2[char:lastchar] )
 
 	raise AssertionError()
 
