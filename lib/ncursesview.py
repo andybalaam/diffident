@@ -53,13 +53,36 @@ class NCursesView( object ):
 	class Cursor( object ):
 		def __init__( self, lr, line_num ):
 			self.lr = lr
-			self.line_num = line_num
+			self.set_line_num( line_num, False )
+
+		def add_to_line_num( self, inc, shift_pressed ):
+			self.set_line_num( self.line_num + inc, shift_pressed )
+
+		def set_line_num( self, new_value, shift_pressed ):
+			self.line_num = new_value
+			if not shift_pressed:
+				self.start_line_num = new_value
+
+		def shift_selection( self, inc ):
+			self.start_line_num += inc
+
+		def is_line_selected( self, line_num ):
+			return ( self.start_line_num <= line_num <= self.line_num or
+			         self.start_line_num >= line_num >= self.line_num )
+
+		def get_selected_range( self ):
+			"""Return a range generator that covers all selected lines."""
+
+			if self.start_line_num <= self.line_num:
+				return xrange( self.start_line_num, self.line_num + 1 )
+			else:
+				return xrange( self.line_num, self.start_line_num + 1 )
 
 	def __init__( self, diffmodel, filename1 = None, filename2 = None ):
 		self.diffmodel = diffmodel
 		self.filename1 = filename1
 		self.filename2 = filename2
-		self.top_line = None
+		self.top_line = 0
 		self.bot_line = None
 		self.first_col = 0
 		self.mycursor = NCursesView.Cursor( NCursesView.LEFT, 0 )
@@ -124,6 +147,7 @@ class NCursesView( object ):
 				self.screenshot_status() )
 
 	def set_top_line( self, top_line ):
+		self.mycursor.shift_selection( self.top_line - top_line )
 		self.top_line = top_line
 		self.bot_line = self.top_line + self.win_height
 		self.lines = self.diffmodel.get_lines( self.top_line, self.bot_line )
@@ -144,17 +168,25 @@ class NCursesView( object ):
 		if key == ord( "q" ): # Quit
 			keep_going = False
 		elif key == ord( "h" ) or key == curses.KEY_LEFT:
-			status_line = self.move_cursor( NCursesView.LEFT )
+			status_line = self.move_cursor( NCursesView.LEFT, False )
 		elif key == ord( "l" ) or key == curses.KEY_RIGHT:
-			status_line = self.move_cursor( NCursesView.RIGHT )
+			status_line = self.move_cursor( NCursesView.RIGHT, False )
 		elif key == ord( "j" ) or key == curses.KEY_DOWN:
-			status_line = self.move_cursor( NCursesView.DOWN )
+			status_line = self.move_cursor( NCursesView.DOWN, False )
 		elif key == ord( "k" ) or key == curses.KEY_UP:
-			status_line = self.move_cursor( NCursesView.UP )
+			status_line = self.move_cursor( NCursesView.UP, False )
+		elif key == ord( "J" ): # Extend selection down
+			status_line = self.move_cursor( NCursesView.DOWN, True )
+		elif key == ord( "K" ): # Extend selection up
+			status_line = self.move_cursor( NCursesView.UP, True )
 		elif key == ord( "." ) or key == curses.KEY_NPAGE: # Page down
-			status_line = self.change_page( 1 )
+			status_line = self.change_page( 1, False )
 		elif key == ord( "," ) or key == curses.KEY_PPAGE: # Page up
-			status_line = self.change_page( -1 )
+			status_line = self.change_page( -1, False )
+		elif key == ord( ">" ): # Extend selection 1 page down
+			status_line = self.change_page( 1, True )
+		elif key == ord( "<" ): # Extend selection 1 page up
+			status_line = self.change_page( -1, True )
 		elif key == ord( "n" ) or key == curses.KEY_F8: # Next difference
 			status_line = self.next_difference( 1 )
 		elif key == ord( "p" ) or key == curses.KEY_F7: # Previous difference
@@ -242,7 +274,7 @@ class NCursesView( object ):
 		# scrolled too far.
 		return True
 
-	def move_cursor( self, dr ):
+	def move_cursor( self, dr, shift_pressed ):
 		# TODO: don't redraw whole screen when scrolling?
 
 		redraw = False
@@ -257,38 +289,45 @@ class NCursesView( object ):
 			if self.mycursor.line_num == 0:
 				if self.top_line > 0:
 					self.set_top_line( self.top_line - 1 )
+					# Move the cursor 0 lines - resets selection if
+					# shift is not pressed
+					self.mycursor.add_to_line_num( 0, shift_pressed )
 					redraw = True
 			else:
-				self.add_to_cursor_and_refresh( -1 )
+				self.add_to_cursor_and_refresh( -1, shift_pressed )
 		elif dr == NCursesView.DOWN:
 			num_model_lines = self.diffmodel.get_num_lines()
 			if self.mycursor.line_num == ( self.win_height - 1 ):
 				if self.bot_line < num_model_lines:
 					self.set_top_line( self.top_line + 1 )
+					# Move the cursor 0 lines - resets selection if
+					# shift is not pressed
+					self.mycursor.add_to_line_num( 0, shift_pressed )
 					redraw = True
 			elif self.mycursor.line_num + self.top_line == num_model_lines - 1:
 				pass # We are at the bottom of the diff.  Don't move down.
 			else:
-				self.add_to_cursor_and_refresh( 1 )
+				self.add_to_cursor_and_refresh( 1, shift_pressed )
 		if redraw:
 			self.draw_screen()
 
-	def add_to_cursor_and_refresh( self, direction ):
-		old_line_num = self.mycursor.line_num
-		self.mycursor.line_num += direction
-		self.draw_single_line( old_line_num )
-		self.draw_single_line( self.mycursor.line_num )
+	def add_to_cursor_and_refresh( self, direction, shift_pressed ):
+		old_range = self.mycursor.get_selected_range()
+		self.mycursor.add_to_line_num( direction, shift_pressed )
+		new_range = self.mycursor.get_selected_range()
+		# Use set union here to avoid updating a line twice
+		for line_num in set( old_range ).union( new_range ):
+			self.draw_single_line_if_visible( line_num )
 		self.textwindow.refresh()
 
-	def move_cursor_and_refresh( self, line_num ):
+	def move_cursor_and_refresh( self, line_num, shift_pressed ):
 		self.add_to_cursor_and_refresh(
-			line_num - self.mycursor.line_num )
+			line_num - self.mycursor.line_num, shift_pressed )
 
 	def refresh_cursor_line( self ):
-		self.draw_single_line( self.mycursor.line_num )
-		self.textwindow.refresh()
+		self.add_to_cursor_and_refresh( 0, False )
 
-	def change_page( self, direction ):
+	def change_page( self, direction, shift_pressed ):
 		top_line = self.top_line
 		top_line += direction * self.win_height
 		if top_line > self.diffmodel.get_num_lines() - self.win_height:
@@ -298,21 +337,25 @@ class NCursesView( object ):
 
 		redraw = False
 		if top_line != self.top_line:
-			# Normal case - move up/down a page and don't move the cursor
+			# Normal case - move up/down a page and put the cursor in the same
+			# screen position.
 			self.set_top_line( top_line )
+			# Move the cursor zero lines, so if we are not extending
+			# the selection, we reset to selecting only one line.
+			self.mycursor.add_to_line_num( 0, shift_pressed )
 			redraw = True
 		elif top_line == 0 and self.mycursor.line_num != 0 and direction < 0:
 			# We hit the top - move the cursor up to the top
-			self.move_cursor_and_refresh( 0 )
+			self.move_cursor_and_refresh( 0, shift_pressed )
 		elif ( self.bot_line == self.diffmodel.get_num_lines() and
 				self.mycursor.line_num != self.win_height - 1 ):
 			# We hit the bottom - move the cursor down to the bottom
-			self.move_cursor_and_refresh( self.win_height - 1 )
+			self.move_cursor_and_refresh( self.win_height - 1, shift_pressed )
 		elif ( direction > 0 and
 				self.diffmodel.get_num_lines() - self.top_line
 					< self.win_height ):
 			self.move_cursor_and_refresh( self.diffmodel.get_num_lines()
-				- self.top_line - 1 )
+				- self.top_line - 1, shift_pressed )
 
 		if redraw:
 			while self.scrolled_off_right():
@@ -381,11 +424,11 @@ class NCursesView( object ):
 		if old_top_line != top_line:
 			# Normal case - we have scrolled
 			self.set_top_line( top_line )
-			self.mycursor.line_num = curs_pos
+			self.mycursor.set_line_num( curs_pos, False )
 			self.draw_screen()
 		else:
 			# If we didn't scroll at all, just move cursor
-			self.move_cursor_and_refresh( curs_pos )
+			self.move_cursor_and_refresh( curs_pos, False )
 
 	def next_difference( self, direction ):
 
@@ -426,7 +469,7 @@ class NCursesView( object ):
 		if scroll:
 			self.scroll_to_line( current_pos )
 		else:
-			self.move_cursor_and_refresh( current_pos - self.top_line )
+			self.move_cursor_and_refresh( current_pos - self.top_line, False )
 
 
 	def make_color_pairs( self ):
@@ -483,9 +526,9 @@ class NCursesView( object ):
 
 		self.textwindow.refresh()
 
-	def draw_single_line( self, line_num ):
-		ln = self.lines[line_num]
-		self.write_line( ln, line_num )
+	def draw_single_line_if_visible( self, line_num ):
+		if 0 <= line_num < len( self.lines ) :
+			self.write_line( self.lines[line_num], line_num )
 
 	def write_line( self, ln, line_num ):
 
@@ -512,7 +555,7 @@ class NCursesView( object ):
 		else:
 			raise Exception( "Unknown line type %d." % ln.status )
 
-		if self.mycursor.line_num == line_num:
+		if self.mycursor.is_line_selected( line_num ):
 			if self.mycursor.lr == NCursesView.LEFT:
 				left_colour_pair  |= curses.A_REVERSE
 			else:
