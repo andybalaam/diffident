@@ -24,24 +24,40 @@ Next:
 
 Next:
 - ncurses: some kind of solution for SHIFT-UP and DOWN?  (numeric keypad?)
-- ncurses: Support different colour schemes: white-on-black, black-on-white, others?
-- ncurses: Special characters to indicate the line continues to the left or right
+- ncurses: Special characters to indicate the line continues to the left/right
 - ncurses: Highlight added and removed parts of the line in a DIFFERENT row.
+- ncurses: Show line number in status bar
+- ncurses: Allow moving the vertical divider
+- ncurses: Jump to beginning, end and line num (of the file the cursor is in)
 
 Big:
 
-- Make scalable to big files.  DiffModel would only cache a certain number of lines,
-  and call into the parser whenever it needed to get some other lines.
+- general: Allow supplying a diff on stdin.  This might mean we can work as a
+  GIT_PAGER?  To be really great, we would need to find the filenames in the
+  supplied diff (git-style and normal) and look for those files, and use them
+  to provide context if they exist.  If they don't exist, use whatever context
+  is in the file, and show "... skip x lines ..." for any gaps.
+  We would also need to handle multi-file diffs.  Showing all files as one
+  side-by-side diff could potentially make us a much better complement to git?
+
+- Make scalable to big files.  DiffModel would only cache a certain number of
+  lines, and call into the parser whenever it needed to get some other lines.
+  Preferably, we should call the underlying diff program and send its output
+  to a fifo, so it's ready if/when we need it.
+
+- Make scalable to long lines?
 
 - Don't use unified diffs internally since they are not quite as reliable
   as context diffs?  (Because of +++ line problem.)
 
 - Support "align manually" on diffs
 
-Unimportant:
+- GTK interface
 
-- ncurses: Show line number in status bar?
-- ncurses: Allow moving the vertical divider
+Later/Never:
+
+- ncurses: toggle showing line number
+- ncurses: Support different colour schemes: white-on-black, black-on-white?
 - ncurses: Allow specifying tab width
 - unified diffs: Ignore lines that do not start with a space in unified diffs
 - ncurses: Don't redraw whole screen when we are only scrolling one line
