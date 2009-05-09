@@ -16,7 +16,7 @@
 #   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import re
-import lib.difflinetypes as difflinetypes
+from lib.constants import difflinetypes
 
 def is_x_line( line, x ):
 	# TODO exclude only lines exactly matching the pattern for the beginning

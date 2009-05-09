@@ -18,7 +18,7 @@
 from asserts import assert_strings_equal
 
 from lib.diffmodel import DiffModel
-import lib.difflinetypes as difflinetypes
+from lib.constants import difflinetypes
 
 class FakeParser:
 	def parse_lines( self, line_callback ):

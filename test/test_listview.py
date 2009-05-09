@@ -20,7 +20,7 @@ from test.asserts import assert_strings_equal
 from testlib.fakediffline import FakeDiffLine
 from testlib.fakediffmodel import FakeDiffModel
 
-import lib.difflinetypes as difflinetypes
+from lib.constants import difflinetypes
 from lib.listview import ListView
 
 def same():

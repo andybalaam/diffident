@@ -19,7 +19,7 @@ from asserts import assert_strings_equal
 
 from lib.unifieddiffparser import UnifiedDiffParser
 from lib.diffmodel import DiffModel
-import lib.difflinetypes as difflinetypes
+from lib.constants import difflinetypes
 
 def parse_hunks():
 	diffparser = UnifiedDiffParser( None, None );

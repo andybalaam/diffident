@@ -15,7 +15,7 @@
 #   with this program; if not, write to the Free Software Foundation, Inc.,
 #   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-import lib.difflinetypes as difflinetypes
+from lib.constants import difflinetypes
 
 def empty_if_none( line ):
 	if line is None:

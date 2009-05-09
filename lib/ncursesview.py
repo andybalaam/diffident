@@ -17,7 +17,7 @@
 
 import curses
 
-import difflinetypes
+from lib.constants import difflinetypes
 
 from translation import _
 
