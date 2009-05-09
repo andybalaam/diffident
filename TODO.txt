@@ -22,6 +22,9 @@ Next:
       lines and applies the changes in order.  Any change that occurs after
       the savepoint makes the line be marked as changed (visible in UI).
 
+- diff: improve diff code (use difflib?) so similar lines are shown
+  side-by-side.
+
 Next:
 - ncurses: some kind of solution for SHIFT-UP and DOWN?  (numeric keypad?)
 - ncurses: Special characters to indicate the line continues to the left/right
