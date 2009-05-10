@@ -29,12 +29,12 @@ def is_minus_line( line ):
 def is_plus_line( line ):
 	return is_x_line( line, "+" )
 
-class UnifiedDiffParser:
+class UnifiedDiffParser( object ):
 	"""Parses a diff in unified format and supplies the result to
 	a consumer (usually a DiffModel) by calling the supplied callback
 	function for each line."""
 
-	class CountingIter:
+	class CountingIter( object ):
 		"""A wrapper around an iterator that keeps count of how many times
 		next() has been called."""
 

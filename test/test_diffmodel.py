@@ -20,7 +20,7 @@ from asserts import assert_strings_equal
 from lib.diffmodel import DiffModel
 from lib.constants import difflinetypes
 
-class FakeParser:
+class FakeParser( object ):
 	def parse_lines( self, line_callback ):
 		line_callback( "line 1\n", "line 1\n", difflinetypes.IDENTICAL )
 		line_callback( "line 2 left\n", None, difflinetypes.REMOVE )

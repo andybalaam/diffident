@@ -21,10 +21,10 @@ def strip_newline( line ):
 	else:
 		return line
 
-class DiffModel:
+class DiffModel( object ):
 	"""An abstract model of the differences between 2 files."""
 
-	class DiffLine:
+	class DiffLine( object ):
 		"""Abstract representation of a line in a diff."""
 
 		def __init__( self, left, right, status ):

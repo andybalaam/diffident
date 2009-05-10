@@ -23,7 +23,7 @@ def empty_if_none( line ):
 	else:
 		return line
 
-class ListView:
+class ListView( object ):
 	"""A simple view on a DiffModel that just lists all the lines in a file
 	side by side."""
 

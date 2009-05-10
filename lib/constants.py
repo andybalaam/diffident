@@ -17,13 +17,13 @@
 
 # The types of diff line there can be
 
-class difflinetypes:
+class difflinetypes( object ):
 	DIFFERENT = 0
 	IDENTICAL = 1
 	ADD       = 2
 	REMOVE    = 3
 
-class directions:
+class directions( object ):
 	LEFT  = 0
 	RIGHT = 1
 	UP    = 2
