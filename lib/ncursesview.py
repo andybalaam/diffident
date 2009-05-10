@@ -18,6 +18,7 @@
 import curses
 
 from lib.constants import difflinetypes
+from lib.constants import directions
 
 from translation import _
 
@@ -47,11 +48,6 @@ COPYRIGHT_MESSAGES = [
 ]
 
 class NCursesView( object ):
-
-	LEFT  = 0
-	RIGHT = 1
-	UP    = 2
-	DOWN  = 3
 
 	class Cursor( object ):
 		def __init__( self, lr, line_num ):
@@ -88,7 +84,7 @@ class NCursesView( object ):
 		self.top_line = 0
 		self.bot_line = None
 		self.first_col = 0
-		self.mycursor = NCursesView.Cursor( NCursesView.LEFT, 0 )
+		self.mycursor = NCursesView.Cursor( directions.LEFT, 0 )
 		self.win_height = None # Modify these in test code
 		self.win_width = None  #
 
@@ -171,17 +167,17 @@ class NCursesView( object ):
 		if key == ord( "q" ): # Quit
 			keep_going = False
 		elif key == ord( "h" ) or key == curses.KEY_LEFT:
-			status_line = self.move_cursor( NCursesView.LEFT, False )
+			status_line = self.move_cursor( directions.LEFT, False )
 		elif key == ord( "l" ) or key == curses.KEY_RIGHT:
-			status_line = self.move_cursor( NCursesView.RIGHT, False )
+			status_line = self.move_cursor( directions.RIGHT, False )
 		elif key == ord( "j" ) or key == curses.KEY_DOWN:
-			status_line = self.move_cursor( NCursesView.DOWN, False )
+			status_line = self.move_cursor( directions.DOWN, False )
 		elif key == ord( "k" ) or key == curses.KEY_UP:
-			status_line = self.move_cursor( NCursesView.UP, False )
+			status_line = self.move_cursor( directions.UP, False )
 		elif key == ord( "J" ): # Extend selection down
-			status_line = self.move_cursor( NCursesView.DOWN, True )
+			status_line = self.move_cursor( directions.DOWN, True )
 		elif key == ord( "K" ): # Extend selection up
-			status_line = self.move_cursor( NCursesView.UP, True )
+			status_line = self.move_cursor( directions.UP, True )
 		elif key == ord( "." ) or key == curses.KEY_NPAGE: # Page down
 			status_line = self.change_page( 1, False )
 		elif key == ord( "," ) or key == curses.KEY_PPAGE: # Page up
@@ -283,13 +279,13 @@ class NCursesView( object ):
 
 		redraw = False
 
-		if dr == NCursesView.LEFT and self.mycursor.lr == NCursesView.RIGHT:
-			self.mycursor.lr = NCursesView.LEFT
+		if dr == directions.LEFT and self.mycursor.lr == directions.RIGHT:
+			self.mycursor.lr = directions.LEFT
 			self.refresh_cursor_line()
-		elif dr == NCursesView.RIGHT and self.mycursor.lr == NCursesView.LEFT:
-			self.mycursor.lr = NCursesView.RIGHT
+		elif dr == directions.RIGHT and self.mycursor.lr == directions.LEFT:
+			self.mycursor.lr = directions.RIGHT
 			self.refresh_cursor_line()
-		elif dr == NCursesView.UP:
+		elif dr == directions.UP:
 			if self.mycursor.line_num == 0:
 				if self.top_line > 0:
 					self.set_top_line( self.top_line - 1 )
@@ -299,7 +295,7 @@ class NCursesView( object ):
 					redraw = True
 			else:
 				self.add_to_cursor_and_refresh( -1, shift_pressed )
-		elif dr == NCursesView.DOWN:
+		elif dr == directions.DOWN:
 			num_model_lines = self.diffmodel.get_num_lines()
 			if self.mycursor.line_num == ( self.win_height - 1 ):
 				if self.bot_line < num_model_lines:
@@ -560,7 +556,7 @@ class NCursesView( object ):
 			raise Exception( "Unknown line type %d." % ln.status )
 
 		if self.mycursor.is_line_selected( line_num ):
-			if self.mycursor.lr == NCursesView.LEFT:
+			if self.mycursor.lr == directions.LEFT:
 				left_colour_pair  |= curses.A_REVERSE
 			else:
 				right_colour_pair |= curses.A_REVERSE

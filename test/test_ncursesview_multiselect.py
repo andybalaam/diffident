@@ -23,10 +23,12 @@ from testlib.fakediffline import FakeDiffLine
 from testlib.fakediffmodel import FakeDiffModel
 
 from lib.constants import difflinetypes
+from lib.constants import directions
+
 from lib.ncursesview import NCursesView
 
 def cursor_get_selected_range():
-	l = NCursesView.LEFT
+	l = directions.LEFT
 
 	curs = NCursesView.Cursor( l, 10 )
 	curs.start_line_num = 10
