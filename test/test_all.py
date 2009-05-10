@@ -19,6 +19,7 @@ import os
 
 import test_listview
 import test_diffmodel
+import test_editablediffmodel
 import test_ncursesview
 import test_ncursesview_movement
 import test_ncursesview_nextdiff
@@ -28,16 +29,17 @@ import test_ncursesview_multiselect
 import test_unifieddiffparser
 
 def run_quick_tests():
-	test_listview.run()
+	test_editablediffmodel.run()
 	test_diffmodel.run()
+	test_listview.run()
 	test_unifieddiffparser.run()
 
 def run_medium_tests():
-	test_ncursesview_multiselect.run()
-	test_ncursesview_helpscreen.run()
-	test_ncursesview_header.run()
 	test_ncursesview.run()
+	test_ncursesview_header.run()
+	test_ncursesview_helpscreen.run()
 	test_ncursesview_movement.run()
+	test_ncursesview_multiselect.run()
 	test_ncursesview_nextdiff.run()
 
 def test_quick():

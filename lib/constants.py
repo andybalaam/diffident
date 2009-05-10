@@ -15,13 +15,15 @@
 #   with this program; if not, write to the Free Software Foundation, Inc.,
 #   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# The types of diff line there can be
-
 class difflinetypes( object ):
-	DIFFERENT = 0
-	IDENTICAL = 1
-	ADD       = 2
-	REMOVE    = 3
+	"""The types of diff line there can be."""
+	DIFFERENT    = 0
+	IDENTICAL    = 1
+	ADD          = 2
+	REMOVE       = 3
+	EDITED_LEFT  = 4
+	EDITED_RIGHT = 5
+	EDITED_BOTH  = 6
 
 class directions( object ):
 	LEFT  = 0

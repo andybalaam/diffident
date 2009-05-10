@@ -1,10 +1,11 @@
 Next:
 
 + ncurses: Select multiple lines
-- editablediffmodel: create class and tests
-- editablediffmodel: modified lines are returned when requested
++ editablediffmodel: create class and tests
++ editablediffmodel: modified lines are returned when requested
++ editablediffmodel: EDITED_* status works
+- editablediffmodel: can add lines
 - editablediffmodel: undo/redo works
-- editablediffmodel: ismodified works
 - editablediffmodel: can save modified files
 - ncurses: Can copy from one side to the other *
 - ncurses: Can see long lines at bottom? (not short lines)
@@ -59,6 +60,7 @@ Big:
 
 Later/Never:
 
+- editablediffmodel: Cache results instead of recalculating each time?
 - git: highlight whitespace at end of lines, and other git diffisms
 - ncurses: toggle showing line number
 - ncurses: Support different colour schemes: white-on-black, black-on-white?
