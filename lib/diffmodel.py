@@ -47,10 +47,7 @@ class DiffModel( object ):
 		self.parser = parser
 		self.lines = None
 
-	def parse_if_needed( self ):
-		if self.lines is None:
-			self.lines = []
-			self.parser.parse_lines( self.line_callback )
+	# Public functions
 
 	def get_lines( self, start=0, end=None ):
 		self.parse_if_needed()
@@ -69,6 +66,13 @@ class DiffModel( object ):
 	def get_num_lines( self ):
 		self.parse_if_needed()
 		return len( self.lines )
+
+	# Private (ish) functions
+
+	def parse_if_needed( self ):
+		if self.lines is None:
+			self.lines = []
+			self.parser.parse_lines( self.line_callback )
 
 	def line_callback( self, left, right, status ):
 		"""Receive a callback from the parser saying that we have received a
