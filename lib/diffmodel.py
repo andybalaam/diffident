@@ -45,27 +45,29 @@ class DiffModel:
 
 	def __init__( self, parser ):
 		self.parser = parser
-		self.lines = []
+		self.lines = None
 
-	def get_lines( self, start=0, end=None ):
-		if len( self.lines ) == 0:
+	def parse_if_needed( self ):
+		if self.lines is None:
+			self.lines = []
 			self.parser.parse_lines( self.line_callback )
 
+	def get_lines( self, start=0, end=None ):
+		self.parse_if_needed()
 		if end is None:
 			return self.lines[start:]
 		else:
 			return self.lines[start:end]
 
 	def get_line( self, line_num ):
-		if len( self.lines ) == 0:
-			self.parser.parse_lines( self.line_callback )
-
+		self.parse_if_needed()
 		if 0 <= line_num < len( self.lines ):
 			return self.lines[line_num]
 		else:
 			return None
 
 	def get_num_lines( self ):
+		self.parse_if_needed()
 		return len( self.lines )
 
 	def line_callback( self, left, right, status ):

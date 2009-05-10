@@ -49,6 +49,38 @@ def get_lines():
 	assert_strings_equal( lines[3].right, "line 4 right" )
 	assert( lines[3].status == difflinetypes.DIFFERENT )
 
+def get_line():
+	parser = FakeParser()
+	diffmodel = DiffModel( parser )
+
+	ln = diffmodel.get_line( 0 )
+	assert_strings_equal( ln.left, "line 1" )
+	assert_strings_equal( ln.right, "line 1" )
+	assert( ln.status == difflinetypes.IDENTICAL )
+
+	ln = diffmodel.get_line( 1 )
+	assert_strings_equal( ln.left, "line 2 left" )
+	assert_strings_equal( ln.right, None )
+	assert( ln.status == difflinetypes.REMOVE )
+
+	ln = diffmodel.get_line( 2 )
+	assert_strings_equal( ln.left, None )
+	assert_strings_equal( ln.right, "line 3 right" )
+	assert( ln.status == difflinetypes.ADD )
+
+	ln = diffmodel.get_line( 3 )
+	assert_strings_equal( ln.left, "line 4 left" )
+	assert_strings_equal( ln.right, "line 4 right" )
+	assert( ln.status == difflinetypes.DIFFERENT )
+
+def get_num_lines():
+	parser = FakeParser()
+	diffmodel = DiffModel( parser )
+
+	assert( diffmodel.get_num_lines() == 4 )
+
 def run():
 	get_lines()
+	get_line()
+	get_num_lines()
 
