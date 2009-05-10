@@ -59,6 +59,7 @@ Big:
 
 Later/Never:
 
+- git: highlight whitespace at end of lines, and other git diffisms
 - ncurses: toggle showing line number
 - ncurses: Support different colour schemes: white-on-black, black-on-white?
 - ncurses: Allow specifying tab width
