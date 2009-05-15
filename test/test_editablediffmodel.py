@@ -40,7 +40,7 @@ def _make_static_diffmodel():
 		FakeDiffLine( "line 7 here", "line 7 here", difflinetypes.IDENTICAL ),
 		FakeDiffLine( "line 8 here", "line 8 here", difflinetypes.IDENTICAL ),
 		FakeDiffLine( "line 9 here", "line 9 here", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 10 here", "line 10 here", difflinetypes.IDENTICAL ),
+		FakeDiffLine( "previous 10", "line 10 here", difflinetypes.DIFFERENT ),
 		]
 
 	return staticdiffmodel
@@ -59,18 +59,24 @@ def edit_line():
 	assert_strings_equal( ln.left, "line 3 here" )
 	assert_strings_equal( ln.right, "line 3 here" )
 	assert( ln.status == difflinetypes.IDENTICAL )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
 
 	# The line itself is changed, and marked as EDITED
 	ln = editable.get_line( 3 )
 	assert_strings_equal( ln.left, "line 4 here" )
 	assert_strings_equal( ln.right, "edited" )
-	assert( ln.status == difflinetypes.EDITED_RIGHT )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == True )
 
 	# The line after is unchanged
 	ln = editable.get_line( 4 )
 	assert_strings_equal( ln.left, "line 5 here" )
 	assert_strings_equal( ln.right, "line 5 here different" )
 	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
 
 	# The underlying diffmodel has not been altered
 	new_static_lines = list( ln for ln in staticdiffmodel.get_lines() )
@@ -84,7 +90,7 @@ def edit_several_lines():
 
 	# Change 3 lines
 	editable.edit_lines( 7, 9, directions.LEFT,
-		( "edited 8", "edited 9", "edited 10" ) )
+		( "edited 8", "edited 9", "line 10 here" ) )
 
 	lines = editable.get_lines()
 
@@ -94,19 +100,27 @@ def edit_several_lines():
 	assert_strings_equal( lines[6].left, "line 7 here" )
 	assert_strings_equal( lines[6].right, "line 7 here" )
 	assert( lines[6].status == difflinetypes.IDENTICAL )
+	assert( lines[6].left_edited == False )
+	assert( lines[6].right_edited == False )
 
 	# The relevant lines have been changed
 	assert_strings_equal( lines[7].left, "edited 8" )
 	assert_strings_equal( lines[7].right, "line 8 here" )
-	assert( lines[7].status == difflinetypes.EDITED_LEFT )
+	assert( lines[7].status == difflinetypes.DIFFERENT )
+	assert( lines[7].left_edited == True )
+	assert( lines[7].right_edited == False )
 
 	assert_strings_equal( lines[8].left, "edited 9" )
 	assert_strings_equal( lines[8].right, "line 9 here" )
-	assert( lines[8].status == difflinetypes.EDITED_LEFT )
+	assert( lines[8].status == difflinetypes.DIFFERENT )
+	assert( lines[8].left_edited == True )
+	assert( lines[8].right_edited == False )
 
-	assert_strings_equal( lines[9].left, "edited 10" )
+	assert_strings_equal( lines[9].left, "line 10 here" )
 	assert_strings_equal( lines[9].right, "line 10 here" )
-	assert( lines[9].status == difflinetypes.EDITED_LEFT )
+	assert( lines[9].status == difflinetypes.IDENTICAL )
+	assert( lines[9].left_edited == True )
+	assert( lines[9].right_edited == False )
 
 	# The underlying diffmodel has not been altered
 	new_static_lines = list( ln for ln in staticdiffmodel.get_lines() )
@@ -133,20 +147,28 @@ def edit_both_sides():
 	# The line before is unchanged
 	assert_strings_equal( lines[6].left, "line 7 here" )
 	assert_strings_equal( lines[6].right, "edited 7" )
-	assert( lines[6].status == difflinetypes.EDITED_RIGHT )
+	assert( lines[6].status == difflinetypes.DIFFERENT )
+	assert( lines[6].left_edited == False )
+	assert( lines[6].right_edited == True )
 
 	# The relevant lines have been changed
 	assert_strings_equal( lines[7].left, "edited 8" )
 	assert_strings_equal( lines[7].right, "edited 8 r" )
-	assert( lines[7].status == difflinetypes.EDITED_BOTH )
+	assert( lines[7].status == difflinetypes.DIFFERENT )
+	assert( lines[7].left_edited == True )
+	assert( lines[7].right_edited == True )
 
 	assert_strings_equal( lines[8].left, "edited 9" )
 	assert_strings_equal( lines[8].right, "edited 9" )
-	assert( lines[8].status == difflinetypes.EDITED_BOTH )
+	assert( lines[8].status == difflinetypes.IDENTICAL )
+	assert( lines[8].left_edited == True )
+	assert( lines[8].right_edited == True )
 
 	assert_strings_equal( lines[9].left, "edited 10" )
 	assert_strings_equal( lines[9].right, "edited 10 r" )
-	assert( lines[9].status == difflinetypes.EDITED_BOTH )
+	assert( lines[9].status == difflinetypes.DIFFERENT )
+	assert( lines[9].left_edited == True )
+	assert( lines[9].right_edited == True )
 
 	# The underlying diffmodel has not been altered
 	new_static_lines = list( ln for ln in staticdiffmodel.get_lines() )
@@ -167,11 +189,15 @@ def edit_starts_before():
 
 	assert_strings_equal( lines[0].left, "line 9 here" )
 	assert_strings_equal( lines[0].right, "edited 9" )
-	assert( lines[0].status == difflinetypes.EDITED_RIGHT )
+	assert( lines[0].status == difflinetypes.DIFFERENT )
+	assert( lines[0].left_edited == False )
+	assert( lines[0].right_edited == True )
 
-	assert_strings_equal( lines[1].left, "line 10 here" )
+	assert_strings_equal( lines[1].left, "previous 10" )
 	assert_strings_equal( lines[1].right, "edited 10" )
-	assert( lines[1].status == difflinetypes.EDITED_RIGHT )
+	assert( lines[1].status == difflinetypes.DIFFERENT )
+	assert( lines[1].left_edited == False )
+	assert( lines[1].right_edited == True )
 
 def edit_ends_after():
 	staticdiffmodel = _make_static_diffmodel()
@@ -189,10 +215,14 @@ def edit_ends_after():
 	assert_strings_equal( lines[0].left, "line 6 here" )
 	assert_strings_equal( lines[0].right, "line 6 here" )
 	assert( lines[0].status == difflinetypes.IDENTICAL )
+	assert( lines[0].left_edited == False )
+	assert( lines[0].right_edited == False )
 
 	assert_strings_equal( lines[1].left, "line 7 here" )
 	assert_strings_equal( lines[1].right, "edited 7" )
-	assert( lines[1].status == difflinetypes.EDITED_RIGHT )
+	assert( lines[1].status == difflinetypes.DIFFERENT )
+	assert( lines[1].left_edited == False )
+	assert( lines[1].right_edited == True )
 
 def edit_spans_before_and_after():
 	staticdiffmodel = _make_static_diffmodel()
@@ -210,20 +240,28 @@ def edit_spans_before_and_after():
 
 	assert_strings_equal( lines[0].left, "line 7 here" )
 	assert_strings_equal( lines[0].right, "edited 7" )
-	assert( lines[0].status == difflinetypes.EDITED_RIGHT )
+	assert( lines[0].status == difflinetypes.DIFFERENT )
+	assert( lines[0].left_edited == False )
+	assert( lines[0].right_edited == True )
 
 	assert_strings_equal( lines[1].left, "line 8 here" )
 	assert_strings_equal( lines[1].right, "edited 8" )
-	assert( lines[1].status == difflinetypes.EDITED_RIGHT )
+	assert( lines[1].status == difflinetypes.DIFFERENT )
+	assert( lines[1].left_edited == False )
+	assert( lines[1].right_edited == True )
 
 	assert_strings_equal( lines[2].left, "line 9 here" )
 	assert_strings_equal( lines[2].right, "edited 9" )
-	assert( lines[2].status == difflinetypes.EDITED_RIGHT )
+	assert( lines[2].status == difflinetypes.DIFFERENT )
+	assert( lines[2].left_edited == False )
+	assert( lines[2].right_edited == True )
 
 	ln = editable.get_line( 0 )
 	assert_strings_equal( ln.left, "line 1 here" )
 	assert_strings_equal( ln.right, "edited 1" )
-	assert( ln.status == difflinetypes.EDITED_RIGHT )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == True )
 
 def edit_doesnt_touch():
 	staticdiffmodel = _make_static_diffmodel()
@@ -238,14 +276,18 @@ def edit_doesnt_touch():
 	# Just ask for line 9
 	lines = editable.get_lines( 9, 10 )
 
-	assert_strings_equal( lines[0].left, "line 10 here" )
+	assert_strings_equal( lines[0].left, "previous 10" )
 	assert_strings_equal( lines[0].right, "line 10 here" )
-	assert( lines[0].status == difflinetypes.IDENTICAL )
+	assert( lines[0].status == difflinetypes.DIFFERENT )
+	assert( lines[0].left_edited == False )
+	assert( lines[0].right_edited == False )
 
 	ln = editable.get_line( 8 )
 	assert_strings_equal( ln.left, "line 9 here" )
 	assert_strings_equal( ln.right, "line 9 here" )
 	assert( ln.status == difflinetypes.IDENTICAL )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
 
 def several_edits():
 	staticdiffmodel = _make_static_diffmodel()
@@ -268,19 +310,27 @@ def several_edits():
 
 	assert_strings_equal( lines[0].left, "line 1 here" )
 	assert_strings_equal( lines[0].right, "edited 1a" )
-	assert( lines[0].status == difflinetypes.EDITED_RIGHT )
+	assert( lines[0].status == difflinetypes.DIFFERENT )
+	assert( lines[0].left_edited == False )
+	assert( lines[0].right_edited == True )
 
 	assert_strings_equal( lines[1].left, "line 2 here" )
 	assert_strings_equal( lines[1].right, "edited 2b" )
-	assert( lines[1].status == difflinetypes.EDITED_RIGHT )
+	assert( lines[1].status == difflinetypes.DIFFERENT )
+	assert( lines[1].left_edited == False )
+	assert( lines[1].right_edited == True )
 
 	assert_strings_equal( lines[2].left, "line 3 here" )
 	assert_strings_equal( lines[2].right, "edited 3c" )
-	assert( lines[2].status == difflinetypes.EDITED_RIGHT )
+	assert( lines[2].status == difflinetypes.DIFFERENT )
+	assert( lines[2].left_edited == False )
+	assert( lines[2].right_edited == True )
 
 	assert_strings_equal( lines[3].left, "line 4 here" )
 	assert_strings_equal( lines[3].right, "edited 4c" )
-	assert( lines[3].status == difflinetypes.EDITED_RIGHT )
+	assert( lines[3].status == difflinetypes.DIFFERENT )
+	assert( lines[3].left_edited == False )
+	assert( lines[3].right_edited == True )
 
 def delete_line():
 	staticdiffmodel = _make_static_diffmodel()
@@ -296,10 +346,14 @@ def delete_line():
 	assert_strings_equal( lines[0].left, "line 1 here" )
 	assert_strings_equal( lines[0].right, "line 1 here" )
 	assert( lines[0].status == difflinetypes.IDENTICAL )
+	assert( lines[0].left_edited == False )
+	assert( lines[0].right_edited == False )
 
 	assert_strings_equal( lines[1].left, "line 2 here" )
 	assert_strings_equal( lines[1].right, None )
-	assert( lines[1].status == difflinetypes.EDITED_RIGHT )
+	assert( lines[1].status == difflinetypes.DIFFERENT )
+	assert( lines[1].left_edited == False )
+	assert( lines[1].right_edited == True )
 
 def run():
 	edit_line()

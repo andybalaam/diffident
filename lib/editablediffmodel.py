@@ -27,12 +27,10 @@ class EditableDiffModel( object ):
 			self.end_line = end_line
 			if side == directions.LEFT:
 				self.set_side = self._set_left_side
-				self.other_side_edited = difflinetypes.EDITED_RIGHT
-				self.this_side_edited  = difflinetypes.EDITED_LEFT
+				self.set_side_edited = self._set_left_side_edited
 			else:
 				self.set_side = self._set_right_side
-				self.other_side_edited = difflinetypes.EDITED_LEFT
-				self.this_side_edited  = difflinetypes.EDITED_RIGHT
+				self.set_side_edited = self._set_right_side_edited
 			self.side = side
 			self.new_strs = new_strs
 
@@ -69,10 +67,11 @@ class EditableDiffModel( object ):
 
 		def adjust_line( self, toadj, new_str ):
 			self.set_side( toadj, new_str )
-			if toadj.status == self.other_side_edited:
-				toadj.status = difflinetypes.EDITED_BOTH
+			self.set_side_edited( toadj )
+			if toadj.left == toadj.right:
+				toadj.status = difflinetypes.IDENTICAL
 			else:
-				toadj.status = self.this_side_edited
+				toadj.status = difflinetypes.DIFFERENT
 
 		def do_single_line( self, line_num, ln ):
 			if self.start_line <= line_num < self.end_line:
@@ -82,8 +81,14 @@ class EditableDiffModel( object ):
 		def _set_left_side( self, line, strtoset ):
 			line.left = strtoset
 
+		def _set_left_side_edited( self, line ):
+			line.left_edited = True
+
 		def _set_right_side( self, line, strtoset ):
 			line.right = strtoset
+
+		def _set_right_side_edited( self, line ):
+			line.right_edited = True
 
 	def __init__( self, staticdiffmodel ):
 		self.staticdiffmodel = staticdiffmodel
@@ -94,6 +99,11 @@ class EditableDiffModel( object ):
 	def get_lines( self, start=0, end=None ):
 		lines = self.staticdiffmodel.get_lines( start, end )
 
+		for line in lines:
+			if line is not None:
+				line.left_edited = False
+				line.right_edited = False
+
 		for edit in self.edits:
 			edit.do_lines( start, end, lines )
 
@@ -101,8 +111,13 @@ class EditableDiffModel( object ):
 
 	def get_line( self, line_num ):
 		ln = self.staticdiffmodel.get_line( line_num )
+		if ln is not None:
+			ln.left_edited = False
+			ln.right_edited = False
+
 		for edit in self.edits:
 			edit.do_single_line( line_num, ln )
+
 		return ln
 
 	def get_num_lines( self ):
