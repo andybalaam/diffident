@@ -388,6 +388,39 @@ def delete_line():
 
 	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
 
+def edit_doesnt_change_anything():
+	staticdiffmodel = _make_static_diffmodel()
+	old_static_lines = list( ln.clone() for ln in staticdiffmodel.get_lines() )
+
+	editable = EditableDiffModel( staticdiffmodel )
+
+	# Make several overlapping changes
+	editable.edit_lines( 0, 2, directions.LEFT,
+		( "line 1 here", "edited 2", "line 3 here" ) )
+
+	# Ask for lines 1 to 3
+	lines = editable.get_lines( 0, 3 )
+
+	assert_strings_equal( lines[0].left, "line 1 here" )
+	assert_strings_equal( lines[0].right, "line 1 here" )
+	assert( lines[0].status == difflinetypes.IDENTICAL )
+	assert( lines[0].left_edited == False )
+	assert( lines[0].right_edited == False )
+
+	assert_strings_equal( lines[1].left, "edited 2" )
+	assert_strings_equal( lines[1].right, "line 2 here" )
+	assert( lines[1].status == difflinetypes.DIFFERENT )
+	assert( lines[1].left_edited == True )
+	assert( lines[1].right_edited == False )
+
+	assert_strings_equal( lines[2].left, "line 3 here" )
+	assert_strings_equal( lines[2].right, "line 3 here" )
+	assert( lines[2].status == difflinetypes.IDENTICAL )
+	assert( lines[2].left_edited == False )
+	assert( lines[2].right_edited == False )
+
+	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
+
 def run():
 	edit_line()
 	edit_several_lines()
@@ -398,6 +431,7 @@ def run():
 	edit_spans_before_and_after()
 	edit_doesnt_touch()
 	several_edits()
+	edit_doesnt_change_anything()
 
 	#add_line() # TODO: requires us to shift all subsequent lines down
 

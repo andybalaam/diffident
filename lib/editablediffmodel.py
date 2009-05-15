@@ -26,9 +26,11 @@ class EditableDiffModel( object ):
 			self.start_line = start_line
 			self.end_line = end_line
 			if side == directions.LEFT:
+				self.get_side = lambda line: line.left
 				self.set_side = self._set_left_side
 				self.set_side_edited = self._set_left_side_edited
 			else:
+				self.get_side = lambda line: line.right
 				self.set_side = self._set_right_side
 				self.set_side_edited = self._set_right_side_edited
 			self.side = side
@@ -63,9 +65,13 @@ class EditableDiffModel( object ):
 			lines_to_add = []
 			try:
 				for new_str in new_iter:
-					newline = toadj_iter.next().clone()
-					self.adjust_line( newline, new_str )
-					lines_to_add.append( newline )
+					oldline = toadj_iter.next()
+					if self.get_side( oldline ) != new_str:
+						newline = oldline.clone()
+						self.adjust_line( newline, new_str )
+						lines_to_add.append( newline )
+					else:
+						lines_to_add.append( oldline )
 			except StopIteration:
 				pass # If we ran our of toadj_iter's, that means we
 				     # have reached the end of the lines the user cares

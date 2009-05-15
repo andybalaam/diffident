@@ -5,7 +5,7 @@ Next:
 + editablediffmodel: modified lines are returned when requested
 + editablediffmodel: EDITED_* status works
 + ncurses: Can copy from one side to the other
-- editablediffmodel: an edit is not an edit if it doesn't change the line
++ editablediffmodel: an edit is not an edit if it doesn't change the line
 - editablediffmodel: can save modified files
 - editablediffmodel: can add lines
 - editablediffmodel: undo/redo works
