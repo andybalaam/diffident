@@ -38,6 +38,7 @@ HELP_MESSAGES = [
 	( _("Page up/down"), _(",/. or PageUp/Down") ),
 	( _("Select page up/down"), _("</>") ),
 	( _("Scroll left/right"), _("z/x") ),
+	( _("Copy left/right"), _("[/]") ),
 ]
 
 COPYRIGHT_MESSAGES = [
@@ -166,34 +167,47 @@ class NCursesView( object ):
 
 		if key == ord( "q" ): # Quit
 			keep_going = False
+
 		elif key == ord( "h" ) or key == curses.KEY_LEFT:
 			status_line = self.move_cursor( directions.LEFT, False )
 		elif key == ord( "l" ) or key == curses.KEY_RIGHT:
 			status_line = self.move_cursor( directions.RIGHT, False )
+
 		elif key == ord( "j" ) or key == curses.KEY_DOWN:
 			status_line = self.move_cursor( directions.DOWN, False )
 		elif key == ord( "k" ) or key == curses.KEY_UP:
 			status_line = self.move_cursor( directions.UP, False )
+
+		elif key == ord( "[" ): # Copy lines right to left
+			status_line = self.copy_lines( directions.LEFT )
+		elif key == ord( "]" ): # Copy lines left to right
+			status_line = self.copy_lines( directions.RIGHT )
+
 		elif key == ord( "J" ): # Extend selection down
 			status_line = self.move_cursor( directions.DOWN, True )
 		elif key == ord( "K" ): # Extend selection up
 			status_line = self.move_cursor( directions.UP, True )
+
 		elif key == ord( "." ) or key == curses.KEY_NPAGE: # Page down
 			status_line = self.change_page( 1, False )
 		elif key == ord( "," ) or key == curses.KEY_PPAGE: # Page up
 			status_line = self.change_page( -1, False )
+
 		elif key == ord( ">" ): # Extend selection 1 page down
 			status_line = self.change_page( 1, True )
 		elif key == ord( "<" ): # Extend selection 1 page up
 			status_line = self.change_page( -1, True )
+
 		elif key == ord( "n" ) or key == curses.KEY_F8: # Next difference
 			status_line = self.next_difference( 1 )
 		elif key == ord( "p" ) or key == curses.KEY_F7: # Previous difference
 			status_line = self.next_difference( -1 )
+
 		elif key == ord( "z" ): # Scroll left
 			status_line = self.scroll_horizontal( -1 )
 		elif key == ord( "x" ): # Scroll right
 			status_line = self.scroll_horizontal( 1 )
+
 		elif key == ord( "H" ): # Help
 			status_line = self.show_help( wait_for_input )
 
@@ -273,6 +287,38 @@ class NCursesView( object ):
 		# None of the lines were long enough, so we are
 		# scrolled too far.
 		return True
+
+	def copy_lines( self, side_to ):
+		first = self.mycursor.start_line_num
+		last = self.mycursor.line_num
+
+		if first > last:
+			last, first = first, last
+
+		strs = self.get_lr_strs( self.opposite_lr( side_to ), first, last )
+		self.diffmodel.edit_lines( first + self.top_line, last + self.top_line,
+			side_to, strs )
+
+		self.set_top_line( self.top_line )
+		self.draw_screen()
+
+	def get_lr_strs( self, side_from, first, last ):
+		if side_from == directions.LEFT:
+			get_str = lambda line: line.left
+		else:
+			get_str = lambda line: line.right
+
+		lines = self.lines[ first: last + 1 ]
+		return list( get_str( line ) for line in lines )
+
+	def opposite_lr( self, side ):
+		if side == directions.LEFT:
+			return directions.RIGHT
+		elif side == directions.RIGHT:
+			return directions.LEFT
+		else:
+			raise Exception( "Expected either LEFT or RIGHT.  Got '%s'."
+				% str( side ) )
 
 	def move_cursor( self, dr, shift_pressed ):
 		# TODO: don't redraw whole screen when scrolling?
@@ -485,6 +531,8 @@ class NCursesView( object ):
 			4, curses.COLOR_RED, -1 )
 		self.CP_MISSING = self.create_color_pair(
 			5, curses.COLOR_MAGENTA, -1 )
+		self.CP_EDITED = self.create_color_pair(
+			6, curses.COLOR_CYAN, -1 )
 
 	def create_color_pair( self, pair_num, fore, back ):
 		curses.init_pair( pair_num, fore, back )
@@ -555,6 +603,14 @@ class NCursesView( object ):
 		else:
 			raise Exception( "Unknown line type %d." % ln.status )
 
+		if ln.left_edited:
+			left_colour_pair = self.CP_EDITED
+			mid_colour_pair = self.CP_EDITED | curses.A_REVERSE
+
+		if ln.right_edited:
+			right_colour_pair = self.CP_EDITED
+			mid_colour_pair = self.CP_EDITED | curses.A_REVERSE
+
 		if self.mycursor.is_line_selected( line_num ):
 			if self.mycursor.lr == directions.LEFT:
 				left_colour_pair  |= curses.A_REVERSE
@@ -590,6 +646,8 @@ class NCursesView( object ):
 			attr_str = "r" # Remove
 		elif attr == 5:
 			attr_str = "m" # Missing
+		elif attr == 6:
+			attr_str = "e" # Edited
 		elif attr == 1025:
 			attr_str = "ni" # Normal-Inverse
 		elif attr == 1026:
@@ -600,6 +658,8 @@ class NCursesView( object ):
 			attr_str = "ri"
 		elif attr == 1029:
 			attr_str = "mi"
+		elif attr == 1030:
+			attr_str = "ei"
 		else:
 			attr_str = str( attr )
 

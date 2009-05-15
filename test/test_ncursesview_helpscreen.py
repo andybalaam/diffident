@@ -53,7 +53,7 @@ def normal():
                             Page up/down - ,/. or PageUp/Down                   
                      Select page up/down - </>                                  
                        Scroll left/right - z/x                                  
-                                                                                
+                         Copy left/right - [/]                                  
                                                                                 
                                                                                 
                                                                                 

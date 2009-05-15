@@ -32,24 +32,58 @@ from lib.listview import ListView # TODO: remove this
 def _make_static_diffmodel():
 	staticdiffmodel = FakeDiffModel()
 	staticdiffmodel.lines = [
-		FakeDiffLine( "line 1 here", "line 1 here", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 2 here", "line 2 here", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 3 here", "line 3 here", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 4 here", "line 4 here", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 5 here", "line 5 here different",
+		DiffLine( "line 1 here", "line 1 here", difflinetypes.IDENTICAL ),
+		DiffLine( "line 2 here", "line 2 here", difflinetypes.IDENTICAL ),
+		DiffLine( "line 3 here", "line 3 here", difflinetypes.IDENTICAL ),
+		DiffLine( "line 4 here", "line 4 here", difflinetypes.IDENTICAL ),
+		DiffLine( "line 5 here", "line 5 here different",
 			difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 6 here", "line 6 here", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 7 here", "line 7 here", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 8 here", "line 8 here", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 9 here", "line 9 here", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "previous 10", "line 10 here", difflinetypes.DIFFERENT ),
+		DiffLine( "line 6 here", "line 6 here", difflinetypes.IDENTICAL ),
+		DiffLine( "line 7 here", "line 7 here", difflinetypes.IDENTICAL ),
+		DiffLine( "line 8 here", "line 8 here", difflinetypes.IDENTICAL ),
+		DiffLine( "line 9 here", "line 9 here", difflinetypes.IDENTICAL ),
+		DiffLine( "previous 10", "line 10 here", difflinetypes.DIFFERENT ),
 		]
 
 	return staticdiffmodel
 
+def _print_lines_list( lst ):
+	for line in lst:
+		print line
+
+def _lines_lists_equal( lst1, lst2 ):
+	if len( lst1 ) != len( lst2 ):
+		return False
+
+	for line1, line2 in itertools.izip( lst1, lst2 ):
+		if line1.left != line2.left:
+			return False
+		if line1.right != line2.right:
+			return False
+		if line1.status != line2.status:
+			return False
+		if "left_edited" in line1.__dict__:
+			if "left_edited" not in line2.__dict__:
+				return False
+			if line1.left_edited != line2.left_edited:
+				return False
+		if "right_edited" in line1.__dict__:
+			if "right_edited" not in line2.__dict__:
+				return False
+			if line1.right_edited != line2.right_edited:
+				return False
+	return True
+
+def assert_lines_lists_equal( lst1, lst2 ):
+	if not _lines_lists_equal( lst1, lst2 ):
+		_print_lines_list( lst1 )
+		print "Differs from:"
+		_print_lines_list( lst2 )
+		raise AssertionError()
+
 def edit_line():
 	staticdiffmodel = _make_static_diffmodel()
-	old_static_lines = list( ln for ln in staticdiffmodel.get_lines() )
+	old_static_lines = list( ln.clone() for ln in staticdiffmodel.get_lines() )
 
 	editable = EditableDiffModel( staticdiffmodel )
 
@@ -81,12 +115,11 @@ def edit_line():
 	assert( ln.right_edited == False )
 
 	# The underlying diffmodel has not been altered
-	new_static_lines = list( ln for ln in staticdiffmodel.get_lines() )
-	assert( old_static_lines == new_static_lines )
+	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
 
 def edit_several_lines():
 	staticdiffmodel = _make_static_diffmodel()
-	old_static_lines = list( ln for ln in staticdiffmodel.get_lines() )
+	old_static_lines = list( ln.clone() for ln in staticdiffmodel.get_lines() )
 
 	editable = EditableDiffModel( staticdiffmodel )
 
@@ -125,12 +158,11 @@ def edit_several_lines():
 	assert( lines[9].right_edited == False )
 
 	# The underlying diffmodel has not been altered
-	new_static_lines = list( ln for ln in staticdiffmodel.get_lines() )
-	assert( old_static_lines == new_static_lines )
+	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
 
 def edit_both_sides():
 	staticdiffmodel = _make_static_diffmodel()
-	old_static_lines = list( ln for ln in staticdiffmodel.get_lines() )
+	old_static_lines = list( ln.clone() for ln in staticdiffmodel.get_lines() )
 
 	editable = EditableDiffModel( staticdiffmodel )
 
@@ -173,12 +205,10 @@ def edit_both_sides():
 	assert( lines[9].right_edited == True )
 
 	# The underlying diffmodel has not been altered
-	new_static_lines = list( ln for ln in staticdiffmodel.get_lines() )
-	assert( old_static_lines == new_static_lines )
+	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
 
 def edit_starts_before():
 	staticdiffmodel = _make_static_diffmodel()
-	old_static_lines = list( ln for ln in staticdiffmodel.get_lines() )
 
 	editable = EditableDiffModel( staticdiffmodel )
 
@@ -203,7 +233,6 @@ def edit_starts_before():
 
 def edit_ends_after():
 	staticdiffmodel = _make_static_diffmodel()
-	old_static_lines = list( ln for ln in staticdiffmodel.get_lines() )
 
 	editable = EditableDiffModel( staticdiffmodel )
 
@@ -228,7 +257,6 @@ def edit_ends_after():
 
 def edit_spans_before_and_after():
 	staticdiffmodel = _make_static_diffmodel()
-	old_static_lines = list( ln for ln in staticdiffmodel.get_lines() )
 
 	editable = EditableDiffModel( staticdiffmodel )
 
@@ -267,7 +295,6 @@ def edit_spans_before_and_after():
 
 def edit_doesnt_touch():
 	staticdiffmodel = _make_static_diffmodel()
-	old_static_lines = list( ln for ln in staticdiffmodel.get_lines() )
 
 	editable = EditableDiffModel( staticdiffmodel )
 
@@ -293,7 +320,7 @@ def edit_doesnt_touch():
 
 def several_edits():
 	staticdiffmodel = _make_static_diffmodel()
-	old_static_lines = list( ln for ln in staticdiffmodel.get_lines() )
+	old_static_lines = list( ln.clone() for ln in staticdiffmodel.get_lines() )
 
 	editable = EditableDiffModel( staticdiffmodel )
 
@@ -334,9 +361,11 @@ def several_edits():
 	assert( lines[3].left_edited == False )
 	assert( lines[3].right_edited == True )
 
+	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
+
 def delete_line():
 	staticdiffmodel = _make_static_diffmodel()
-	old_static_lines = list( ln for ln in staticdiffmodel.get_lines() )
+	old_static_lines = list( ln.clone() for ln in staticdiffmodel.get_lines() )
 
 	editable = EditableDiffModel( staticdiffmodel )
 
@@ -356,6 +385,8 @@ def delete_line():
 	assert( lines[1].status == difflinetypes.DIFFERENT )
 	assert( lines[1].left_edited == False )
 	assert( lines[1].right_edited == True )
+
+	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
 
 def run():
 	edit_line()

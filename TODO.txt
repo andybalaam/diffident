@@ -4,10 +4,11 @@ Next:
 + editablediffmodel: create class and tests
 + editablediffmodel: modified lines are returned when requested
 + editablediffmodel: EDITED_* status works
++ ncurses: Can copy from one side to the other
+- editablediffmodel: an edit is not an edit if it doesn't change the line
+- editablediffmodel: can save modified files
 - editablediffmodel: can add lines
 - editablediffmodel: undo/redo works
-- editablediffmodel: can save modified files
-- ncurses: Can copy from one side to the other *
 - ncurses: Can see long lines at bottom? (not short lines)
 - ncurses: Long lines at bottom are scrollable
 - ncurses: Can edit lines

@@ -35,35 +35,47 @@ class EditableDiffModel( object ):
 			self.new_strs = new_strs
 
 		def do_lines( self, start, end, lines_to_adjust ):
-			# If this edit is relevant to the lines required
+			# If this edit is not relevant to the lines required, exit
 			if end is not None and self.start_line >= end:
 				return
 			elif self.end_line <= start:
 				return
 
+			# Adjust our start and end point to be relative to the
+			# start of this array of lines
 			adj_sta = self.start_line - start
 			adj_end = self.end_line - start
 
+			# Get an iterator to the first affected line in the supplied
+			# line array, and an iterator to the first relevant string in
+			# this edit.
 			toadj_iter = lines_to_adjust.__iter__()
 			new_iter = self.new_strs.__iter__()
 
-			start_pt = self.start_line - start
-			if start_pt > 0:
-				for i in xrange( start_pt ):
+			if adj_sta > 0:
+				for i in xrange( adj_sta ):
 					toadj_iter.next()
-			elif start_pt < 0:
-				for i in xrange( -start_pt ):
+			elif adj_sta < 0:
+				for i in xrange( -adj_sta ):
 					new_iter.next()
 
+			# Make a list of the modifed lines
+			lines_to_add = []
 			try:
 				for new_str in new_iter:
-					toadj = toadj_iter.next()
-					self.adjust_line( toadj, new_str )
+					newline = toadj_iter.next().clone()
+					self.adjust_line( newline, new_str )
+					lines_to_add.append( newline )
 			except StopIteration:
 				pass # If we ran our of toadj_iter's, that means we
 				     # have reached the end of the lines the user cares
 				     # about, but this edit actually goes on beyond that.
 				     # We stop here since the user doesn't care!
+
+			# Replace the old lines with the modified ones
+			if adj_sta < 0:
+				adj_sta = 0
+			lines_to_adjust[adj_sta:adj_end] = lines_to_add
 
 		def adjust_line( self, toadj, new_str ):
 			self.set_side( toadj, new_str )
@@ -76,7 +88,9 @@ class EditableDiffModel( object ):
 		def do_single_line( self, line_num, ln ):
 			if self.start_line <= line_num < self.end_line:
 				relative_line_num = line_num - self.start_line
+				ln = ln.clone()
 				self.adjust_line( ln, self.new_strs[relative_line_num] )
+			return ln
 
 		def _set_left_side( self, line, strtoset ):
 			line.left = strtoset
@@ -99,11 +113,6 @@ class EditableDiffModel( object ):
 	def get_lines( self, start=0, end=None ):
 		lines = self.staticdiffmodel.get_lines( start, end )
 
-		for line in lines:
-			if line is not None:
-				line.left_edited = False
-				line.right_edited = False
-
 		for edit in self.edits:
 			edit.do_lines( start, end, lines )
 
@@ -111,12 +120,9 @@ class EditableDiffModel( object ):
 
 	def get_line( self, line_num ):
 		ln = self.staticdiffmodel.get_line( line_num )
-		if ln is not None:
-			ln.left_edited = False
-			ln.right_edited = False
 
 		for edit in self.edits:
-			edit.do_single_line( line_num, ln )
+			ln = edit.do_single_line( line_num, ln )
 
 		return ln
 

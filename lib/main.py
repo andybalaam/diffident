@@ -19,6 +19,7 @@ import os
 
 from lib.unifieddiffparser import UnifiedDiffParser
 from lib.diffmodel import DiffModel
+from lib.editablediffmodel import EditableDiffModel
 from lib.listview import ListView
 from lib.ncursesview import NCursesView
 
@@ -37,8 +38,9 @@ def diff_2_files( filename1, filename2, launch_viewer ):
 
 	diffparser = UnifiedDiffParser( left_file, diff_file )
 	diffmodel = DiffModel( diffparser )
+	editablediffmodel = EditableDiffModel( diffmodel )
 
-	launch_viewer( diffmodel, filename1, filename2 )
+	launch_viewer( editablediffmodel, filename1, filename2 )
 
 	left_file.close()
 	diff_file.close()

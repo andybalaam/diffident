@@ -21,9 +21,6 @@ class difflinetypes( object ):
 	IDENTICAL    = 1
 	ADD          = 2
 	REMOVE       = 3
-	EDITED_LEFT  = 4
-	EDITED_RIGHT = 5
-	EDITED_BOTH  = 6
 
 class directions( object ):
 	LEFT  = 0

@@ -18,7 +18,8 @@
 class DiffLine( object ):
 	"""Abstract representation of a line in a diff."""
 
-	def __init__( self, left, right, status ):
+	def __init__( self, left, right, status,
+			left_edited=False, right_edited=False ):
 		"""Create a DiffLine.
 		- left is the line in the left file, or
 		  None if this is an ADD line.
@@ -30,8 +31,8 @@ class DiffLine( object ):
 		self.left = left
 		self.right = right
 		self.status = status
-		self.left_edited = False
-		self.right_edited = False
+		self.left_edited = left_edited
+		self.right_edited = right_edited
 
 	def __repr__( self ):
 		if self.left_edited:
@@ -46,9 +47,8 @@ class DiffLine( object ):
 			self.status, self.right, red )
 
 	def clone( self ):
-		ret = DiffLine( self.left, self.right, self.status )
-		ret.left_edited = self.left_edited
-		ret.right_edited = self.right_edited
+		ret = DiffLine( self.left, self.right, self.status,
+			self.left_edited, self.right_edited )
 
 		return ret
 
