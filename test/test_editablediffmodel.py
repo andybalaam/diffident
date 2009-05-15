@@ -15,9 +15,11 @@
 #   with this program; if not, write to the Free Software Foundation, Inc.,
 #   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+import itertools
+
 from asserts import assert_strings_equal
 
-from testlib.fakediffline import FakeDiffLine
+from lib.diffline import DiffLine
 from testlib.fakediffmodel import FakeDiffModel
 
 from lib.constants import difflinetypes

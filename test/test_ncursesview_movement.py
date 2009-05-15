@@ -19,7 +19,7 @@ import curses
 
 from test.asserts import assert_strings_equal
 
-from testlib.fakediffline import FakeDiffLine
+from lib.diffline import DiffLine
 from testlib.fakediffmodel import FakeDiffModel
 
 from lib.constants import difflinetypes
@@ -28,12 +28,12 @@ from lib.ncursesview import NCursesView
 def _make_view():
 	diffmodel = FakeDiffModel()
 	diffmodel.lines = [
-		FakeDiffLine( "line 1 here", "line 1 here", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 2 here", "line 2 here", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 3 here", "line 3 here", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 4 here", "line 4 here", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 5 here", "line 5 here", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 6 here", "line 6 here", difflinetypes.IDENTICAL ),
+		DiffLine( "line 1 here", "line 1 here", difflinetypes.IDENTICAL ),
+		DiffLine( "line 2 here", "line 2 here", difflinetypes.IDENTICAL ),
+		DiffLine( "line 3 here", "line 3 here", difflinetypes.IDENTICAL ),
+		DiffLine( "line 4 here", "line 4 here", difflinetypes.IDENTICAL ),
+		DiffLine( "line 5 here", "line 5 here", difflinetypes.IDENTICAL ),
+		DiffLine( "line 6 here", "line 6 here", difflinetypes.IDENTICAL ),
 		]
 
 	view = NCursesView( diffmodel )
@@ -124,8 +124,8 @@ def down_twice():
 def down_emptyfile():
 	diffmodel = FakeDiffModel()
 	diffmodel.lines = [
-		FakeDiffLine( None, "line 1 here", difflinetypes.ADD ),
-		FakeDiffLine( None, "line 2 here", difflinetypes.ADD ),
+		DiffLine( None, "line 1 here", difflinetypes.ADD ),
+		DiffLine( None, "line 2 here", difflinetypes.ADD ),
 		]
 
 	view = NCursesView( diffmodel )
@@ -306,13 +306,13 @@ line 3 here          line 3 here
 def _make_wide_view():
 	diffmodel = FakeDiffModel()
 	diffmodel.lines = [
-		FakeDiffLine( "0-23456789abcdef", "0-23456789abcdef", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "1-23456789abcdef", "1-23456789abcdef plus extr",
+		DiffLine( "0-23456789abcdef", "0-23456789abcdef", difflinetypes.IDENTICAL ),
+		DiffLine( "1-23456789abcdef", "1-23456789abcdef plus extr",
 			difflinetypes.DIFFERENT ),
-		FakeDiffLine( None, "2-23456789abcdef plus extr", difflinetypes.ADD ),
-		FakeDiffLine( "3-23456789abcdef", None, difflinetypes.REMOVE ),
-		FakeDiffLine( "4-23456789abcdef", "4-23456789abcdef", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "5-23456789abcdef", "5-23456789abcdef plus ext", difflinetypes.DIFFERENT ),
+		DiffLine( None, "2-23456789abcdef plus extr", difflinetypes.ADD ),
+		DiffLine( "3-23456789abcdef", None, difflinetypes.REMOVE ),
+		DiffLine( "4-23456789abcdef", "4-23456789abcdef", difflinetypes.IDENTICAL ),
+		DiffLine( "5-23456789abcdef", "5-23456789abcdef plus ext", difflinetypes.DIFFERENT ),
 		]
 
 	view = NCursesView( diffmodel )
@@ -406,8 +406,8 @@ def page_right_page_down_shorter_lines():
 def _make_short_diff_view():
 	diffmodel = FakeDiffModel()
 	diffmodel.lines = [
-		FakeDiffLine( "line 01", "line 01", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 02", "line 02", difflinetypes.IDENTICAL ),
+		DiffLine( "line 01", "line 01", difflinetypes.IDENTICAL ),
+		DiffLine( "line 02", "line 02", difflinetypes.IDENTICAL ),
 	]
 
 	view = NCursesView( diffmodel )

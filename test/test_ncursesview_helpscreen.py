@@ -19,7 +19,7 @@ import curses
 
 from test.asserts import assert_strings_equal
 
-from testlib.fakediffline import FakeDiffLine
+from lib.diffline import DiffLine
 from testlib.fakediffmodel import FakeDiffModel
 
 from lib.constants import difflinetypes
@@ -28,7 +28,7 @@ from lib.ncursesview import NCursesView
 def _make_view():
 	diffmodel = FakeDiffModel()
 	diffmodel.lines = [
-		FakeDiffLine( "line 1 here", "line 1 here", difflinetypes.IDENTICAL ),
+		DiffLine( "line 1 here", "line 1 here", difflinetypes.IDENTICAL ),
 	]
 
 	view = NCursesView( diffmodel )

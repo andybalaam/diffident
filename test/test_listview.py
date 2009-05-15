@@ -17,7 +17,7 @@
 
 from test.asserts import assert_strings_equal
 
-from testlib.fakediffline import FakeDiffLine
+from lib.diffline import DiffLine
 from testlib.fakediffmodel import FakeDiffModel
 
 from lib.constants import difflinetypes
@@ -27,8 +27,8 @@ def same():
 
 	diffmodel = FakeDiffModel()
 	diffmodel.lines = [
-		FakeDiffLine( "line 1 here", "line 1 here", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 2 here", "line 2 here", difflinetypes.IDENTICAL ),
+		DiffLine( "line 1 here", "line 1 here", difflinetypes.IDENTICAL ),
+		DiffLine( "line 2 here", "line 2 here", difflinetypes.IDENTICAL ),
 		]
 
 	listview = ListView( diffmodel )
@@ -45,9 +45,9 @@ def differences():
 
 	diffmodel = FakeDiffModel()
 	diffmodel.lines = [
-		FakeDiffLine( "line 1 here", "line 1 here different",
+		DiffLine( "line 1 here", "line 1 here different",
 			difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 2 here", "line 2 here different",
+		DiffLine( "line 2 here", "line 2 here different",
 			difflinetypes.DIFFERENT ),
 		]
 
@@ -71,8 +71,8 @@ def adds():
 
 	diffmodel = FakeDiffModel()
 	diffmodel.lines = [
-		FakeDiffLine( None, "line 1 here", difflinetypes.ADD ),
-		FakeDiffLine( None, "line 2 here", difflinetypes.ADD ),
+		DiffLine( None, "line 1 here", difflinetypes.ADD ),
+		DiffLine( None, "line 2 here", difflinetypes.ADD ),
 		]
 
 	listview = ListView( diffmodel )
@@ -89,8 +89,8 @@ def removes():
 
 	diffmodel = FakeDiffModel()
 	diffmodel.lines = [
-		FakeDiffLine( "line 1 here", None, difflinetypes.REMOVE ),
-		FakeDiffLine( "line 2 here", None, difflinetypes.REMOVE ),
+		DiffLine( "line 1 here", None, difflinetypes.REMOVE ),
+		DiffLine( "line 2 here", None, difflinetypes.REMOVE ),
 		]
 
 	listview = ListView( diffmodel )

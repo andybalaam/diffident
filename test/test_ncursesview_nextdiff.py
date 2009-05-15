@@ -19,7 +19,7 @@ import curses
 
 from test.asserts import assert_strings_equal
 
-from testlib.fakediffline import FakeDiffLine
+from lib.diffline import DiffLine
 from testlib.fakediffmodel import FakeDiffModel
 
 from lib.constants import difflinetypes
@@ -28,21 +28,21 @@ from lib.ncursesview import NCursesView
 def _make_view():
 	diffmodel = FakeDiffModel()
 	diffmodel.lines = [
-		FakeDiffLine( "line 01", "line 01", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 02", "line 02", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 03", "line 03", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 04", "line 04", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 05", "line 05", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 06", "line 06", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 07", "line 07", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 08", "line 08", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 09", "line 09", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 10", "line 10 different", difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 11", "line 11 different", difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 12", "line 12", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 13", "line 13", difflinetypes.IDENTICAL ),
-		FakeDiffLine( None,      "line 14", difflinetypes.ADD ),
-		FakeDiffLine( None,      "line 15", difflinetypes.ADD ),
+		DiffLine( "line 01", "line 01", difflinetypes.IDENTICAL ),
+		DiffLine( "line 02", "line 02", difflinetypes.IDENTICAL ),
+		DiffLine( "line 03", "line 03", difflinetypes.IDENTICAL ),
+		DiffLine( "line 04", "line 04", difflinetypes.IDENTICAL ),
+		DiffLine( "line 05", "line 05", difflinetypes.IDENTICAL ),
+		DiffLine( "line 06", "line 06", difflinetypes.IDENTICAL ),
+		DiffLine( "line 07", "line 07", difflinetypes.IDENTICAL ),
+		DiffLine( "line 08", "line 08", difflinetypes.IDENTICAL ),
+		DiffLine( "line 09", "line 09", difflinetypes.IDENTICAL ),
+		DiffLine( "line 10", "line 10 different", difflinetypes.DIFFERENT ),
+		DiffLine( "line 11", "line 11 different", difflinetypes.DIFFERENT ),
+		DiffLine( "line 12", "line 12", difflinetypes.IDENTICAL ),
+		DiffLine( "line 13", "line 13", difflinetypes.IDENTICAL ),
+		DiffLine( None,      "line 14", difflinetypes.ADD ),
+		DiffLine( None,      "line 15", difflinetypes.ADD ),
 	]
 
 	view = NCursesView( diffmodel )
@@ -170,19 +170,19 @@ def _make_diff_at_begin_view():
 
 	diffmodel = FakeDiffModel()
 	diffmodel.lines = [
-		FakeDiffLine( "line 01", "line 01 different", difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 02", "line 02 different", difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 03", "line 03 different", difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 04", "line 04", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 05", "line 05", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 06", "line 06", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 07", "line 07", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 08", "line 08", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 09", "line 09", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 10", "line 10 different", difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 11", "line 11 different", difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 12", "line 12", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 13", "line 13", difflinetypes.IDENTICAL ),
+		DiffLine( "line 01", "line 01 different", difflinetypes.DIFFERENT ),
+		DiffLine( "line 02", "line 02 different", difflinetypes.DIFFERENT ),
+		DiffLine( "line 03", "line 03 different", difflinetypes.DIFFERENT ),
+		DiffLine( "line 04", "line 04", difflinetypes.IDENTICAL ),
+		DiffLine( "line 05", "line 05", difflinetypes.IDENTICAL ),
+		DiffLine( "line 06", "line 06", difflinetypes.IDENTICAL ),
+		DiffLine( "line 07", "line 07", difflinetypes.IDENTICAL ),
+		DiffLine( "line 08", "line 08", difflinetypes.IDENTICAL ),
+		DiffLine( "line 09", "line 09", difflinetypes.IDENTICAL ),
+		DiffLine( "line 10", "line 10 different", difflinetypes.DIFFERENT ),
+		DiffLine( "line 11", "line 11 different", difflinetypes.DIFFERENT ),
+		DiffLine( "line 12", "line 12", difflinetypes.IDENTICAL ),
+		DiffLine( "line 13", "line 13", difflinetypes.IDENTICAL ),
 	]
 
 	view = NCursesView( diffmodel )
@@ -275,23 +275,23 @@ line 03 [di] * [d]line 03 d
 def _make_manydiffs_view():
 	diffmodel = FakeDiffModel()
 	diffmodel.lines = [
-		FakeDiffLine( "line 01", "line 01", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 02", "diff 02", difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 03", "diff 03", difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 04", "diff 04", difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 05", "line 05", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 06", "diff 06", difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 07", "line 07", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 08", "diff 08", difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 09", "diff 09", difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 10", "diff 10", difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 11", "line 11", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 12", "diff 12", difflinetypes.DIFFERENT ),
-		FakeDiffLine( "line 13", "line 13", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 14", "line 14", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 15", "line 15", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 16", "line 16", difflinetypes.IDENTICAL ),
-		FakeDiffLine( "line 17", "line 17", difflinetypes.IDENTICAL ),
+		DiffLine( "line 01", "line 01", difflinetypes.IDENTICAL ),
+		DiffLine( "line 02", "diff 02", difflinetypes.DIFFERENT ),
+		DiffLine( "line 03", "diff 03", difflinetypes.DIFFERENT ),
+		DiffLine( "line 04", "diff 04", difflinetypes.DIFFERENT ),
+		DiffLine( "line 05", "line 05", difflinetypes.IDENTICAL ),
+		DiffLine( "line 06", "diff 06", difflinetypes.DIFFERENT ),
+		DiffLine( "line 07", "line 07", difflinetypes.IDENTICAL ),
+		DiffLine( "line 08", "diff 08", difflinetypes.DIFFERENT ),
+		DiffLine( "line 09", "diff 09", difflinetypes.DIFFERENT ),
+		DiffLine( "line 10", "diff 10", difflinetypes.DIFFERENT ),
+		DiffLine( "line 11", "line 11", difflinetypes.IDENTICAL ),
+		DiffLine( "line 12", "diff 12", difflinetypes.DIFFERENT ),
+		DiffLine( "line 13", "line 13", difflinetypes.IDENTICAL ),
+		DiffLine( "line 14", "line 14", difflinetypes.IDENTICAL ),
+		DiffLine( "line 15", "line 15", difflinetypes.IDENTICAL ),
+		DiffLine( "line 16", "line 16", difflinetypes.IDENTICAL ),
+		DiffLine( "line 17", "line 17", difflinetypes.IDENTICAL ),
 	]
 
 	view = NCursesView( diffmodel )
