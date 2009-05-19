@@ -34,10 +34,7 @@ class DiffModel( object ):
 
 	def get_lines( self, start=0, end=None ):
 		self.parse_if_needed()
-		if end is None:
-			return self.lines[start:]
-		else:
-			return self.lines[start:end]
+		return self.lines[start:end]
 
 	def get_line( self, line_num ):
 		self.parse_if_needed()
