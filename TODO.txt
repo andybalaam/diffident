@@ -41,6 +41,8 @@ Next:
 - ncurses: Jump to beginning, end and line num (of the file the cursor is in)
 - diffmodel: Change line.left and line.right into line.strs[LEFT] etc.
 - ncurses: Confirm exit when there are unsaved changes
+- filemanager: save to backup files
+- filemanager: save to temporary file then rename when finished
 
 Big:
 
@@ -82,4 +84,6 @@ Later/Never:
   expression) as + lines
 - listview: write lines one by one instead of returning a string
 - ncurses: redefine keys?
+- ncurses: pressing s saves the modified file wherever your cursor is?
+
 
