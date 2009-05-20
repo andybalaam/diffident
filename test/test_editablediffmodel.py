@@ -371,20 +371,29 @@ def delete_line():
 
 	editable.delete_line( 1, directions.RIGHT )
 
-	# Ask for lines 1 to 2
-	lines = editable.get_lines( 0, 2 )
+	# Ask for lines 1 to 3
+	lines = editable.get_lines( 0, 3 )
 
-	assert_strings_equal( lines[0].left, "line 1 here" )
-	assert_strings_equal( lines[0].right, "line 1 here" )
-	assert( lines[0].status == difflinetypes.IDENTICAL )
-	assert( lines[0].left_edited == False )
-	assert( lines[0].right_edited == False )
+	ln = lines[0]
+	assert_strings_equal( ln.left, "line 1 here" )
+	assert_strings_equal( ln.right, "line 1 here" )
+	assert( ln.status == difflinetypes.IDENTICAL )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
 
-	assert_strings_equal( lines[1].left, "line 2 here" )
-	assert_strings_equal( lines[1].right, None )
-	assert( lines[1].status == difflinetypes.DIFFERENT )
-	assert( lines[1].left_edited == False )
-	assert( lines[1].right_edited == True )
+	ln = lines[1]
+	assert_strings_equal( ln.left, "line 2 here" )
+	assert_strings_equal( ln.right, None )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == True )
+
+	ln = lines[2]
+	assert_strings_equal( ln.left, "line 3 here" )
+	assert_strings_equal( ln.right, "line 3 here" )
+	assert( ln.status == difflinetypes.IDENTICAL )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
 
 	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
 
@@ -394,7 +403,7 @@ def edit_doesnt_change_anything():
 
 	editable = EditableDiffModel( staticdiffmodel )
 
-	# Make several overlapping changes
+	# Make a change that actually doesn't change some lines
 	editable.edit_lines( 0, 2, directions.LEFT,
 		( "line 1 here", "edited 2", "line 3 here" ) )
 
@@ -421,6 +430,156 @@ def edit_doesnt_change_anything():
 
 	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
 
+class FakeFile( object ):
+	def __init__( self ):
+		self.txt = ""
+
+	def write( self, towrite ):
+		self.txt += towrite
+
+
+def edit_after_delete():
+
+	staticdiffmodel = _make_static_diffmodel()
+	old_static_lines = list( ln.clone() for ln in staticdiffmodel.get_lines() )
+
+	editable = EditableDiffModel( staticdiffmodel )
+
+	# Delete then edit
+	editable.delete_line( 1, directions.RIGHT )
+
+	#editable.edit_lines( 2, 4, directions.RIGHT,
+	#	( "edited 3c", "edited 4c", "edited 5c" ) )
+
+	# Ask for lines 1 to 3
+	lines = editable.get_lines( 0, 3 )
+
+	ln = lines[0]
+	assert_strings_equal( ln.left, "line 1 here" )
+	assert_strings_equal( ln.right, "line 1 here" )
+	assert( ln.status == difflinetypes.IDENTICAL )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
+
+	ln = lines[1]
+	assert_strings_equal( ln.left, "line 2 here" )
+	assert_strings_equal( ln.right, None )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == True )
+
+	ln = lines[2]
+	assert_strings_equal( ln.left, "line 3 here" )
+	assert_strings_equal( ln.right, "line 3 here" )
+	assert( ln.status == difflinetypes.IDENTICAL )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
+
+	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
+
+def delete_line_plus_edits():
+
+	staticdiffmodel = _make_static_diffmodel()
+	old_static_lines = list( ln.clone() for ln in staticdiffmodel.get_lines() )
+
+	editable = EditableDiffModel( staticdiffmodel )
+
+	# Make several overlapping changes, including a deletion
+	editable.edit_lines( 0, 2, directions.RIGHT,
+		( "edited 1a", "edited 2a", "edited 3a" ) )
+
+	editable.edit_lines( 1, 3, directions.RIGHT,
+		( "edited 2b", "edited 3b", "edited 4b" ) )
+
+	editable.delete_line( 1, directions.RIGHT )
+
+	editable.edit_lines( 2, 4, directions.RIGHT,
+		( "edited 3c", "edited 4c", "edited 5c" ) )
+
+	# Ask for lines 1 to 3
+	lines = editable.get_lines( 0, 3 )
+
+	ln = lines[0]
+	assert_strings_equal( ln.left, "line 1 here" )
+	assert_strings_equal( ln.right, "edited 1a" )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == True )
+
+	ln = lines[1]
+	assert_strings_equal( ln.left, "line 2 here" )
+	assert_strings_equal( ln.right, None )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == True )
+
+	ln = lines[2]
+	assert_strings_equal( ln.left, "line 3 here" )
+	assert_strings_equal( ln.right, "edited 3c" )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == True )
+
+	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
+
+def write_to_file():
+	fakefile = FakeFile()
+
+	staticdiffmodel = _make_static_diffmodel()
+	old_static_lines = list( ln.clone() for ln in staticdiffmodel.get_lines() )
+
+	editable = EditableDiffModel( staticdiffmodel )
+
+	# Make several overlapping changes, including a deletion
+	editable.edit_lines( 0, 2, directions.RIGHT,
+		( "edited 1a", "edited 2a", "edited 3a" ) )
+
+	editable.edit_lines( 1, 3, directions.RIGHT,
+		( "edited 2b", "edited 3b", "edited 4b" ) )
+
+	editable.delete_line( 1, directions.RIGHT )
+
+	editable.edit_lines( 2, 4, directions.RIGHT,
+		( "edited 3c", "edited 4c", "edited 5c" ) )
+
+	editable.write_to_file( fakefile, directions.RIGHT )
+
+	assert_strings_equal( fakefile.txt,
+		  "edited 1a\n"
+		+ "edited 3c\n"
+		+ "edited 4c\n"
+		+ "edited 5c\n"
+		+ "line 6 here\n"
+		+ "line 7 here\n"
+		+ "line 8 here\n"
+		+ "line 9 here\n"
+		+ "line 10 here\n"
+		)
+
+	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
+
+def write_to_file_no_changes():
+	fakefile = FakeFile()
+
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	editable.write_to_file( fakefile, directions.LEFT )
+
+	assert_strings_equal( fakefile.txt,
+		  "line 1 here\n"
+		+ "line 2 here\n"
+		+ "line 3 here\n"
+		+ "line 4 here\n"
+		+ "line 5 here\n"
+		+ "line 6 here\n"
+		+ "line 7 here\n"
+		+ "line 8 here\n"
+		+ "line 9 here\n"
+		+ "previous 10\n"
+		)
+
+
 def run():
 	edit_line()
 	edit_several_lines()
@@ -431,7 +590,11 @@ def run():
 	edit_spans_before_and_after()
 	edit_doesnt_touch()
 	several_edits()
+	edit_after_delete()
+	delete_line_plus_edits()
 	edit_doesnt_change_anything()
+	write_to_file()
+	write_to_file_no_changes()
 
 	#add_line() # TODO: requires us to shift all subsequent lines down
 

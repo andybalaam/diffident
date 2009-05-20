@@ -132,9 +132,43 @@ END`
 #	listview_matches_diff "$FILE1" "$FILE2" listview_matches_diff_longline
 #}
 
+function ncursesview_saves_edits()
+{
+	FILE1=`cat <<END
+left 1
+left 2
+left 3
+END`
+
+	FILE2=`cat <<END
+right 1
+right 2
+right 3
+END`
+
+	EXPOUT=`cat <<END
+left 1
+right 2
+right 3
+END`
+
+	echo "$FILE1" > file1.tmptxt
+	echo "$FILE2" > file2.tmptxt
+	echo "$EXPOUT" > expout.tmptxt
+
+	./diffident.py --view=term --send-keys "]ls" file1.tmptxt file2.tmptxt
+	assert_retval_is_zero $? ncursesview_saves_edits-diffident
+
+	diff file2.tmptxt expout.tmptxt > /dev/null
+	assert_retval_is_zero $? ncursesview_saves_edits-diff-outputs
+
+	rm *.tmptxt
+}
 
 listview_matches_diff_nochanges
 listview_matches_diff_changes
 listview_matches_diff_adds
 listview_matches_diff_removes
+
+ncursesview_saves_edits
 

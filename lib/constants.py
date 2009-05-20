@@ -29,3 +29,7 @@ class directions( object ):
 	DOWN  = 3
 
 
+class save_status( object ):
+	STATUS_SAVED     = 0
+	STATUS_NOCHANGES = 1
+

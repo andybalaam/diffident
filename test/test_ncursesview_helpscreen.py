@@ -54,7 +54,7 @@ def normal():
                      Select page up/down - </>                                  
                        Scroll left/right - z/x                                  
                          Copy left/right - [/]                                  
-                                                                                
+                            Save changes - s                                    
                                                                                 
                                                                                 
                                                                                 

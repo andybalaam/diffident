@@ -19,6 +19,7 @@ import curses
 
 from lib.constants import difflinetypes
 from lib.constants import directions
+from lib.constants import save_status
 
 from translation import _
 
@@ -39,6 +40,7 @@ HELP_MESSAGES = [
 	( _("Select page up/down"), _("</>") ),
 	( _("Scroll left/right"), _("z/x") ),
 	( _("Copy left/right"), _("[/]") ),
+	( _("Save changes"), _("s") ),
 ]
 
 COPYRIGHT_MESSAGES = [
@@ -78,10 +80,12 @@ class NCursesView( object ):
 			else:
 				return xrange( self.line_num, self.start_line_num + 1 )
 
-	def __init__( self, diffmodel, filename1 = None, filename2 = None ):
+	def __init__( self, diffmodel, filename_left=None, filename_right=None,
+			filemanager=None ):
 		self.diffmodel = diffmodel
-		self.filename1 = filename1
-		self.filename2 = filename2
+		self.filename_left = filename_left
+		self.filename_right = filename_right
+		self.filemanager = filemanager
 		self.top_line = 0
 		self.bot_line = None
 		self.first_col = 0
@@ -207,6 +211,15 @@ class NCursesView( object ):
 			status_line = self.scroll_horizontal( -1 )
 		elif key == ord( "x" ): # Scroll right
 			status_line = self.scroll_horizontal( 1 )
+
+		elif key == ord( "s" ): # Save
+			assert( self.filemanager )
+			status = self.filemanager.save( self.diffmodel, self.mycursor.lr )
+			if status == save_status.STATUS_SAVED:
+				self.set_status_line( _("File saved."), True )
+			elif status == save_status.STATUS_NOCHANGES:
+				self.set_status_line( _("No changes were made in this file."),
+					True )
 
 		elif key == ord( "H" ): # Help
 			status_line = self.show_help( wait_for_input )
@@ -547,8 +560,8 @@ class NCursesView( object ):
 			return filename
 
 	def draw_header_window( self ):
-		left  = self.format_filename( self.filename1, self.left_width )
-		right = self.format_filename( self.filename2, self.right_width )
+		left  = self.format_filename( self.filename_left, self.left_width )
+		right = self.format_filename( self.filename_right, self.right_width )
 
 		self.headerwindow.addnstr( 0, 0,
 			left, self.left_width )

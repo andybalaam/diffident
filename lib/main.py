@@ -20,10 +20,11 @@ import os
 from lib.unifieddiffparser import UnifiedDiffParser
 from lib.diffmodel import DiffModel
 from lib.editablediffmodel import EditableDiffModel
+from lib.filemanager import FileManager
 from lib.listview import ListView
 from lib.ncursesview import NCursesView
 
-def diff_2_files( filename1, filename2, launch_viewer ):
+def diff_2_files( filename_left, filename_right, launch_viewer, sendkeys ):
 
 	# TODO: do this properly - handle errors, suck stderr from diff,
 	#       don't use os.system, and use a proper temporary file path.
@@ -31,35 +32,40 @@ def diff_2_files( filename1, filename2, launch_viewer ):
 
 	diff_filename = "tmpdiff.tmpdiffident"
 	os.system( 'diff -u "%s" "%s" > %s' % (
-		filename1, filename2, diff_filename ) )
+		filename_left, filename_right, diff_filename ) )
 
 	diff_file = file( diff_filename, 'r' )
-	left_file = file( filename1, 'r' )
+	left_file = file( filename_left, 'r' )
 
 	diffparser = UnifiedDiffParser( left_file, diff_file )
 	diffmodel = DiffModel( diffparser )
 	editablediffmodel = EditableDiffModel( diffmodel )
+	filemanager = FileManager( filename_left, filename_right )
 
-	launch_viewer( editablediffmodel, filename1, filename2 )
+	launch_viewer( editablediffmodel, filename_left, filename_right,
+		filemanager, sendkeys )
 
 	left_file.close()
 	diff_file.close()
 
 	os.remove( diff_filename )
 
-def print_listview( diffmodel, filename1, filename2 ):
+def print_listview( diffmodel, filename_left, filename_right, filemanager,
+		sendkeys ):
 	listview = ListView( diffmodel )
 	print listview.get_string(),
 
-def run_ncursesview( diffmodel, filename1, filename2 ):
-	ncursesview = NCursesView( diffmodel, filename1, filename2 )
-	ncursesview.show()
+def run_ncursesview( diffmodel, filename_left, filename_right, filemanager,
+		sendkeys ):
+	ncursesview = NCursesView( diffmodel, filename_left, filename_right,
+		filemanager )
+	ncursesview.show( sendkeys )
 
-def emulate_diff_minus_y( filename1, filename2 ):
-	diff_2_files( filename1, filename2, print_listview )
+def emulate_diff_minus_y( filename_left, filename_right ):
+	diff_2_files( filename_left, filename_right, print_listview, None )
 
-def interactive_diff_ncurses( filename1, filename2 ):
-	diff_2_files( filename1, filename2, run_ncursesview )
+def interactive_diff_ncurses( filename_left, filename_right, sendkeys ):
+	diff_2_files( filename_left, filename_right, run_ncursesview, sendkeys )
 
 
 

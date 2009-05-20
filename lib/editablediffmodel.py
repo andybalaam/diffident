@@ -54,10 +54,11 @@ class EditableDiffModel( object ):
 			toadj_iter = lines_to_adjust.__iter__()
 			new_iter = self.new_strs.__iter__()
 
+			# Skip forward in either the supplied array ...
 			if adj_sta > 0:
 				for i in xrange( adj_sta ):
 					toadj_iter.next()
-			elif adj_sta < 0:
+			elif adj_sta < 0: # ... or our list of edited lines
 				for i in xrange( -adj_sta ):
 					new_iter.next()
 
@@ -81,7 +82,8 @@ class EditableDiffModel( object ):
 			# Replace the old lines with the modified ones
 			if adj_sta < 0:
 				adj_sta = 0
-			lines_to_adjust[adj_sta:adj_end] = lines_to_add
+			end_of_slice = adj_sta + len( lines_to_add )
+			lines_to_adjust[adj_sta:end_of_slice] = lines_to_add
 
 		def adjust_line( self, toadj, new_str ):
 			self.set_side( toadj, new_str )
@@ -160,4 +162,36 @@ class EditableDiffModel( object ):
 	def delete_line( self, line_num, side ):
 		self.edits.append( EditableDiffModel.Edit(
 			line_num, line_num, side, ( None, ) ) )
+
+	def write_to_file( self, fl, side ):
+		# We write this many lines at a time
+		chunk_size = 1000
+
+		num_lines = self.get_num_lines()
+		next_lnum = 0
+		prev_lnum = 0
+
+		while next_lnum < num_lines:
+			next_lnum += chunk_size
+			if next_lnum > num_lines:
+				next_lnum = num_lines
+
+			lines = self.get_lines( prev_lnum, next_lnum )
+
+			for line in lines:
+
+				if side == directions.LEFT:
+					towrite = line.left
+				else:
+					towrite = line.right
+
+				if towrite is not None:
+					towrite += "\n"
+					fl.write( towrite )
+
+			prev_lnum = next_lnum
+
+	def has_edit_affecting_side( self, side ):
+		# TODO: implement this
+		return True
 

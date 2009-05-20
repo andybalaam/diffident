@@ -6,14 +6,19 @@ Next:
 + editablediffmodel: EDITED_* status works
 + ncurses: Can copy from one side to the other
 + editablediffmodel: an edit is not an edit if it doesn't change the line
-- editablediffmodel: can save modified files
++ editablediffmodel: can save modified files
+- editablediffmodel: write and test EditableDiffModel.has_edit_affecting_side
+- ncurses: tests for status messages on next etc.
+- ncurses: tests for status messages on save
 - editablediffmodel: can add lines
+- editablediffmodel: can delete lines
+- ncurses: header indication that a file is modified (goes away on save)
 - editablediffmodel: undo/redo works
 - ncurses: Can see long lines at bottom? (not short lines)
 - ncurses: Long lines at bottom are scrollable
 - ncurses: Can edit lines
 - ncurses: Can edit long lines because they wrap or scroll
-- ncurses: Handle screen resizes - can crash it by making screen smaller
+- ncurses: Handle screen resizes - currently you can crash it by resizing
 - git: create a script suitable for use as GIT_EXTERNAL_DIFF
 - editablediffmodel: allow locking one or both files as non-writeable
 - general: return the correct values as used by git?
@@ -34,6 +39,8 @@ Next:
 - ncurses: Show line number in status bar
 - ncurses: Allow moving the vertical divider
 - ncurses: Jump to beginning, end and line num (of the file the cursor is in)
+- diffmodel: Change line.left and line.right into line.strs[LEFT] etc.
+- ncurses: Confirm exit when there are unsaved changes
 
 Big:
 
@@ -51,6 +58,8 @@ Big:
   to a fifo, so it's ready if/when we need it.
 
 - Make scalable to long lines?
+
+- Make scalable to large numbers of edits/undos?
 
 - Don't use unified diffs internally since they are not quite as reliable
   as context diffs?  (Because of +++ line problem.)

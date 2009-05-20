@@ -32,8 +32,14 @@ def main():
 		default="term", type="string",
 		help=( "Set the view type: "
 			+ "list (somewhat emulates diff -y), "
-			+ "term (interactive editable diff in a terminal) or "
-			+ "gtk (interactive editable diff in a GTK IU)." ) )
+			+ "or term (interactive editable diff in a terminal)"
+			# (not yet!) "or gtk (interactive editable diff in a GTK IU)."
+			) )
+
+	parser.add_option("", "--send-keys", dest="sendkeys",
+		default=None, type="string",
+		help="'Press' these keys after starting, then exit "
+			+ "(used for testing)." )
 
 	parser.add_option("", "--test", dest="test",
 		default=False, action="store_true",
@@ -63,7 +69,8 @@ def main():
 	if options.view == "list":
 		return lib.main.emulate_diff_minus_y( args[0], args[1] )
 	elif options.view == "term":
-		return lib.main.interactive_diff_ncurses( args[0], args[1] )
+		return lib.main.interactive_diff_ncurses( args[0], args[1],
+			options.sendkeys )
 	elif options.view == "gtk":
 		sys.stderr.write( "GTK UI not yet supported!\n" )
 		sys.exit( 1 )
