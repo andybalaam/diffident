@@ -579,6 +579,27 @@ def write_to_file_no_changes():
 		+ "previous 10\n"
 		)
 
+def has_edit_affecting_side():
+
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	assert( not editable.has_edit_affecting_side( directions.RIGHT ) )
+	assert( not editable.has_edit_affecting_side( directions.LEFT ) )
+
+	editable.edit_lines( 0, 2, directions.RIGHT,
+		( "edited 1a", "edited 2a", "edited 3a" ) )
+
+	editable.edit_lines( 1, 3, directions.RIGHT,
+		( "edited 2b", "edited 3b", "edited 4b" ) )
+
+	assert( editable.has_edit_affecting_side( directions.RIGHT ) )
+	assert( not editable.has_edit_affecting_side( directions.LEFT ) )
+
+	editable.delete_line( 1, directions.LEFT )
+
+	assert( editable.has_edit_affecting_side( directions.RIGHT ) )
+	assert( editable.has_edit_affecting_side( directions.LEFT ) )
 
 def run():
 	edit_line()
@@ -597,4 +618,6 @@ def run():
 	write_to_file_no_changes()
 
 	#add_line() # TODO: requires us to shift all subsequent lines down
+
+	has_edit_affecting_side()
 

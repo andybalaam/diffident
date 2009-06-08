@@ -7,7 +7,7 @@ Next:
 + ncurses: Can copy from one side to the other
 + editablediffmodel: an edit is not an edit if it doesn't change the line
 + editablediffmodel: can save modified files
-- editablediffmodel: write and test EditableDiffModel.has_edit_affecting_side
++ editablediffmodel: write and test EditableDiffModel.has_edit_affecting_side
 - ncurses: tests for status messages on next etc.
 - ncurses: tests for status messages on save
 - editablediffmodel: can add lines

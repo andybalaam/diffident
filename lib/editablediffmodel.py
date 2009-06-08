@@ -192,6 +192,10 @@ class EditableDiffModel( object ):
 			prev_lnum = next_lnum
 
 	def has_edit_affecting_side( self, side ):
-		# TODO: implement this
-		return True
+
+		for edit in self.edits:
+			if edit.side == side:
+				return True
+
+		return False
 
