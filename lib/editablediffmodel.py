@@ -156,8 +156,11 @@ class EditableDiffModel( object ):
 
 		assert( len( lines ) == ( last_line_num - first_line_num ) )
 
-		self.edits.append( EditableDiffModel.Edit(
-			first_line_num, last_line_num, side, lines ) )
+		# If this edit changes anything, store it
+		if self.existing_lines_different(
+				first_line_num, last_line_num, side,  lines ):
+			self.edits.append( EditableDiffModel.Edit(
+				first_line_num, last_line_num, side, lines ) )
 
 	def delete_line( self, line_num, side ):
 		self.edits.append( EditableDiffModel.Edit(
@@ -198,4 +201,20 @@ class EditableDiffModel( object ):
 				return True
 
 		return False
+
+	# Private functions
+	
+	def existing_lines_different( self, first_line_num, last_line_num,
+			side, strs ):
+
+		if side == directions.LEFT:
+			get_side = lambda line: line.left
+		else:
+			get_side = lambda line: line.right
+
+		existing_lines = self.get_lines( first_line_num, last_line_num )
+
+		existing_strs = map( get_side, existing_lines )
+
+		return ( existing_strs != strs )
 

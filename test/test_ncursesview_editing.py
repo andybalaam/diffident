@@ -39,6 +39,17 @@ class EditTracingFakeDiffModel( FakeDiffModel ):
 	def delete_line( self, line_num, side ):
 		self.trace.append( ( "delete_line", line_num, side ) )
 
+class EditReportingFakeDiffModel( FakeDiffModel ):
+	def __init__( self ):
+		super( EditReportingFakeDiffModel, self ).__init__()
+		self.has_edit = {
+			directions.LEFT : False,
+			directions.RIGHT : True,
+			}
+
+	def has_edit_affecting_side( self, side ):
+		return self.has_edit[side]
+
 def _make_view():
 	diffmodel = EditTracingFakeDiffModel()
 	diffmodel.lines = [
@@ -105,8 +116,66 @@ line 05           [ei]   [e]line 05
 line 06           [ei]   [n]line 06            
 """ )
 
+def display_file_modified_left_short():
+
+	diffmodel = EditReportingFakeDiffModel()
+	diffmodel.has_edit[ directions.LEFT ] = True
+	diffmodel.has_edit[ directions.RIGHT ] = False
+
+	view = NCursesView( diffmodel )
+	view.win_width = 30
+	view.win_height = 5
+	view.filename_left = "/path/to/the/filename_left.txt"
+	view.filename_right = "r.txt"
+
+	actions = []
+	(window, header, status ) = view.show( actions )
+
+	assert_strings_equal( header,
+		"[ni]*..._left.txt   r.txt         \n" )
+
+
+def display_file_modified_right():
+
+	diffmodel = EditReportingFakeDiffModel()
+	diffmodel.has_edit[ directions.LEFT ] = False
+	diffmodel.has_edit[ directions.RIGHT ] = True
+
+	view = NCursesView( diffmodel )
+	view.win_width = 60
+	view.win_height = 5
+	view.filename_left = "filename_left.txt"
+	view.filename_right = "filename_right.txt"
+
+	actions = []
+	(window, header, status ) = view.show( actions )
+
+	assert_strings_equal( header,
+		"[ni]filename_left.txt              *filename_right.txt          \n" )
+
+def display_file_modified_both():
+
+	diffmodel = EditReportingFakeDiffModel()
+	diffmodel.has_edit[ directions.LEFT ] = True
+	diffmodel.has_edit[ directions.RIGHT ] = True
+
+	view = NCursesView( diffmodel )
+	view.win_width = 60
+	view.win_height = 5
+	view.filename_left = "filename_left.txt"
+	view.filename_right = "filename_right.txt"
+
+	actions = []
+	(window, header, status ) = view.show( actions )
+
+	assert_strings_equal( header,
+		"[ni]*filename_left.txt             *filename_right.txt          \n" )
+
 def run():
 	copy_l2r_1_line()
 	copy_r2l_multiple_lines_upside_down_after_scroll()
 	display_edited_lines()
+	display_file_modified_left_short()
+	display_file_modified_right()
+	display_file_modified_both()
 

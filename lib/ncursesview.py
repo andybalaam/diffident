@@ -311,6 +311,7 @@ class NCursesView( object ):
 		strs = self.get_lr_strs( self.opposite_lr( side_to ), first, last )
 		self.diffmodel.edit_lines( first + self.top_line, last + self.top_line,
 			side_to, strs )
+		self.draw_header_window()
 
 		self.set_top_line( self.top_line )
 		self.draw_screen()
@@ -551,17 +552,35 @@ class NCursesView( object ):
 		curses.init_pair( pair_num, fore, back )
 		return curses.color_pair( pair_num )
 
-	def format_filename( self, filename, width ):
-		if filename is None:
-			return ""
-		elif len( filename ) > width:
-			return "..." + filename[len(filename)-(width-3):]
+	def format_filename( self, side ):
+
+		if side == directions.LEFT:
+			filename = self.filename_left
+			width = self.left_width
 		else:
-			return filename
+			filename = self.filename_right
+			width = self.right_width
+
+		if filename is None:
+			filename = ""
+
+		edited = self.diffmodel.has_edit_affecting_side( side )
+
+		if edited:
+			width -= 1
+		
+		if len( filename ) > width:
+			filename = "..." + filename[len(filename)-(width-3):]
+
+		if edited:
+			filename = "*" + filename
+
+		return filename
 
 	def draw_header_window( self ):
-		left  = self.format_filename( self.filename_left, self.left_width )
-		right = self.format_filename( self.filename_right, self.right_width )
+
+		left  = self.format_filename( directions.LEFT )
+		right = self.format_filename( directions.RIGHT )
 
 		self.headerwindow.addnstr( 0, 0,
 			left, self.left_width )

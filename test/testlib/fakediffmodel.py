@@ -34,3 +34,6 @@ class FakeDiffModel( object ):
 	def get_num_lines( self ):
 		return len( self.lines )
 
+	def has_edit_affecting_side( self, side ):
+		return False
+

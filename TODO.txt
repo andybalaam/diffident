@@ -8,11 +8,13 @@ Next:
 + editablediffmodel: an edit is not an edit if it doesn't change the line
 + editablediffmodel: can save modified files
 + editablediffmodel: write and test EditableDiffModel.has_edit_affecting_side
++ ncurses: header indication that a file is modified
++ editablediffmodel: don't remember edits that don't change anything
+- ncurses: file modified * goes away on save
 - ncurses: tests for status messages on next etc.
 - ncurses: tests for status messages on save
 - editablediffmodel: can add lines
 - editablediffmodel: can delete lines
-- ncurses: header indication that a file is modified (goes away on save)
 - editablediffmodel: undo/redo works
 - ncurses: Can see long lines at bottom? (not short lines)
 - ncurses: Long lines at bottom are scrollable

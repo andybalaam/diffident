@@ -601,6 +601,27 @@ def has_edit_affecting_side():
 	assert( editable.has_edit_affecting_side( directions.RIGHT ) )
 	assert( editable.has_edit_affecting_side( directions.LEFT ) )
 
+def has_edit_affecting_side_nullchange():
+
+	print
+	print
+	print
+
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	assert( not editable.has_edit_affecting_side( directions.RIGHT ) )
+	assert( not editable.has_edit_affecting_side( directions.LEFT ) )
+
+	editable.edit_lines( 0, 2, directions.RIGHT,
+		[ "line 1 here", "line 2 here", "line 3 here" ] )
+
+	editable.edit_lines( 1, 3, directions.RIGHT,
+		[ "line 2 here", "line 3 here", "line 4 here" ] )
+
+	assert( not editable.has_edit_affecting_side( directions.LEFT ) )
+	assert( not editable.has_edit_affecting_side( directions.RIGHT ) )
+
 def run():
 	edit_line()
 	edit_several_lines()
@@ -620,4 +641,5 @@ def run():
 	#add_line() # TODO: requires us to shift all subsequent lines down
 
 	has_edit_affecting_side()
+	has_edit_affecting_side_nullchange()
 
