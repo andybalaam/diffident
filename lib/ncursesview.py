@@ -575,6 +575,8 @@ class NCursesView( object ):
 		if edited:
 			filename = "*" + filename
 
+		filename += " " * ( width - len( filename ) )
+
 		return filename
 
 	def draw_header_window( self ):
