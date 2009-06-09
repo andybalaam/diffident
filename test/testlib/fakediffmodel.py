@@ -37,3 +37,6 @@ class FakeDiffModel( object ):
 	def has_edit_affecting_side( self, side ):
 		return False
 
+	def set_save_point( self, side ):
+		pass
+

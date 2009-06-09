@@ -36,7 +36,8 @@ class EditableDiffModel( object ):
 			self.side = side
 			self.new_strs = new_strs
 
-		def do_lines( self, start, end, lines_to_adjust ):
+		def do_lines( self, start, end, lines_to_adjust,
+				edit_num, save_points ):
 			# If this edit is not relevant to the lines required, exit
 			if end is not None and self.start_line >= end:
 				return
@@ -69,7 +70,8 @@ class EditableDiffModel( object ):
 					oldline = toadj_iter.next()
 					if self.get_side( oldline ) != new_str:
 						newline = oldline.clone()
-						self.adjust_line( newline, new_str )
+						self.adjust_line( newline, new_str, edit_num,
+							save_points )
 						lines_to_add.append( newline )
 					else:
 						lines_to_add.append( oldline )
@@ -85,19 +87,21 @@ class EditableDiffModel( object ):
 			end_of_slice = adj_sta + len( lines_to_add )
 			lines_to_adjust[adj_sta:end_of_slice] = lines_to_add
 
-		def adjust_line( self, toadj, new_str ):
+		def adjust_line( self, toadj, new_str, edit_num, save_points ):
 			self.set_side( toadj, new_str )
-			self.set_side_edited( toadj )
+			if edit_num >= save_points[ self.side ]:
+				self.set_side_edited( toadj )
 			if toadj.left == toadj.right:
 				toadj.status = difflinetypes.IDENTICAL
 			else:
 				toadj.status = difflinetypes.DIFFERENT
 
-		def do_single_line( self, line_num, ln ):
+		def do_single_line( self, line_num, ln, edit_num, save_points ):
 			if self.start_line <= line_num < self.end_line:
 				relative_line_num = line_num - self.start_line
 				ln = ln.clone()
-				self.adjust_line( ln, self.new_strs[relative_line_num] )
+				self.adjust_line( ln, self.new_strs[relative_line_num],
+					edit_num, save_points )
 			return ln
 
 		def _set_left_side( self, line, strtoset ):
@@ -116,21 +120,28 @@ class EditableDiffModel( object ):
 		self.staticdiffmodel = staticdiffmodel
 		self.edits = []
 
+		# Save points are the array index of the edit on which
+		# we saved the file.
+		self.save_points = {
+			directions.LEFT : 0,
+			directions.RIGHT : 0,
+			}
+
 	# DiffModel public functions:
 
 	def get_lines( self, start=0, end=None ):
 		lines = self.staticdiffmodel.get_lines( start, end )
 
-		for edit in self.edits:
-			edit.do_lines( start, end, lines )
+		for edit_num, edit in enumerate( self.edits ):
+			edit.do_lines( start, end, lines, edit_num, self.save_points )
 
 		return lines
 
 	def get_line( self, line_num ):
 		ln = self.staticdiffmodel.get_line( line_num )
 
-		for edit in self.edits:
-			ln = edit.do_single_line( line_num, ln )
+		for edit_num, edit in enumerate( self.edits ):
+			ln = edit.do_single_line( line_num, ln, edit_num, self.save_points )
 
 		return ln
 
@@ -196,11 +207,14 @@ class EditableDiffModel( object ):
 
 	def has_edit_affecting_side( self, side ):
 
-		for edit in self.edits:
+		for edit in self.edits[ self.save_points[side] : ]:
 			if edit.side == side:
 				return True
 
 		return False
+
+	def set_save_point( self, side ):
+		self.save_points[side] = len( self.edits )
 
 	# Private functions
 	

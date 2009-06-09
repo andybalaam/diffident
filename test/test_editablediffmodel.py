@@ -603,10 +603,6 @@ def has_edit_affecting_side():
 
 def has_edit_affecting_side_nullchange():
 
-	print
-	print
-	print
-
 	staticdiffmodel = _make_static_diffmodel()
 	editable = EditableDiffModel( staticdiffmodel )
 
@@ -621,6 +617,57 @@ def has_edit_affecting_side_nullchange():
 
 	assert( not editable.has_edit_affecting_side( directions.LEFT ) )
 	assert( not editable.has_edit_affecting_side( directions.RIGHT ) )
+
+def has_edit_affecting_side_after_save():
+
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	editable.edit_lines( 0, 2, directions.RIGHT,
+		( "edited 1a", "edited 2a", "edited 3a" ) )
+
+	editable.edit_lines( 0, 2, directions.LEFT,
+		( "edited left 1a", "edited left 2a", "edited left 3a" ) )
+
+	assert( editable.has_edit_affecting_side( directions.RIGHT ) )
+	assert( editable.has_edit_affecting_side( directions.LEFT ) )
+
+	lines = editable.get_lines( 0, 3 )
+	ln = lines[0]
+	assert_strings_equal( ln.left, "edited left 1a" )
+	assert_strings_equal( ln.right, "edited 1a" )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == True )
+	assert( ln.right_edited == True )
+
+	editable.set_save_point( directions.LEFT )
+
+	lines = editable.get_lines( 0, 3 )
+	ln = lines[0]
+	assert_strings_equal( ln.left, "edited left 1a" )
+	assert_strings_equal( ln.right, "edited 1a" )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == True )
+
+	assert( editable.has_edit_affecting_side( directions.RIGHT ) )
+	assert( not editable.has_edit_affecting_side( directions.LEFT ) )
+
+	editable.edit_lines( 0, 2, directions.RIGHT,
+		( "edited 1b", "edited 2b", "edited 3b" ) )
+
+	editable.set_save_point( directions.RIGHT )
+
+	assert( not editable.has_edit_affecting_side( directions.RIGHT ) )
+	assert( not editable.has_edit_affecting_side( directions.LEFT ) )
+
+	lines = editable.get_lines( 0, 3 )
+	ln = lines[0]
+	assert_strings_equal( ln.left, "edited left 1a" )
+	assert_strings_equal( ln.right, "edited 1b" )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
 
 def run():
 	edit_line()
@@ -642,4 +689,5 @@ def run():
 
 	has_edit_affecting_side()
 	has_edit_affecting_side_nullchange()
+	has_edit_affecting_side_after_save()
 

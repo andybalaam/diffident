@@ -216,7 +216,11 @@ class NCursesView( object ):
 			assert( self.filemanager )
 			status = self.filemanager.save( self.diffmodel, self.mycursor.lr )
 			if status == save_status.STATUS_SAVED:
+				self.diffmodel.set_save_point( self.mycursor.lr )
 				self.set_status_line( _("File saved."), True )
+				self.draw_header_window()
+				self.set_top_line( self.top_line )
+				self.draw_screen()
 			elif status == save_status.STATUS_NOCHANGES:
 				self.set_status_line( _("No changes were made in this file."),
 					True )

@@ -10,7 +10,7 @@ Next:
 + editablediffmodel: write and test EditableDiffModel.has_edit_affecting_side
 + ncurses: header indication that a file is modified
 + editablediffmodel: don't remember edits that don't change anything
-- ncurses: file modified * goes away on save
++ ncurses: file modified * goes away on save
 - ncurses: tests for status messages on next etc.
 - ncurses: tests for status messages on save
 - editablediffmodel: can add lines
