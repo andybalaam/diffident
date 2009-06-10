@@ -363,16 +363,16 @@ def several_edits():
 
 	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
 
-def delete_line():
+def delete_lines():
 	staticdiffmodel = _make_static_diffmodel()
 	old_static_lines = list( ln.clone() for ln in staticdiffmodel.get_lines() )
 
 	editable = EditableDiffModel( staticdiffmodel )
 
-	editable.delete_line( 1, directions.RIGHT )
+	editable.delete_lines( 1, 2, directions.RIGHT )
 
-	# Ask for lines 1 to 3
-	lines = editable.get_lines( 0, 3 )
+	# Ask for lines 1 to 4
+	lines = editable.get_lines( 0, 4 )
 
 	ln = lines[0]
 	assert_strings_equal( ln.left, "line 1 here" )
@@ -390,7 +390,14 @@ def delete_line():
 
 	ln = lines[2]
 	assert_strings_equal( ln.left, "line 3 here" )
-	assert_strings_equal( ln.right, "line 3 here" )
+	assert_strings_equal( ln.right, None )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == True )
+
+	ln = lines[3]
+	assert_strings_equal( ln.left, "line 4 here" )
+	assert_strings_equal( ln.right, "line 4 here" )
 	assert( ln.status == difflinetypes.IDENTICAL )
 	assert( ln.left_edited == False )
 	assert( ln.right_edited == False )
@@ -446,7 +453,7 @@ def edit_after_delete():
 	editable = EditableDiffModel( staticdiffmodel )
 
 	# Delete then edit
-	editable.delete_line( 1, directions.RIGHT )
+	editable.delete_lines( 1, 1, directions.RIGHT )
 
 	editable.edit_lines( 2, 4, directions.RIGHT,
 		( "edited 3c", "edited 4c", "edited 5c" ) )
@@ -491,7 +498,7 @@ def delete_line_plus_edits():
 	editable.edit_lines( 1, 3, directions.RIGHT,
 		( "edited 2b", "edited 3b", "edited 4b" ) )
 
-	editable.delete_line( 1, directions.RIGHT )
+	editable.delete_lines( 1, 1, directions.RIGHT )
 
 	editable.edit_lines( 2, 4, directions.RIGHT,
 		( "edited 3c", "edited 4c", "edited 5c" ) )
@@ -537,7 +544,7 @@ def write_to_file():
 	editable.edit_lines( 1, 3, directions.RIGHT,
 		( "edited 2b", "edited 3b", "edited 4b" ) )
 
-	editable.delete_line( 1, directions.RIGHT )
+	editable.delete_lines( 1, 1, directions.RIGHT )
 
 	editable.edit_lines( 2, 4, directions.RIGHT,
 		( "edited 3c", "edited 4c", "edited 5c" ) )
@@ -596,7 +603,7 @@ def has_edit_affecting_side():
 	assert( editable.has_edit_affecting_side( directions.RIGHT ) )
 	assert( not editable.has_edit_affecting_side( directions.LEFT ) )
 
-	editable.delete_line( 1, directions.LEFT )
+	editable.delete_lines( 1, 1, directions.LEFT )
 
 	assert( editable.has_edit_affecting_side( directions.RIGHT ) )
 	assert( editable.has_edit_affecting_side( directions.LEFT ) )
@@ -673,7 +680,7 @@ def run():
 	edit_line()
 	edit_several_lines()
 	edit_both_sides()
-	delete_line()
+	delete_lines()
 	edit_starts_before()
 	edit_ends_after()
 	edit_spans_before_and_after()

@@ -13,8 +13,9 @@ Next:
 + ncurses: file modified * goes away on save
 + ncurses: tests for status messages on next etc.
 + ncurses: tests for status messages on save
++ ncurses: can delete lines
 - editablediffmodel: can add lines
-- editablediffmodel: can delete lines
+- ncurses: can add lines
 - editablediffmodel: undo/redo works
 - ncurses: Can see long lines at bottom? (not short lines)
 - ncurses: Long lines at bottom are scrollable

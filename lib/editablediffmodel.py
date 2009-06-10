@@ -175,9 +175,11 @@ class EditableDiffModel( object ):
 			self.edits.append( EditableDiffModel.Edit(
 				first_line_num, last_line_num, side, lines ) )
 
-	def delete_line( self, line_num, side ):
+	def delete_lines( self, first_line_num, last_line_num, side ):
+		num_nones = 1 + last_line_num - first_line_num
+		nones = [ None ] * num_nones
 		self.edits.append( EditableDiffModel.Edit(
-			line_num, line_num, side, ( None, ) ) )
+			first_line_num, last_line_num, side, nones ) )
 
 	def write_to_file( self, fl, side ):
 		# We write this many lines at a time

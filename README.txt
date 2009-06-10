@@ -38,7 +38,8 @@ Keyboard shortcuts
  Select page up/down - </>
    Scroll left/right - z/x
      Copy left/right - [/]
-        Save changes - [/]  (NOTE: saves the file containing the cursor)
+         Delete line - d
+        Save changes - s  (NOTE: saves the file containing the cursor)
 
 Code
 ----

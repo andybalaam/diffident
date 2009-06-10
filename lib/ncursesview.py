@@ -40,6 +40,7 @@ HELP_MESSAGES = [
 	( _("Select page up/down"), _("</>") ),
 	( _("Scroll left/right"), _("z/x") ),
 	( _("Copy left/right"), _("[/]") ),
+	( _("Delete line(s)"), _("d") ),
 	( _("Save changes"), _("s") ),
 ]
 
@@ -79,6 +80,13 @@ class NCursesView( object ):
 				return xrange( self.start_line_num, self.line_num + 1 )
 			else:
 				return xrange( self.line_num, self.start_line_num + 1 )
+
+		def get_ordered_begin_and_end( self ):
+			first = self.start_line_num
+			last = self.line_num
+			if first > last:
+				last, first = first, last
+			return first, last
 
 	def __init__( self, diffmodel, filename_left=None, filename_right=None,
 			filemanager=None ):
@@ -186,6 +194,9 @@ class NCursesView( object ):
 			status_line = self.copy_lines( directions.LEFT )
 		elif key == ord( "]" ): # Copy lines left to right
 			status_line = self.copy_lines( directions.RIGHT )
+
+		elif key == ord( "d" ): # Delete selected lines
+			status_line = self.delete_lines()
 
 		elif key == ord( "J" ): # Extend selection down
 			status_line = self.move_cursor( directions.DOWN, True )
@@ -308,17 +319,25 @@ class NCursesView( object ):
 		return True
 
 	def copy_lines( self, side_to ):
-		first = self.mycursor.start_line_num
-		last = self.mycursor.line_num
-
-		if first > last:
-			last, first = first, last
+		first, last = self.mycursor.get_ordered_begin_and_end()
 
 		strs = self.get_lr_strs( self.opposite_lr( side_to ), first, last )
 		self.diffmodel.edit_lines( first + self.top_line, last + self.top_line,
 			side_to, strs )
 		self.draw_header_window()
 
+		# TODO: only update changed lines
+		self.set_top_line( self.top_line )
+		self.draw_screen()
+
+	def delete_lines( self ):
+		first, last = self.mycursor.get_ordered_begin_and_end()
+
+		self.diffmodel.delete_lines( first + self.top_line,
+			last + self.top_line, self.mycursor.lr )
+		self.draw_header_window()
+
+		# TODO: only update changed lines
 		self.set_top_line( self.top_line )
 		self.draw_screen()
 

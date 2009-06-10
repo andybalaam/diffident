@@ -36,8 +36,9 @@ class EditTracingFakeDiffModel( FakeDiffModel ):
 		self.trace.append( ( "edit_lines", first_line_num, last_line_num, side,
 			lines ) )
 
-	def delete_line( self, line_num, side ):
-		self.trace.append( ( "delete_line", line_num, side ) )
+	def delete_lines( self, first_line_num, last_line_num, side ):
+		self.trace.append( ( "delete_lines",
+			first_line_num, last_line_num, side ) )
 
 class EditReportingFakeDiffModel( FakeDiffModel ):
 	def __init__( self ):
@@ -89,6 +90,16 @@ def copy_r2l_multiple_lines_upside_down_after_scroll():
 			"right 05",
 			"right 06", ] ),
 		] )
+
+def delete_lines():
+	view, diffmodel = _make_view()
+	actions = [ "j", "l", "j", "j", "j", "j", "K", "K", "d" ]
+	view.show( actions )
+
+	assert( diffmodel.trace ==
+		[ ( "delete_lines", 3, 5, directions.RIGHT ),
+		] )
+
 
 def display_edited_lines():
 	diffmodel = FakeDiffModel()
@@ -174,6 +185,7 @@ def display_file_modified_both():
 def run():
 	copy_l2r_1_line()
 	copy_r2l_multiple_lines_upside_down_after_scroll()
+	delete_lines()
 	display_edited_lines()
 	display_file_modified_left_short()
 	display_file_modified_right()
