@@ -226,7 +226,9 @@ class NCursesView( object ):
 					True )
 
 		elif key == ord( "H" ): # Help
-			status_line = self.show_help( wait_for_input )
+			self.show_help( wait_for_input )
+			# We have already reset the status after showing the help
+			status_line = -1
 
 		if status_line is None:
 			self.set_status_line( DEFAULT_STATUS_MESSAGE, False )

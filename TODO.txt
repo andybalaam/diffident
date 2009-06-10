@@ -11,8 +11,8 @@ Next:
 + ncurses: header indication that a file is modified
 + editablediffmodel: don't remember edits that don't change anything
 + ncurses: file modified * goes away on save
-- ncurses: tests for status messages on next etc.
-- ncurses: tests for status messages on save
++ ncurses: tests for status messages on next etc.
++ ncurses: tests for status messages on save
 - editablediffmodel: can add lines
 - editablediffmodel: can delete lines
 - editablediffmodel: undo/redo works
@@ -45,6 +45,7 @@ Next:
 - ncurses: Confirm exit when there are unsaved changes
 - filemanager: save to backup files
 - filemanager: save to temporary file then rename when finished
+- filemanager: handle save failed e.g. file is not writeable
 
 Big:
 

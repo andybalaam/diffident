@@ -27,6 +27,7 @@ import test_ncursesview_helpscreen
 import test_ncursesview_multiselect
 import test_ncursesview_movement
 import test_ncursesview_nextdiff
+import test_ncursesview_status
 import test_unifieddiffparser
 
 def run_quick_tests():
@@ -43,10 +44,11 @@ def run_medium_tests():
 	test_ncursesview_movement.run()
 	test_ncursesview_multiselect.run()
 	test_ncursesview_nextdiff.run()
+	test_ncursesview_status.run()
 
 def test_quick():
 	run_quick_tests()
-	print "All tests passed."
+	print "All quick tests passed."
 	return 0
 
 def test_medium():
@@ -63,4 +65,6 @@ def test_slow():
 	retval = os.system( "test/slow/test_slow.sh" )
 	if retval == 0:
 		print "All tests (including slow ones) passed."
+
+	return retval
 
