@@ -448,8 +448,8 @@ def edit_after_delete():
 	# Delete then edit
 	editable.delete_line( 1, directions.RIGHT )
 
-	#editable.edit_lines( 2, 4, directions.RIGHT,
-	#	( "edited 3c", "edited 4c", "edited 5c" ) )
+	editable.edit_lines( 2, 4, directions.RIGHT,
+		( "edited 3c", "edited 4c", "edited 5c" ) )
 
 	# Ask for lines 1 to 3
 	lines = editable.get_lines( 0, 3 )
@@ -470,10 +470,10 @@ def edit_after_delete():
 
 	ln = lines[2]
 	assert_strings_equal( ln.left, "line 3 here" )
-	assert_strings_equal( ln.right, "line 3 here" )
-	assert( ln.status == difflinetypes.IDENTICAL )
+	assert_strings_equal( ln.right, "edited 3c" )
+	assert( ln.status == difflinetypes.DIFFERENT )
 	assert( ln.left_edited == False )
-	assert( ln.right_edited == False )
+	assert( ln.right_edited == True )
 
 	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
 
