@@ -15,6 +15,8 @@
 #   with this program; if not, write to the Free Software Foundation, Inc.,
 #   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+import itertools
+
 from lib.constants import difflinetypes
 from lib.constants import directions
 
@@ -207,7 +209,8 @@ class EditableDiffModel( object ):
 
 	def has_edit_affecting_side( self, side ):
 
-		for edit in self.edits[ self.save_points[side] : ]:
+		for edit in itertools.islice( self.edits,
+				self.save_points[side], None ):
 			if edit.side == side:
 				return True
 
