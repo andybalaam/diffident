@@ -55,23 +55,7 @@ def header_long_names():
 """[ni].../dir5/file1.txt   ...d/dire/file2.txt
 """ )
 
-def status_default():
-
-	diffmodel = FakeDiffModel()
-	diffmodel.lines = []
-
-	view = NCursesView( diffmodel )
-	view.win_width  = 40
-	view.win_height = 5
-
-	actions = []
-
-	assert_strings_equal( view.show( actions )[2],
-"""[ni]         Press SHIFT-H for help         
-""" )
-
-
 def run():
 	header_short_names()
 	header_long_names()
-	status_default()
+
