@@ -17,11 +17,48 @@
 
 import itertools
 
+from diffline import DiffLine
+
 from lib.constants import difflinetypes
 from lib.constants import directions
 
 class EditableDiffModel( object ):
 	"""An abstract model of an editable set of differences between 2 files."""
+
+	class Add( object ):
+		def __init__( self, first_line, side, new_strs ):
+			self.first_line = first_line
+			self.new_strs_len = len( new_strs )
+
+			# TODO: don't repeat yourself here
+			if side == directions.LEFT:
+				self.lines = [ DiffLine( s, None, difflinetypes.DIFFERENT,
+					True, False ) for s in new_strs ]
+			else:
+				self.lines = [ DiffLine( None, s, difflinetypes.DIFFERENT,
+					False, True ) for s in new_strs ]
+
+		def do_lines( self, start, end, lines_to_adjust,
+				edit_num, save_points ):
+
+			#print "lines_to_adjust =", lines_to_adjust
+			#print start, self.first_line, end
+
+			if start <= self.first_line < end:
+				insert_point = self.first_line - start
+				lines_to_adjust[ insert_point : insert_point ] = self.lines[:end-self.first_line]
+			else:
+				overlap = start - self.first_line
+				if overlap > 0:
+					lines_to_adjust[ 0 : 0 ] = self.lines[overlap:overlap+(end-start)]
+
+		def do_single_line( self, line_num, ln, edit_num, save_points ):
+			selfsta = self.first_line
+			selfend = self.first_line + self.new_strs_len
+			if selfsta <= line_num < selfend:
+				return self.lines[ line_num - selfsta ]
+			else:
+				return ln
 
 	class Edit( object ):
 		def __init__( self, start_line, end_line, side, new_strs ):
@@ -132,7 +169,20 @@ class EditableDiffModel( object ):
 	# DiffModel public functions:
 
 	def get_lines( self, start=0, end=None ):
-		lines = self.staticdiffmodel.get_lines( start, end )
+
+		# TODO: factor out and tidy
+		staticstart = start
+		staticend = end
+		for edit in self.edits:
+			if isinstance( edit, EditableDiffModel.Add ):
+				if edit.first_line < staticstart:
+					staticstart -= min( staticstart - edit.first_line,
+						edit.new_strs_len )
+				if staticend is not None and edit.first_line < staticend:
+					staticend -= min( staticend - edit.first_line,
+						edit.new_strs_len )
+
+		lines = self.staticdiffmodel.get_lines( staticstart, staticend )
 
 		for edit_num, edit in enumerate( self.edits ):
 			edit.do_lines( start, end, lines, edit_num, self.save_points )
@@ -140,7 +190,16 @@ class EditableDiffModel( object ):
 		return lines
 
 	def get_line( self, line_num ):
-		ln = self.staticdiffmodel.get_line( line_num )
+
+		# TODO: factor out and tidy
+		static_line_num = line_num
+		for edit in self.edits:
+			if ( isinstance( edit, EditableDiffModel.Add )
+					and edit.first_line < static_line_num ):
+				static_line_num -= min( static_line_num - edit.first_line,
+					edit.new_strs_len )
+
+		ln = self.staticdiffmodel.get_line( static_line_num )
 
 		for edit_num, edit in enumerate( self.edits ):
 			ln = edit.do_single_line( line_num, ln, edit_num, self.save_points )
@@ -180,6 +239,10 @@ class EditableDiffModel( object ):
 		nones = [ None ] * num_nones
 		self.edits.append( EditableDiffModel.Edit(
 			first_line_num, last_line_num, side, nones ) )
+
+	def add_lines( self, before_line_num, side, strs ):
+		self.edits.append( EditableDiffModel.Add( before_line_num, side,
+			strs ) )
 
 	def write_to_file( self, fl, side ):
 		# We write this many lines at a time

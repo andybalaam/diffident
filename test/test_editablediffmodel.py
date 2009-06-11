@@ -129,8 +129,6 @@ def edit_several_lines():
 
 	lines = editable.get_lines()
 
-	#print ListView( editable ).get_string()
-
 	# The line before is unchanged
 	assert_strings_equal( lines[6].left, "line 7 here" )
 	assert_strings_equal( lines[6].right, "line 7 here" )
@@ -175,8 +173,6 @@ def edit_both_sides():
 		( "edited 7", "edited 8 r", "edited 9", "edited 10 r" ) )
 
 	lines = editable.get_lines()
-
-	#print ListView( editable ).get_string()
 
 	# The line before is unchanged
 	assert_strings_equal( lines[6].left, "line 7 here" )
@@ -242,6 +238,7 @@ def edit_ends_after():
 
 	# Just ask for lines 6 and 7
 	lines = editable.get_lines( 5, 7 )
+	assert( len( lines ) == 2 )
 
 	assert_strings_equal( lines[0].left, "line 6 here" )
 	assert_strings_equal( lines[0].right, "line 6 here" )
@@ -267,6 +264,7 @@ def edit_spans_before_and_after():
 
 	# Just ask for lines 7, 8 and 9
 	lines = editable.get_lines( 6, 10 )
+	assert( len( lines ) == 4 )
 
 	assert_strings_equal( lines[0].left, "line 7 here" )
 	assert_strings_equal( lines[0].right, "edited 7" )
@@ -304,6 +302,7 @@ def edit_doesnt_touch():
 
 	# Just ask for line 9
 	lines = editable.get_lines( 9, 10 )
+	assert( len( lines ) == 1 )
 
 	assert_strings_equal( lines[0].left, "previous 10" )
 	assert_strings_equal( lines[0].right, "line 10 here" )
@@ -336,6 +335,7 @@ def several_edits():
 
 	# Ask for lines 1 to 4
 	lines = editable.get_lines( 0, 4 )
+	assert( len( lines ) == 4 )
 
 	assert_strings_equal( lines[0].left, "line 1 here" )
 	assert_strings_equal( lines[0].right, "edited 1a" )
@@ -373,6 +373,7 @@ def delete_lines():
 
 	# Ask for lines 1 to 4
 	lines = editable.get_lines( 0, 4 )
+	assert( len( lines ) == 4 )
 
 	ln = lines[0]
 	assert_strings_equal( ln.left, "line 1 here" )
@@ -416,6 +417,7 @@ def edit_doesnt_change_anything():
 
 	# Ask for lines 1 to 3
 	lines = editable.get_lines( 0, 3 )
+	assert( len( lines ) == 3 )
 
 	assert_strings_equal( lines[0].left, "line 1 here" )
 	assert_strings_equal( lines[0].right, "line 1 here" )
@@ -460,6 +462,7 @@ def edit_after_delete():
 
 	# Ask for lines 1 to 3
 	lines = editable.get_lines( 0, 3 )
+	assert( len( lines ) == 3 )
 
 	ln = lines[0]
 	assert_strings_equal( ln.left, "line 1 here" )
@@ -505,6 +508,7 @@ def delete_line_plus_edits():
 
 	# Ask for lines 1 to 3
 	lines = editable.get_lines( 0, 3 )
+	assert( len( lines ) == 3 )
 
 	ln = lines[0]
 	assert_strings_equal( ln.left, "line 1 here" )
@@ -586,6 +590,316 @@ def write_to_file_no_changes():
 		+ "previous 10\n"
 		)
 
+def add_lines_before():
+	"""The lines before an add are unaffected by it."""
+
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	editable.add_lines( 3, directions.LEFT, ["new line 3a", "new line 3b"] )
+	editable.add_lines( 6, directions.LEFT, ["new line 4a", "new line 4b"] )
+
+	# Get some lines before the add
+	lines = editable.get_lines( 0, 3 )
+	assert( len( lines ) == 3 )
+
+	ln = lines[0]
+	assert_strings_equal( ln.left, "line 1 here" )
+	assert_strings_equal( ln.right, "line 1 here" )
+	assert( ln.status == difflinetypes.IDENTICAL )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
+	assert( ln == editable.get_line( 0 ) ) # Sanity for get_line
+
+	ln = lines[1]
+	assert_strings_equal( ln.left, "line 2 here" )
+	assert_strings_equal( ln.right, "line 2 here" )
+	assert( ln.status == difflinetypes.IDENTICAL )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
+	assert( ln == editable.get_line( 1 ) ) # Sanity for get_line
+
+	ln = lines[2]
+	assert_strings_equal( ln.left, "line 3 here" )
+	assert_strings_equal( ln.right, "line 3 here" )
+	assert( ln.status == difflinetypes.IDENTICAL )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
+	assert( ln == editable.get_line( 2 ) ) # Sanity for get_line
+
+def add_lines_after():
+	"""The lines after an add are shifted down."""
+
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	# TODO: change to this
+	#editable.add_lines( 3, directions.LEFT, ["new line 3a"] )
+	#editable.add_lines( 4, directions.LEFT, ["new line 3b"] )
+	editable.add_lines( 3, directions.LEFT, ["new line 3a", "new line 3b"] )
+
+	# Get some lines after the add
+	lines = editable.get_lines( 5, 7 )
+	assert( len( lines ) == 2 )
+
+	ln = lines[0]
+	assert_strings_equal( ln.left, "line 4 here" )
+	assert_strings_equal( ln.right, "line 4 here" )
+	assert( ln.status == difflinetypes.IDENTICAL )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
+	assert( ln == editable.get_line( 5 ) ) # Sanity for get_line
+
+	ln = lines[1]
+	assert_strings_equal( ln.left, "line 5 here" )
+	assert_strings_equal( ln.right, "line 5 here different" )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
+	assert( ln == editable.get_line( 6 ) ) # Sanity for get_line
+
+def add_lines_containing():
+	"""The lines containing an add are calculated correctly."""
+
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	editable.add_lines( 3, directions.LEFT, ["new line 3a", "new line 3b"] )
+
+	# Get some lines containing the add
+	lines = editable.get_lines( 1, 6 )
+	assert( len( lines ) == 5 )
+
+	ln = lines[0]
+	assert_strings_equal( ln.left, "line 2 here" )
+	assert_strings_equal( ln.right, "line 2 here" )
+	assert( ln.status == difflinetypes.IDENTICAL )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
+	assert( ln == editable.get_line( 1 ) ) # Sanity for get_line
+
+	ln = lines[1]
+	assert_strings_equal( ln.left, "line 3 here" )
+	assert_strings_equal( ln.right, "line 3 here" )
+	assert( ln.status == difflinetypes.IDENTICAL )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
+	assert( ln == editable.get_line( 2 ) ) # Sanity for get_line
+
+	ln = lines[2]
+	assert_strings_equal( ln.left, "new line 3a" )
+	assert_strings_equal( ln.right, None )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == True )
+	assert( ln.right_edited == False )
+	assert( ln == editable.get_line( 3 ) ) # Sanity for get_line
+
+	ln = lines[3]
+	assert_strings_equal( ln.left, "new line 3b" )
+	assert_strings_equal( ln.right, None )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == True )
+	assert( ln.right_edited == False )
+	assert( ln == editable.get_line( 4 ) ) # Sanity for get_line
+
+	ln = lines[4]
+	assert_strings_equal( ln.left, "line 4 here" )
+	assert_strings_equal( ln.right, "line 4 here" )
+	assert( ln.status == difflinetypes.IDENTICAL )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
+	assert( ln == editable.get_line( 5 ) ) # Sanity for get_line
+
+def add_lines_overlapping_left():
+	"""If an add overlaps the region we are asking for on the left,
+	we still calculate the right answer."""
+
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	editable.add_lines( 3, directions.RIGHT,
+		[
+		"new line 3a",
+		"new line 3b",
+		"new line 3c",
+		"new line 3d",
+		] )
+
+	# Get some lines containing the add
+	lines = editable.get_lines( 5, 8 )
+	assert( len( lines ) == 3 )
+
+	ln = lines[0]
+	assert_strings_equal( ln.left, None )
+	assert_strings_equal( ln.right, "new line 3c" )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == True )
+	assert( ln == editable.get_line( 5 ) ) # Sanity for get_line
+
+	ln = editable.get_line( 6 )
+	assert_strings_equal( ln.left, None )
+	assert_strings_equal( ln.right, "new line 3d" )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == True )
+	assert( ln == lines[1] ) # Sanity - get_lines gives same answer as get_line
+
+	ln = lines[2]
+	assert_strings_equal( ln.left, "line 4 here" )
+	assert_strings_equal( ln.right, "line 4 here" )
+	assert( ln.status == difflinetypes.IDENTICAL )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
+	assert( ln == editable.get_line( 7 ) ) # Sanity for get_line
+
+def add_lines_overlapping_right():
+	"""If an add overlaps the region we are asking for on the right,
+	we still calculate the right answer."""
+
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	editable.add_lines( 1, directions.RIGHT,
+		[
+		"new line 1a",
+		"new line 1b",
+		"new line 1c",
+		"new line 1d",
+		] )
+
+	# Get some lines containing the add
+	lines = editable.get_lines( 0, 2 )
+	assert( len( lines ) == 2 )
+
+	ln = lines[0]
+	assert_strings_equal( ln.left, "line 1 here" )
+	assert_strings_equal( ln.right, "line 1 here" )
+	assert( ln.status == difflinetypes.IDENTICAL )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
+	assert( ln == editable.get_line( 0 ) ) # Sanity for get_line
+
+	ln = lines[1]
+	assert_strings_equal( ln.left, None )
+	assert_strings_equal( ln.right, "new line 1a" )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == True )
+	assert( ln == editable.get_line( 1 ) ) # Sanity for get_line
+
+def add_lines_spanning():
+	"""If an add overlaps the entire region we asking for,
+	we still calculate the right answer."""
+
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	editable.add_lines( 1, directions.RIGHT,
+		[
+		"new line 1a",
+		"new line 1b",
+		"new line 1c",
+		"new line 1d",
+		] )
+
+	# Get some lines containing the add
+	lines = editable.get_lines( 2, 4 )
+	assert( len( lines ) == 2 )
+
+	ln = lines[0]
+	assert_strings_equal( ln.left, None )
+	assert_strings_equal( ln.right, "new line 1b" )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == True )
+	assert( ln == editable.get_line( 2 ) ) # Sanity for get_line
+
+	ln = lines[1]
+	assert_strings_equal( ln.left, None )
+	assert_strings_equal( ln.right, "new line 1c" )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == True )
+	assert( ln == editable.get_line( 3 ) ) # Sanity for get_line
+
+def add_inside_another_add():
+	"""If an add lands inside another add,
+	we still calculate the right answer."""
+
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	editable.add_lines( 1, directions.RIGHT,
+		[
+		"new line 1a",
+		"new line 1b",
+		"new line 1c",
+		"new line 1d",
+		] )
+
+	editable.add_lines( 3, directions.LEFT,
+		[
+		"new line 1bi",
+		"new line 1bii",
+		] )
+
+	# Get some lines containing the add
+	lines = editable.get_lines( 0 , 8 )
+	assert( len( lines ) == 8 )
+
+	ln = lines[0]
+	assert_strings_equal( ln.left, "line 1 here" )
+	assert_strings_equal( ln.right, "line 1 here" )
+	assert( ln == editable.get_line( 2 ) ) # Sanity for get_line
+
+	ln = lines[1]
+	assert_strings_equal( ln.left, None )
+	assert_strings_equal( ln.right, "new line 1a" )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == True )
+	assert( ln == editable.get_line( 1 ) ) # Sanity for get_line
+
+	ln = lines[2]
+	assert_strings_equal( ln.left, None )
+	assert_strings_equal( ln.right, "new line 1b" )
+	assert( ln == editable.get_line( 2 ) ) # Sanity for get_line
+
+	ln = lines[3]
+	assert_strings_equal( ln.left, "new line 1bi" )
+	assert_strings_equal( ln.right, None )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == True )
+	assert( ln.right_edited == False )
+	assert( ln == editable.get_line( 3 ) ) # Sanity for get_line
+
+	ln = lines[4]
+	assert_strings_equal( ln.left, "new line 1bii" )
+	assert_strings_equal( ln.right, None )
+	assert( ln == editable.get_line( 4 ) ) # Sanity for get_line
+
+	ln = lines[5]
+	assert_strings_equal( ln.left, None )
+	assert_strings_equal( ln.right, "new line 1c" )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == True )
+	assert( ln == editable.get_line( 5 ) ) # Sanity for get_line
+
+	ln = lines[6]
+	assert_strings_equal( ln.left, None )
+	assert_strings_equal( ln.right, "new line 1d" )
+	assert( ln == editable.get_line( 6 ) ) # Sanity for get_line
+
+	ln = lines[7]
+	assert_strings_equal( ln.left, "line 2 here" )
+	assert_strings_equal( ln.right, "line 2 here" )
+	assert( ln == editable.get_line( 7 ) ) # Sanity for get_line
+
+def several_edits_and_adds():
+	assert( False )
+
 def has_edit_affecting_side():
 
 	staticdiffmodel = _make_static_diffmodel()
@@ -636,10 +950,14 @@ def has_edit_affecting_side_after_save():
 	editable.edit_lines( 0, 2, directions.LEFT,
 		( "edited left 1a", "edited left 2a", "edited left 3a" ) )
 
+	#TODO: editable.add_lines add some lines
+
 	assert( editable.has_edit_affecting_side( directions.RIGHT ) )
 	assert( editable.has_edit_affecting_side( directions.LEFT ) )
 
 	lines = editable.get_lines( 0, 3 )
+	assert( len( lines ) == 3 )
+
 	ln = lines[0]
 	assert_strings_equal( ln.left, "edited left 1a" )
 	assert_strings_equal( ln.right, "edited 1a" )
@@ -650,6 +968,8 @@ def has_edit_affecting_side_after_save():
 	editable.set_save_point( directions.LEFT )
 
 	lines = editable.get_lines( 0, 3 )
+	assert( len( lines ) == 3 )
+
 	ln = lines[0]
 	assert_strings_equal( ln.left, "edited left 1a" )
 	assert_strings_equal( ln.right, "edited 1a" )
@@ -669,6 +989,8 @@ def has_edit_affecting_side_after_save():
 	assert( not editable.has_edit_affecting_side( directions.LEFT ) )
 
 	lines = editable.get_lines( 0, 3 )
+	assert( len( lines ) == 3 )
+
 	ln = lines[0]
 	assert_strings_equal( ln.left, "edited left 1a" )
 	assert_strings_equal( ln.right, "edited 1b" )
@@ -692,7 +1014,14 @@ def run():
 	write_to_file()
 	write_to_file_no_changes()
 
-	#add_line() # TODO: requires us to shift all subsequent lines down
+	add_lines_before()
+	add_lines_after()
+	add_lines_containing()
+	add_lines_overlapping_left()
+	add_lines_overlapping_right()
+	add_lines_spanning()
+	# TODO: make pass: add_inside_another_add()
+	# TODO: implement: several_edits_and_adds()
 
 	has_edit_affecting_side()
 	has_edit_affecting_side_nullchange()
