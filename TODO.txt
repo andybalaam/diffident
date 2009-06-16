@@ -15,6 +15,8 @@ Next:
 + ncurses: tests for status messages on save
 + ncurses: can delete lines
 - editablediffmodel: can add lines
+- Fix or remove all TODOs in code
+- Split EditableDiffModel into several files
 - ncurses: can add lines
 - editablediffmodel: undo/redo works
 - ncurses: Can see long lines at bottom? (not short lines)
@@ -76,6 +78,9 @@ Big:
 
 Later/Never:
 
+- If you edit a line and don't actually change it (but other parts of
+  your edit do change things) don't mark the unchanged line as changed.
+  See test_editabkediffmodel.py:edit_doesnt_change_line.
 - editablediffmodel: Cache results instead of recalculating each time?
 - git: highlight whitespace at end of lines, and other git diffisms
 - ncurses: toggle showing line number

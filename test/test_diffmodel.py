@@ -79,8 +79,51 @@ def get_num_lines():
 
 	assert( diffmodel.get_num_lines() == 4 )
 
+def get_lines_beyond_end():
+	parser = FakeParser()
+	diffmodel = DiffModel( parser )
+
+	# We ask for many lines, but get only those that exist
+	lines = diffmodel.get_lines(0, 10)
+	assert( len( lines ) == 4 )
+
+	assert_strings_equal( lines[0].left, "line 1" )
+	assert_strings_equal( lines[0].right, "line 1" )
+	assert( lines[0].status == difflinetypes.IDENTICAL )
+
+	assert_strings_equal( lines[1].left, "line 2 left" )
+	assert_strings_equal( lines[1].right, None )
+	assert( lines[1].status == difflinetypes.REMOVE )
+
+	assert_strings_equal( lines[2].left, None )
+	assert_strings_equal( lines[2].right, "line 3 right" )
+	assert( lines[2].status == difflinetypes.ADD )
+
+	assert_strings_equal( lines[3].left, "line 4 left" )
+	assert_strings_equal( lines[3].right, "line 4 right" )
+	assert( lines[3].status == difflinetypes.DIFFERENT )
+
+def get_line_beyond_end():
+	parser = FakeParser()
+	diffmodel = DiffModel( parser )
+
+	# We ask for many lines, but get only those that exist
+	line = diffmodel.get_line( 4 )
+	assert( line is None )
+
+def get_line_before_start():
+	parser = FakeParser()
+	diffmodel = DiffModel( parser )
+
+	# We ask for many lines, but get only those that exist
+	line = diffmodel.get_line( -1 )
+	assert( line is None )
+
 def run():
 	get_lines()
 	get_line()
 	get_num_lines()
+	get_lines_beyond_end()
+	get_line_beyond_end()
+	get_line_before_start()
 

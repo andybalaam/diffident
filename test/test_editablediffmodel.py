@@ -214,6 +214,7 @@ def edit_starts_before():
 
 	# Just ask for lines 8 and 9
 	lines = editable.get_lines( 8 )
+	assert( len( lines ) == 2 )
 
 	assert_strings_equal( lines[0].left, "line 9 here" )
 	assert_strings_equal( lines[0].right, "edited 9" )
@@ -405,7 +406,7 @@ def delete_lines():
 
 	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
 
-def edit_doesnt_change_anything():
+def edit_doesnt_change_line():
 	staticdiffmodel = _make_static_diffmodel()
 	old_static_lines = list( ln.clone() for ln in staticdiffmodel.get_lines() )
 
@@ -422,13 +423,51 @@ def edit_doesnt_change_anything():
 	assert_strings_equal( lines[0].left, "line 1 here" )
 	assert_strings_equal( lines[0].right, "line 1 here" )
 	assert( lines[0].status == difflinetypes.IDENTICAL )
-	assert( lines[0].left_edited == False )
+	assert( lines[0].left_edited == True ) # Because this is part of a real
+	                                       # change, we do mark it as changed.
+	                                       # This may be fixed in future
 	assert( lines[0].right_edited == False )
 
 	assert_strings_equal( lines[1].left, "edited 2" )
 	assert_strings_equal( lines[1].right, "line 2 here" )
 	assert( lines[1].status == difflinetypes.DIFFERENT )
 	assert( lines[1].left_edited == True )
+	assert( lines[1].right_edited == False )
+
+	assert_strings_equal( lines[2].left, "line 3 here" )
+	assert_strings_equal( lines[2].right, "line 3 here" )
+	assert( lines[2].status == difflinetypes.IDENTICAL )
+	assert( lines[2].left_edited == True ) # Because this is part of a real
+	                                       # change, we do mark it as changed.
+	                                       # This may be fixed in future
+	assert( lines[2].right_edited == False )
+
+	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
+
+def edit_doesnt_change_anything():
+	staticdiffmodel = _make_static_diffmodel()
+	old_static_lines = list( ln.clone() for ln in staticdiffmodel.get_lines() )
+
+	editable = EditableDiffModel( staticdiffmodel )
+
+	# Make a change that actually doesn't change any lines
+	editable.edit_lines( 0, 2, directions.LEFT,
+		[ "line 1 here", "line 2 here", "line 3 here" ] )
+
+	# Ask for lines 1 to 3
+	lines = editable.get_lines( 0, 3 )
+	assert( len( lines ) == 3 )
+
+	assert_strings_equal( lines[0].left, "line 1 here" )
+	assert_strings_equal( lines[0].right, "line 1 here" )
+	assert( lines[0].status == difflinetypes.IDENTICAL )
+	assert( lines[0].left_edited == False )
+	assert( lines[0].right_edited == False )
+
+	assert_strings_equal( lines[1].left, "line 2 here" )
+	assert_strings_equal( lines[1].right, "line 2 here" )
+	assert( lines[1].status == difflinetypes.IDENTICAL )
+	assert( lines[1].left_edited == False )
 	assert( lines[1].right_edited == False )
 
 	assert_strings_equal( lines[2].left, "line 3 here" )
@@ -590,6 +629,24 @@ def write_to_file_no_changes():
 		+ "previous 10\n"
 		)
 
+def add_lines_get_num_lines():
+	"""The number of lines is correctly reported when lines have been added."""
+
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	assert( editable.get_num_lines() == 10 )
+
+	editable.add_lines( 3, directions.LEFT,
+		["new line 3a", "new line 3b", "new line 3c"] )
+
+	assert( editable.get_num_lines() == 13 )
+
+	editable.add_lines( 6, directions.LEFT, ["new line 4a", "new line 4b"] )
+	editable.add_lines( 4, directions.LEFT, ["new line 3ai", "new line 3aii"] )
+
+	assert( editable.get_num_lines() == 17 )
+
 def add_lines_before():
 	"""The lines before an add are unaffected by it."""
 
@@ -634,12 +691,12 @@ def add_lines_after():
 	editable = EditableDiffModel( staticdiffmodel )
 
 	# TODO: change to this
-	#editable.add_lines( 3, directions.LEFT, ["new line 3a"] )
-	#editable.add_lines( 4, directions.LEFT, ["new line 3b"] )
-	editable.add_lines( 3, directions.LEFT, ["new line 3a", "new line 3b"] )
+	editable.add_lines( 3, directions.LEFT, ["new line 3a"] )
+	editable.add_lines( 2, directions.LEFT, ["new line 2a", "new line 2b"] )
 
 	# Get some lines after the add
-	lines = editable.get_lines( 5, 7 )
+	lines = editable.get_lines( 6, 8 )
+
 	assert( len( lines ) == 2 )
 
 	ln = lines[0]
@@ -648,7 +705,7 @@ def add_lines_after():
 	assert( ln.status == difflinetypes.IDENTICAL )
 	assert( ln.left_edited == False )
 	assert( ln.right_edited == False )
-	assert( ln == editable.get_line( 5 ) ) # Sanity for get_line
+	assert( ln == editable.get_line( 6 ) ) # Sanity for get_line
 
 	ln = lines[1]
 	assert_strings_equal( ln.left, "line 5 here" )
@@ -656,7 +713,37 @@ def add_lines_after():
 	assert( ln.status == difflinetypes.DIFFERENT )
 	assert( ln.left_edited == False )
 	assert( ln.right_edited == False )
+	assert( ln == editable.get_line( 7 ) ) # Sanity for get_line
+
+def add_lines_after_overlapping():
+	"""The lines after an add are shifted down, even when the adds are overlapping."""
+
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	editable.add_lines( 2, directions.LEFT, ["new line 2a", "new line 2c"] )
+	editable.add_lines( 3, directions.LEFT, ["new line 2b"] )
+
+	# Get some lines after the add
+	lines = editable.get_lines( 6, 8 )
+
+	assert( len( lines ) == 2 )
+
+	ln = lines[0]
+	assert_strings_equal( ln.left, "line 4 here" )
+	assert_strings_equal( ln.right, "line 4 here" )
+	assert( ln.status == difflinetypes.IDENTICAL )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
 	assert( ln == editable.get_line( 6 ) ) # Sanity for get_line
+
+	ln = lines[1]
+	assert_strings_equal( ln.left, "line 5 here" )
+	assert_strings_equal( ln.right, "line 5 here different" )
+	assert( ln.status == difflinetypes.DIFFERENT )
+	assert( ln.left_edited == False )
+	assert( ln.right_edited == False )
+	assert( ln == editable.get_line( 7 ) ) # Sanity for get_line
 
 def add_lines_containing():
 	"""The lines containing an add are calculated correctly."""
@@ -851,7 +938,7 @@ def add_inside_another_add():
 	ln = lines[0]
 	assert_strings_equal( ln.left, "line 1 here" )
 	assert_strings_equal( ln.right, "line 1 here" )
-	assert( ln == editable.get_line( 2 ) ) # Sanity for get_line
+	assert( ln == editable.get_line( 0 ) ) # Sanity for get_line
 
 	ln = lines[1]
 	assert_strings_equal( ln.left, None )
@@ -998,7 +1085,47 @@ def has_edit_affecting_side_after_save():
 	assert( ln.left_edited == False )
 	assert( ln.right_edited == False )
 
+def get_lines_beyond_end():
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	editable.edit_lines( 0, 2, directions.RIGHT,
+		( "edited 1b", "edited 2b", "edited 3b" ) )
+
+	# We ask for many lines, but get only those that exist
+	lines = editable.get_lines( 0, 100 )
+	assert( len( lines ) == 10 )
+
+def get_line_beyond_end():
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	editable.edit_lines( 0, 2, directions.RIGHT,
+		( "edited 1b", "edited 2b", "edited 3b" ) )
+
+	line = editable.get_line( 9 )
+	assert( line is not None )
+
+	# We ask for a line out of range and get None
+	line = editable.get_line( 10 )
+	assert( line is None )
+
+def get_line_before_start():
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	editable.edit_lines( 2, 4, directions.RIGHT,
+		( "edited 3b", "edited 3b", "edited 3c" ) )
+
+	line = editable.get_line( 1 )
+	assert( line is not None )
+
+	# We ask for a line out of range and get None
+	line = editable.get_line( -1 )
+	assert( line is None )
+
 def run():
+
 	edit_line()
 	edit_several_lines()
 	edit_both_sides()
@@ -1010,20 +1137,30 @@ def run():
 	several_edits()
 	edit_after_delete()
 	delete_line_plus_edits()
+	edit_doesnt_change_line()
 	edit_doesnt_change_anything()
 	write_to_file()
 	write_to_file_no_changes()
 
+	add_lines_get_num_lines()
 	add_lines_before()
+	add_lines_after_overlapping()
 	add_lines_after()
 	add_lines_containing()
 	add_lines_overlapping_left()
 	add_lines_overlapping_right()
 	add_lines_spanning()
-	# TODO: make pass: add_inside_another_add()
+	# TODO: add_lines_ask_for_all()
+	add_inside_another_add()
 	# TODO: implement: several_edits_and_adds()
+	# TODO: implement: add_lines_write_to_file()
+	# TODO: implement: add_then_edit()
 
 	has_edit_affecting_side()
 	has_edit_affecting_side_nullchange()
 	has_edit_affecting_side_after_save()
+
+	get_line_beyond_end()
+	get_lines_beyond_end()
+	get_line_before_start()
 
