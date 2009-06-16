@@ -47,8 +47,6 @@ class DiffLine( object ):
 			self.status, self.right, red )
 
 	def clone( self ):
-		ret = DiffLine( self.left, self.right, self.status,
+		return DiffLine( self.left, self.right, self.status,
 			self.left_edited, self.right_edited )
-
-		return ret
 
