@@ -46,6 +46,15 @@ class DiffLine( object ):
 		return "%s%s -%s- %s%s" % ( self.left, led,
 			self.status, self.right, red )
 
+	def __eq__( self, other ):
+		return (
+			    self.left_edited  == other.left_edited
+			and self.right_edited == other.right_edited
+			and self.left         == other.left
+			and self.right        == other.right
+			and self.status       == other.status
+			)
+
 	def clone( self ):
 		return DiffLine( self.left, self.right, self.status,
 			self.left_edited, self.right_edited )
