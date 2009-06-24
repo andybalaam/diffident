@@ -75,16 +75,16 @@ class EditableDiffModel( object ):
 						annotated_lines[array_index] -= reduce_line_num_by
 				else:
 					# TODO: combine with "if" part
-					if self.start_line <= line.line_num < self.end_line:
-						if not line.is_fully_edited():
-							after_save = ( edit_num >= save_points[self.side] )
-							line.maybe_set_side( self.side,
-								self.new_strs[line.line_num - self.start_line],
-								after_save )
-							line.maybe_set_side(
-								directions.opposite_lr( self.side ),
-								None, False )
-							reduce_line_num_by += 1
+					if ( self.start_line <= line.line_num < self.end_line and
+							not line.is_fully_edited() ):
+						after_save = ( edit_num >= save_points[self.side] )
+						line.maybe_set_side( self.side,
+							self.new_strs[line.line_num - self.start_line],
+							after_save )
+						line.maybe_set_side(
+							directions.opposite_lr( self.side ),
+							None, False )
+						reduce_line_num_by += 1
 					else:
 						line.line_num -= reduce_line_num_by
 					if not any_gaps_left:
@@ -173,6 +173,9 @@ class EditableDiffModel( object ):
 		if len( self.edits ) == 0:
 			return self.staticdiffmodel.get_lines( start, end )
 
+		# TODO: Call something like self.staticdiffmodel.is_before_end( end ).
+		#       This can return early in most cases, meaning we don't need to
+		#       wait for diff to diff the whole model.
 		num_lines = self.get_num_lines()
 		if end is None or end > num_lines:
 			end = num_lines
@@ -204,6 +207,9 @@ class EditableDiffModel( object ):
 
 
 	def get_line( self, line_num ):
+		# TODO: Call something like staticdiffmodel.is_before_end( line_num ).
+		#       This can return early in most cases, meaning we don't need to
+		#       wait for diff to diff the whole model.
 		num_lines = self.get_num_lines()
 		if line_num >= num_lines or line_num < 0:
 			return None
