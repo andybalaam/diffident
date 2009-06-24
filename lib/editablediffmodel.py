@@ -44,20 +44,20 @@ class EditableDiffModel( object ):
 		def apply_to( self, annotated_lines, edit_num, save_points ):
 			reduce_line_num_by = 0
 
-			first_annotated_line = None
+			first_editable_line = None
 			for ln in annotated_lines:
 				if ln.__class__ == int:
-					first_annotated_line = ln
+					first_editable_line = ln
 					break
-				elif not ln.is_fully_edited():
-					first_annotated_line = ln.line_num
+				if not ln.is_fully_edited():
+					first_editable_line = ln.line_num
 					break
 
-			assert( first_annotated_line is not None )
+			assert( first_editable_line is not None )
 
-			if self.start_line < first_annotated_line:
+			if self.start_line < first_editable_line:
 				reduce_line_num_by += min(
-					first_annotated_line - self.start_line,
+					first_editable_line - self.start_line,
 					self.num_added_lines )
 
 			any_gaps_left = False
@@ -111,18 +111,18 @@ class EditableDiffModel( object ):
 		# TODO: combine with Add's impl
 		def apply_to( self, annotated_lines, edit_num, save_points ):
 
-			first_annotated_line = None
+			first_editable_line = None
 			for ln in annotated_lines:
 				if ln.__class__ == int:
-					first_annotated_line = ln
+					first_editable_line = ln
 					break
 				elif not ln.is_fully_edited():
-					first_annotated_line = ln.line_num
+					first_editable_line = ln.line_num
 					break
 
-			assert( first_annotated_line is not None )
+			assert( first_editable_line is not None )
 
-			if self.end_line <= first_annotated_line:
+			if self.end_line <= first_editable_line:
 				return True
 
 			any_gaps_left = False
@@ -190,7 +190,8 @@ class EditableDiffModel( object ):
 		# ints to indicate which line number should be inserted in which place,
 		# and as edits are found for each line number, the ints are replaced
 		# with DiffLine objects.
-		annotated_lines = range( start, end )
+		annotated_lines = list( EditableDiffModel.EditingLine( line_num )
+			for line_num in xrange( start, end ) )
 
 		# TODO: make a nice iterator for this loop?
 		# Loop through all edits in reverse order, working out the
