@@ -27,8 +27,6 @@ from lib.constants import directions
 
 from lib.editablediffmodel import EditableDiffModel
 
-from lib.listview import ListView # TODO: remove this
-
 def _make_static_diffmodel():
 	staticdiffmodel = FakeDiffModel()
 	staticdiffmodel.lines = [
@@ -735,7 +733,6 @@ def add_lines_after():
 	staticdiffmodel = _make_static_diffmodel()
 	editable = EditableDiffModel( staticdiffmodel )
 
-	# TODO: change to this
 	editable.add_lines( 3, directions.LEFT, ["new line 3a"] )
 	editable.add_lines( 2, directions.LEFT, ["new line 2a", "new line 2b"] )
 
@@ -1371,8 +1368,6 @@ def has_edit_affecting_side_after_save():
 	editable.edit_lines( 0, 2, directions.LEFT,
 		( "edited left 1a", "edited left 2a", "edited left 3a" ) )
 
-	#TODO: editable.add_lines add some lines
-
 	assert( editable.has_edit_affecting_side( directions.RIGHT ) )
 	assert( editable.has_edit_affecting_side( directions.LEFT ) )
 
@@ -1418,6 +1413,28 @@ def has_edit_affecting_side_after_save():
 	assert( ln.status == difflinetypes.DIFFERENT )
 	assert( ln.left_edited == False )
 	assert( ln.right_edited == False )
+
+	editable.add_lines( 3, directions.LEFT,
+		[ "Added line 1", "Added line 1", "Added line 1" ] )
+
+	assert( not editable.has_edit_affecting_side( directions.RIGHT ) )
+	assert( editable.has_edit_affecting_side( directions.LEFT ) )
+
+	editable.add_lines( 3, directions.RIGHT,
+		[ "Added line 1", "Added line 1", "Added line 1" ] )
+
+	assert( editable.has_edit_affecting_side( directions.RIGHT ) )
+	assert( editable.has_edit_affecting_side( directions.LEFT ) )
+
+	editable.set_save_point( directions.LEFT )
+
+	assert( editable.has_edit_affecting_side( directions.RIGHT ) )
+	assert( not editable.has_edit_affecting_side( directions.LEFT ) )
+
+	editable.set_save_point( directions.RIGHT )
+
+	assert( not editable.has_edit_affecting_side( directions.RIGHT ) )
+	assert( not editable.has_edit_affecting_side( directions.LEFT ) )
 
 def get_lines_beyond_end():
 	staticdiffmodel = _make_static_diffmodel()
