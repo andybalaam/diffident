@@ -46,9 +46,6 @@ class EditableDiffModel( object ):
 
 			first_editable_line = None
 			for ln in annotated_lines:
-				if ln.__class__ == int:
-					first_editable_line = ln
-					break
 				if not ln.is_fully_edited():
 					first_editable_line = ln.line_num
 					break
@@ -62,39 +59,18 @@ class EditableDiffModel( object ):
 
 			any_gaps_left = False
 			for array_index, line in enumerate( annotated_lines ):
-				if line.__class__ == int:
-					# This line hasn't been edited at all
-					if self.start_line <= line < self.end_line:
-						# If this line is touched by this Add
+				if ( self.start_line <= line.line_num < self.end_line and
+						not line.is_fully_edited() ):
+					# This line is affected by this Add
+					self._update_editing_line( line, line.line_num,
+						edit_num, save_points )
 
-						# Create an EditingLine that is already fully edited -
-						# no previous edit could have affected it because
-						# it didn't exist
-						editingline = EditableDiffModel.EditingLine( line )
-						self._update_editing_line( editingline, line, edit_num,
-							save_points )
-						
-						# TODO: can we avoid an array lookup by using an
-						#       iterator?
-						annotated_lines[array_index] = editingline
-						reduce_line_num_by += 1
-					else:
-						any_gaps_left = True
-						annotated_lines[array_index] -= reduce_line_num_by
+					reduce_line_num_by += 1
 				else:
-					# line is a EditableDiffModel.EditingLine indicating
-					# that we have edited it before
-					if ( self.start_line <= line.line_num < self.end_line and
-							not line.is_fully_edited() ):
-						# This line is affected by this Add
-						self._update_editing_line( line, line.line_num,
-							edit_num, save_points )
+					line.line_num -= reduce_line_num_by
 
-						reduce_line_num_by += 1
-					else:
-						line.line_num -= reduce_line_num_by
-					if not any_gaps_left:
-						any_gaps_left = not line.is_fully_edited()
+				if not any_gaps_left:
+					any_gaps_left = not line.is_fully_edited()
 
 			return any_gaps_left
 
@@ -113,10 +89,7 @@ class EditableDiffModel( object ):
 
 			first_editable_line = None
 			for ln in annotated_lines:
-				if ln.__class__ == int:
-					first_editable_line = ln
-					break
-				elif not ln.is_fully_edited():
+				if not ln.is_fully_edited():
 					first_editable_line = ln.line_num
 					break
 
@@ -127,35 +100,16 @@ class EditableDiffModel( object ):
 
 			any_gaps_left = False
 			for array_index, line in enumerate( annotated_lines ):
-				# We only process ints - if this is not an int, it is a line
-				# that we have already modified.
-				if line.__class__ == int:
-					any_gaps_left = True
-					if self.start_line <= line < self.end_line:
-						# TODO: can we avoid an array lookup by using an
-						#       iterator?
-						
+				if self.start_line <= line.line_num < self.end_line:
+					if not line.is_fully_edited():
+						new_str = self.new_strs[line.line_num -
+							self.start_line]
 						after_save = ( edit_num >= save_points[self.side] )
+						modified = line.maybe_set_side( self.side, new_str,
+							after_save )
 
-						editcol = EditableDiffModel.EditingLine( line )
-						editcol.maybe_set_side( self.side,
-							self.new_strs[line - self.start_line], after_save )
-						annotated_lines[array_index] = editcol
-				else:
-					# type-ish checks
-					#assert( "line_num" in line.__dict__ )
-					#assert( line.is_fully_edited )
-					#assert( line.maybe_set_side )
-
-					if self.start_line <= line.line_num < self.end_line:
-						if not line.is_fully_edited():
-							new_str = self.new_strs[line.line_num -
-								self.start_line]
-							after_save = ( edit_num >= save_points[self.side] )
-							modified = line.maybe_set_side( self.side, new_str,
-								after_save )
-					if not any_gaps_left:
-						any_gaps_left = not line.is_fully_edited()
+				if not any_gaps_left:
+					any_gaps_left = not line.is_fully_edited()
 
 			return any_gaps_left
 
@@ -207,8 +161,8 @@ class EditableDiffModel( object ):
 			if not any_gaps_left:
 				break
 
-		ret = list( self._get_static_or_edited_line( edited_line )
-			for edited_line in annotated_lines )
+		ret = list( edited_line.create_filled_in_diffline(
+			self.staticdiffmodel ) for edited_line in annotated_lines )
 
 		return ret
 
@@ -372,41 +326,26 @@ class EditableDiffModel( object ):
 			return EditableDiffModel.EditingLine._NOT_EDITED_YET not in (
 				self.left, self.right )
 
-		def create_filled_in_diffline( self, static_line ):
+		def create_filled_in_diffline( self, staticdiffmodel ):
 			"""If any parts of this line have not yet been affected by
 			an edit, absorb them from the supplied static line and
 			return a DiffLine object representing the final version
 			of this line."""
 
-			if static_line is None:
-				left = None
-				right = None
-			else:
-				left = static_line.left
-				right = static_line.right
+			if not self.is_fully_edited():
 
-			self.maybe_set_side( directions.LEFT,  left,  False )
-			self.maybe_set_side( directions.RIGHT, right, False )
+				static_line = staticdiffmodel.get_line( self.line_num )
+
+				if static_line is None:
+					left = None
+					right = None
+				else:
+					left = static_line.left
+					right = static_line.right
+	
+				self.maybe_set_side( directions.LEFT,  left,  False )
+				self.maybe_set_side( directions.RIGHT, right, False )
 
 			return DiffLine.clone( self )
-
-
-	def _get_static_or_edited_line( self, edited_line ):
-		"""If edited_line is an int, return that line number from our static
-		DiffModel.  Otherwise, we assume it is a DiffLine, and return it."""
-
-		if edited_line.__class__ == int:
-			# If it's an int it means return this line from the static model
-			return self.staticdiffmodel.get_line( edited_line )
-		elif edited_line.__class__ == DiffLine:
-			# Adds put an object of the exact type we need into the array,
-			# so we can just return it
-			return edited_line
-		else:
-			# Otherwise it must be an EditingLine and we use that to
-			# create the line to return
-
-			static_line = self.staticdiffmodel.get_line( edited_line.line_num )
-			return edited_line.create_filled_in_diffline( static_line )
 
 
