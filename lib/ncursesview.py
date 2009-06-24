@@ -321,7 +321,8 @@ class NCursesView( object ):
 	def copy_lines( self, side_to ):
 		first, last = self.mycursor.get_ordered_begin_and_end()
 
-		strs = self.get_lr_strs( self.opposite_lr( side_to ), first, last )
+		strs = self.get_lr_strs( directions.opposite_lr( side_to ),
+			first, last )
 		self.diffmodel.edit_lines( first + self.top_line, last + self.top_line,
 			side_to, strs )
 		self.draw_header_window()
@@ -349,15 +350,6 @@ class NCursesView( object ):
 
 		lines = self.lines[ first: last + 1 ]
 		return list( get_str( line ) for line in lines )
-
-	def opposite_lr( self, side ):
-		if side == directions.LEFT:
-			return directions.RIGHT
-		elif side == directions.RIGHT:
-			return directions.LEFT
-		else:
-			raise Exception( "Expected either LEFT or RIGHT.  Got '%s'."
-				% str( side ) )
 
 	def move_cursor( self, dr, shift_pressed ):
 		# TODO: don't redraw whole screen when scrolling?

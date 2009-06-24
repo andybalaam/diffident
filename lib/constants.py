@@ -28,6 +28,15 @@ class directions( object ):
 	UP    = 2
 	DOWN  = 3
 
+	def opposite_lr( side ):
+		if side == directions.LEFT:
+			return directions.RIGHT
+		elif side == directions.RIGHT:
+			return directions.LEFT
+		else:
+			raise Exception( "Expected either LEFT or RIGHT.  Got '%s'."
+				% str( side ) )
+	opposite_lr = staticmethod(opposite_lr) 
 
 class save_status( object ):
 	STATUS_SAVED     = 0
