@@ -629,6 +629,51 @@ def write_to_file_no_changes():
 		+ "previous 10\n"
 		)
 
+def add_lines_write_to_file():
+	fakefile = FakeFile()
+
+	staticdiffmodel = _make_static_diffmodel()
+	old_static_lines = list( ln.clone() for ln in staticdiffmodel.get_lines() )
+
+	editable = EditableDiffModel( staticdiffmodel )
+
+	# Make several overlapping changes, including a deletion
+	editable.edit_lines( 0, 2, directions.RIGHT,
+		( "edited 1a", "edited 2a", "edited 3a" ) )
+
+	editable.add_lines( 1, directions.LEFT,
+		[ "Unimportant 1", "Unimportant 2" ] )
+
+	editable.edit_lines( 3, 5, directions.RIGHT,
+		( "edited 2b", "edited 3b", "edited 4b" ) )
+
+	editable.add_lines( 3, directions.RIGHT,
+		[ "Added 1", "Added 2" ] )
+
+	editable.delete_lines( 3, 3, directions.RIGHT )
+
+	editable.edit_lines( 6, 8, directions.RIGHT,
+		( "edited 3c", "edited 4c", "edited 5c" ) )
+
+	editable.write_to_file( fakefile, directions.RIGHT )
+
+	assert_strings_equal( fakefile.txt,
+		  "edited 1a\n"
+		+ "Added 2\n"
+		+ "edited 2b\n"
+		+ "edited 3c\n"
+		+ "edited 4c\n"
+		+ "edited 5c\n"
+		+ "line 6 here\n"
+		+ "line 7 here\n"
+		+ "line 8 here\n"
+		+ "line 9 here\n"
+		+ "line 10 here\n"
+		)
+
+	assert_lines_lists_equal( old_static_lines, staticdiffmodel.get_lines() )
+
+
 def add_lines_get_num_lines():
 	"""The number of lines is correctly reported when lines have been added."""
 
@@ -1086,6 +1131,42 @@ def add_then_edit():
 	assert_strings_equal( ln.left, "line 2 here" )
 	assert_strings_equal( ln.right, "line 2 here" )
 
+def add_then_delete():
+	"""If we add some lines and then delete some of them later we get
+	the right result."""
+
+	staticdiffmodel = _make_static_diffmodel()
+	editable = EditableDiffModel( staticdiffmodel )
+
+	editable.add_lines( 1, directions.RIGHT,
+		[ "Added line 1a", "Added line 1b", "Added line 1c" ] )
+
+	editable.delete_lines( 2, 2, directions.RIGHT )
+
+	# Get some lines containing the add
+	lines = editable.get_lines( 0, 5 )
+	assert( len( lines ) == 5 )
+
+	ln = lines[0]
+	assert_strings_equal( ln.left, "line 1 here" )
+	assert_strings_equal( ln.right, "line 1 here" )
+
+	ln = lines[1]
+	assert_strings_equal( ln.left, None )
+	assert_strings_equal( ln.right, "Added line 1a" )
+
+	ln = lines[2]
+	assert_strings_equal( ln.left, None )
+	assert_strings_equal( ln.right, None )
+
+	ln = lines[3]
+	assert_strings_equal( ln.left, None )
+	assert_strings_equal( ln.right, "Added line 1c" )
+
+	ln = lines[4]
+	assert_strings_equal( ln.left, "line 2 here" )
+	assert_strings_equal( ln.right, "line 2 here" )
+
 def several_edits_and_adds():
 	staticdiffmodel = _make_static_diffmodel()
 	old_static_lines = list( ln.clone() for ln in staticdiffmodel.get_lines() )
@@ -1392,8 +1473,6 @@ def run():
 	delete_line_plus_edits()
 	edit_doesnt_change_line()
 	edit_doesnt_change_anything()
-	write_to_file()
-	write_to_file_no_changes()
 
 	add_lines_get_num_lines()
 	add_lines_before()
@@ -1406,10 +1485,14 @@ def run():
 	add_lines_ask_for_all()
 	add_inside_another_add()
 	add_then_edit()
+	add_then_delete()
 	several_edits_and_adds()
 	add_at_beginning()
 	add_at_end()
-	# TODO: implement: add_lines_write_to_file()
+
+	write_to_file()
+	write_to_file_no_changes()
+	add_lines_write_to_file()
 
 	has_edit_affecting_side()
 	has_edit_affecting_side_nullchange()
