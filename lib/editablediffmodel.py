@@ -26,21 +26,15 @@ class EditableDiffModel( object ):
 	"""An abstract model of an editable set of differences between 2 files."""
 
 	class Add( object ):
+		# TODO: combine common parts with Edit
 		def __init__( self, start_line, side, new_strs ):
 			self.start_line = start_line
 			self.num_added_lines = len( new_strs )
 			self.end_line = start_line + self.num_added_lines
-
-			# TODO: don't repeat yourself here
-			if side == directions.LEFT:
-				self.lines = [ DiffLine( s, None, difflinetypes.DIFFERENT,
-					True, False ) for s in new_strs ]
-			else:
-				self.lines = [ DiffLine( None, s, difflinetypes.DIFFERENT,
-					False, True ) for s in new_strs ]
+			self.new_strs = new_strs
+			self.side = side
 
 		def apply_to( self, annotated_lines, edit_num, save_points ):
-
 			reduce_line_num_by = 0
 
 			first_annotated_line = None
@@ -60,19 +54,41 @@ class EditableDiffModel( object ):
 					self.num_added_lines )
 
 			any_gaps_left = False
-			for array_index, line_num in enumerate( annotated_lines ):
-				# We only process ints - if this is not an int, it is a line
-				# that we have already modified.
-				if line_num.__class__ == int:
-					if self.start_line <= line_num < self.end_line:
+			for array_index, line in enumerate( annotated_lines ):
+				if line.__class__ == int:
+					if self.start_line <= line < self.end_line:
+						# Create an EditingLine that is already fully edited -
+						# no previous edit could have affected it because
+						# it didn't exist
+						after_save = ( edit_num >= save_points[self.side] )
+						editcol = EditableDiffModel.EditingLine( line )
+						editcol.maybe_set_side( self.side,
+							self.new_strs[line - self.start_line], after_save )
+						editcol.maybe_set_side(
+							directions.opposite_lr( self.side ), None, False )
 						# TODO: can we avoid an array lookup by using an
 						#       iterator?
-						annotated_lines[array_index] = (
-							self.lines[line_num - self.start_line] )
+						annotated_lines[array_index] = editcol
 						reduce_line_num_by += 1
 					else:
 						any_gaps_left = True
 						annotated_lines[array_index] -= reduce_line_num_by
+				else:
+					# TODO: combine with "if" part
+					if self.start_line <= line.line_num < self.end_line:
+						if not line.is_fully_edited():
+							after_save = ( edit_num >= save_points[self.side] )
+							line.maybe_set_side( self.side,
+								self.new_strs[line.line_num - self.start_line],
+								after_save )
+							line.maybe_set_side(
+								directions.opposite_lr( self.side ),
+								None, False )
+							reduce_line_num_by += 1
+					else:
+						line.line_num -= reduce_line_num_by
+					if not any_gaps_left:
+						any_gaps_left = not line.is_fully_edited()
 
 			return any_gaps_left
 
@@ -120,6 +136,11 @@ class EditableDiffModel( object ):
 							self.new_strs[line - self.start_line], after_save )
 						annotated_lines[array_index] = editcol
 				else:
+					# type-ish checks
+					#assert( "line_num" in line.__dict__ )
+					#assert( line.is_fully_edited )
+					#assert( line.maybe_set_side )
+
 					if self.start_line <= line.line_num < self.end_line:
 						if not line.is_fully_edited():
 							new_str = self.new_strs[line.line_num -
@@ -159,7 +180,7 @@ class EditableDiffModel( object ):
 		# ints to indicate which line number should be inserted in which place,
 		# and as edits are found for each line number, the ints are replaced
 		# with DiffLine objects.
-		annotated_lines = list( xrange( start, end ) )
+		annotated_lines = range( start, end )
 
 		# TODO: make a nice iterator for this loop?
 		# Loop through all edits in reverse order, working out the
@@ -309,6 +330,7 @@ class EditableDiffModel( object ):
 		_NOT_EDITED_YET = NotEditedYet()
 
 		def __init__( self, line_num ):
+
 			DiffLine.__init__( self,
 				EditableDiffModel.EditingLine._NOT_EDITED_YET,
 				EditableDiffModel.EditingLine._NOT_EDITED_YET,
@@ -348,8 +370,15 @@ class EditableDiffModel( object ):
 			return a DiffLine object representing the final version
 			of this line."""
 
-			self.maybe_set_side( directions.LEFT,  static_line.left,  False )
-			self.maybe_set_side( directions.RIGHT, static_line.right, False )
+			if static_line is None:
+				left = None
+				right = None
+			else:
+				left = static_line.left
+				right = static_line.right
+
+			self.maybe_set_side( directions.LEFT,  left,  False )
+			self.maybe_set_side( directions.RIGHT, right, False )
 
 			return DiffLine.clone( self )
 
