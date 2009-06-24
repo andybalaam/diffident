@@ -34,6 +34,13 @@ class EditableDiffModel( object ):
 			self.new_strs = new_strs
 			self.side = side
 
+		def _update_editing_line( self, line, line_num, edit_num, save_points ):
+			after_save = ( edit_num >= save_points[self.side] )
+			line.maybe_set_side( self.side,
+				self.new_strs[line_num - self.start_line], after_save )
+			line.maybe_set_side(
+				directions.opposite_lr( self.side ), None, False )
+
 		def apply_to( self, annotated_lines, edit_num, save_points ):
 			reduce_line_num_by = 0
 
@@ -56,34 +63,33 @@ class EditableDiffModel( object ):
 			any_gaps_left = False
 			for array_index, line in enumerate( annotated_lines ):
 				if line.__class__ == int:
+					# This line hasn't been edited at all
 					if self.start_line <= line < self.end_line:
+						# If this line is touched by this Add
+
 						# Create an EditingLine that is already fully edited -
 						# no previous edit could have affected it because
 						# it didn't exist
-						after_save = ( edit_num >= save_points[self.side] )
-						editcol = EditableDiffModel.EditingLine( line )
-						editcol.maybe_set_side( self.side,
-							self.new_strs[line - self.start_line], after_save )
-						editcol.maybe_set_side(
-							directions.opposite_lr( self.side ), None, False )
+						editingline = EditableDiffModel.EditingLine( line )
+						self._update_editing_line( editingline, line, edit_num,
+							save_points )
+						
 						# TODO: can we avoid an array lookup by using an
 						#       iterator?
-						annotated_lines[array_index] = editcol
+						annotated_lines[array_index] = editingline
 						reduce_line_num_by += 1
 					else:
 						any_gaps_left = True
 						annotated_lines[array_index] -= reduce_line_num_by
 				else:
-					# TODO: combine with "if" part
+					# line is a EditableDiffModel.EditingLine indicating
+					# that we have edited it before
 					if ( self.start_line <= line.line_num < self.end_line and
 							not line.is_fully_edited() ):
-						after_save = ( edit_num >= save_points[self.side] )
-						line.maybe_set_side( self.side,
-							self.new_strs[line.line_num - self.start_line],
-							after_save )
-						line.maybe_set_side(
-							directions.opposite_lr( self.side ),
-							None, False )
+						# This line is affected by this Add
+						self._update_editing_line( line, line.line_num,
+							edit_num, save_points )
+
 						reduce_line_num_by += 1
 					else:
 						line.line_num -= reduce_line_num_by
