@@ -14,7 +14,7 @@ Next:
 + ncurses: tests for status messages on next etc.
 + ncurses: tests for status messages on save
 + ncurses: can delete lines
-- editablediffmodel: can add lines
++ editablediffmodel: can add lines
 - Fix or remove all TODOs in code
 - Split EditableDiffModel into several files
 - ncurses: can add lines
