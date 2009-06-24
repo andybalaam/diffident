@@ -156,6 +156,7 @@ class EditableDiffModel( object ):
 	def __init__( self, staticdiffmodel ):
 		self.staticdiffmodel = staticdiffmodel
 		self.edits = []
+		self.num_added_lines = 0
 
 		# Save points are the array index of the edit on which
 		# we saved the file.
@@ -214,14 +215,7 @@ class EditableDiffModel( object ):
 			return lines[0]
 
 	def get_num_lines( self ):
-		# TODO: cache this value
-
-		num_lines = self.staticdiffmodel.get_num_lines()
-
-		for edit in self.edits:
-			num_lines += edit.num_added_lines
-
-		return num_lines
+		return self.staticdiffmodel.get_num_lines() + self.num_added_lines
 
 	# Our own public functions
 
@@ -255,8 +249,9 @@ class EditableDiffModel( object ):
 			first_line_num, last_line_num + 1, side, nones ) )
 
 	def add_lines( self, before_line_num, side, strs ):
-		self.edits.append( EditableDiffModel.Add( before_line_num, side,
-			strs ) )
+		add = EditableDiffModel.Add( before_line_num, side, strs )
+		self.edits.append( add )
+		self.num_added_lines += add.num_added_lines
 
 	def write_to_file( self, fl, side ):
 		# We write this many lines at a time
@@ -302,7 +297,7 @@ class EditableDiffModel( object ):
 	
 	def _existing_lines_different( self, first_line_num, last_line_num,
 			side, strs ):
-		# TODO: If this is slow, the UI can probably perform this check for us.
+		# NOTE: If this is slow, the UI can probably perform this check for us.
 		#       It should be ok though because it only operates on the
 		#       visible set of lines, not all of them.
 
