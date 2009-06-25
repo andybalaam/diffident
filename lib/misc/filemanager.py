@@ -1,6 +1,6 @@
 
-from lib.constants import directions
-from lib.constants import save_status
+from lib.misc.constants import directions
+from lib.misc.constants import save_status
 
 class FileManager( object ):
 	def __init__( self, filename_left, filename_right ):

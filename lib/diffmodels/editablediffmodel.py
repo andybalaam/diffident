@@ -19,8 +19,8 @@ import itertools
 
 from diffline import DiffLine
 
-from lib.constants import difflinetypes
-from lib.constants import directions
+from lib.misc.constants import difflinetypes
+from lib.misc.constants import directions
 
 class EditableDiffModel( object ):
 	"""An abstract model of an editable set of differences between 2 files."""

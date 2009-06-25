@@ -16,7 +16,7 @@
 #   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import re
-from lib.constants import difflinetypes
+from lib.misc.constants import difflinetypes
 
 def is_x_line( line, x ):
 	# TODO exclude only lines exactly matching the pattern for the beginning
@@ -163,7 +163,7 @@ class UnifiedDiffParser( object ):
 		call the supplied line_callback function with three arguments:
 		the line on the left (or None if this is an ADD),
 		the line on the right (or None if this is a REMOVE),
-		and the type of line (a constant from lib.difflinetypes)."""
+		and the type of line (a constant from constants.difflinetypes)."""
 
 		diff_iter = self.diff.__iter__()
 		left_iter = UnifiedDiffParser.CountingIter( self.left_file.__iter__() )

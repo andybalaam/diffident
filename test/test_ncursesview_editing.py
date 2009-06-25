@@ -19,13 +19,13 @@ import curses
 
 from test.asserts import assert_strings_equal
 
-from lib.diffline import DiffLine
+from lib.diffmodels.diffline import DiffLine
 from testlib.fakediffmodel import FakeDiffModel
 
-from lib.constants import directions
-from lib.constants import difflinetypes
+from lib.misc.constants import directions
+from lib.misc.constants import difflinetypes
 
-from lib.ncursesview import NCursesView
+from lib.views.ncursesview import NCursesView
 
 class EditTracingFakeDiffModel( FakeDiffModel ):
 	def __init__( self ):

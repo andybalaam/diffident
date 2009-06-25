@@ -17,11 +17,11 @@
 
 from test.asserts import assert_strings_equal
 
-from lib.diffline import DiffLine
+from lib.diffmodels.diffline import DiffLine
 from testlib.fakediffmodel import FakeDiffModel
 
-from lib.constants import difflinetypes
-from lib.listview import ListView
+from lib.misc.constants import difflinetypes
+from lib.views.listview import ListView
 
 def same():
 

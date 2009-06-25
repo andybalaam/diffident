@@ -25,7 +25,7 @@ class DiffLine( object ):
 		  None if this is an ADD line.
 		- right is the line in the right file, or
 		  None if this is a REMOVE line.
-		- status is a constant from lib.difflinetypes describing the type
+		- status is a constant from constants.difflinetypes describing the type
 		  of line this is: IDENTICAL, DIFFERENT, ADD or REMOVE."""
 
 		self.left = left

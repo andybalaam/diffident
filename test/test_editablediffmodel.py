@@ -19,13 +19,13 @@ import itertools
 
 from asserts import assert_strings_equal
 
-from lib.diffline import DiffLine
+from lib.diffmodels.diffline import DiffLine
 from testlib.fakediffmodel import FakeDiffModel
 
-from lib.constants import difflinetypes
-from lib.constants import directions
+from lib.misc.constants import difflinetypes
+from lib.misc.constants import directions
 
-from lib.editablediffmodel import EditableDiffModel
+from lib.diffmodels.editablediffmodel import EditableDiffModel
 
 def _make_static_diffmodel():
 	staticdiffmodel = FakeDiffModel()

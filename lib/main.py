@@ -17,12 +17,12 @@
 
 import os
 
-from lib.unifieddiffparser import UnifiedDiffParser
-from lib.diffmodel import DiffModel
-from lib.editablediffmodel import EditableDiffModel
-from lib.filemanager import FileManager
-from lib.listview import ListView
-from lib.ncursesview import NCursesView
+from lib.parsers.unifieddiffparser import UnifiedDiffParser
+from lib.diffmodels.diffmodel import DiffModel
+from lib.diffmodels.editablediffmodel import EditableDiffModel
+from lib.misc.filemanager import FileManager
+from lib.views.listview import ListView
+from lib.views.ncursesview import NCursesView
 
 def diff_2_files( filename_left, filename_right, launch_viewer, sendkeys ):
 

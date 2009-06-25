@@ -17,11 +17,11 @@
 
 import curses
 
-from lib.constants import difflinetypes
-from lib.constants import directions
-from lib.constants import save_status
+from lib.misc.constants import difflinetypes
+from lib.misc.constants import directions
+from lib.misc.constants import save_status
 
-from translation import _
+from lib.misc.translation import _
 
 NEXT_DIFF_MARGIN = 3
 
