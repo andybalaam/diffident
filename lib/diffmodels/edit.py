@@ -43,11 +43,11 @@ class Edit( object ):
 			line.maybe_set_side(
 				directions.opposite_lr( self.side ), None, False )
 
-	def apply_to( self, annotated_lines, edit_num, save_points ):
+	def apply_to( self, editing_lines, edit_num, save_points ):
 		reduce_line_num_by = 0
 
 		first_editable_line = None
-		for ln in annotated_lines:
+		for ln in editing_lines:
 			if not ln.is_fully_edited():
 				first_editable_line = ln.line_num
 				break
@@ -68,7 +68,7 @@ class Edit( object ):
 				self.num_added_lines )
 
 		any_gaps_left = False
-		for array_index, line in enumerate( annotated_lines ):
+		for array_index, line in enumerate( editing_lines ):
 			if ( self.start_line <= line.line_num < self.end_line and
 					not line.is_fully_edited() ):
 				# This line is affected by this Edit

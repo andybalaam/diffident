@@ -59,7 +59,7 @@ class EditableDiffModel( object ):
 		# ints to indicate which line number should be inserted in which place,
 		# and as edits are found for each line number, the ints are replaced
 		# with DiffLine objects.
-		annotated_lines = list( EditingLine( line_num )
+		editing_lines = list( EditingLine( line_num )
 			for line_num in xrange( start, end ) )
 
 		# Loop through all edits in reverse order, noting the
@@ -68,14 +68,14 @@ class EditableDiffModel( object ):
 		# list of lines we have made.
 		for edit_num, edit in diffidenttools.reversed_enumerate( self.edits ):
 
-			any_gaps_left = edit.apply_to( annotated_lines, edit_num,
+			any_gaps_left = edit.apply_to( editing_lines, edit_num,
 				self.save_points )
 
 			if not any_gaps_left:
 				break
 
 		ret = list( edited_line.create_filled_in_diffline(
-			self.staticdiffmodel ) for edited_line in annotated_lines )
+			self.staticdiffmodel ) for edited_line in editing_lines )
 
 		return ret
 
