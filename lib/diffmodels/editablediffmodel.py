@@ -62,8 +62,7 @@ class EditableDiffModel( object ):
 		annotated_lines = list( EditingLine( line_num )
 			for line_num in xrange( start, end ) )
 
-		# TODO: make a nice iterator for this loop?
-		# Loop through all edits in reverse order, working out the
+		# Loop through all edits in reverse order, noting the
 		# edit number (so that we can decide which edits should cause
 		# an "edited" flag to be set), and applying them to the
 		# list of lines we have made.

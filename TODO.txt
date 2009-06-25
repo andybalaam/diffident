@@ -15,8 +15,8 @@ Next:
 + ncurses: tests for status messages on save
 + ncurses: can delete lines
 + editablediffmodel: can add lines
-- Fix or remove all TODOs in code
-- Split EditableDiffModel into several files
++ Fix or remove all EditableDiffModel refactoring TODOs in code
++ Split EditableDiffModel into several files
 - ncurses: can add lines
 - editablediffmodel: undo/redo works
 - ncurses: Can see long lines at bottom? (not short lines)
@@ -60,6 +60,7 @@ Big:
   We would also need to handle multi-file diffs.  Showing all files as one
   side-by-side diff could potentially make us a much better complement to git?
 
+- Create a scalability test case
 - Make scalable to big files.  DiffModel would only cache a certain number of
   lines, and call into the parser whenever it needed to get some other lines.
   Preferably, we should call the underlying diff program and send its output
