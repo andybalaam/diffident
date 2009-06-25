@@ -17,12 +17,10 @@
 
 import itertools
 
-from diffline import DiffLine
-
-from lib.misc.constants import difflinetypes
 from lib.misc.constants import directions
 
 from edit import Edit
+from editingline import EditingLine
 
 class EditableDiffModel( object ):
 	"""An abstract model of an editable set of differences between 2 files."""
@@ -58,7 +56,7 @@ class EditableDiffModel( object ):
 		# ints to indicate which line number should be inserted in which place,
 		# and as edits are found for each line number, the ints are replaced
 		# with DiffLine objects.
-		annotated_lines = list( EditableDiffModel.EditingLine( line_num )
+		annotated_lines = list( EditingLine( line_num )
 			for line_num in xrange( start, end ) )
 
 		# TODO: make a nice iterator for this loop?
@@ -213,71 +211,4 @@ class EditableDiffModel( object ):
 		existing_strs = map( get_side, existing_lines )
 
 		return ( existing_strs != strs )
-
-	class EditingLine( DiffLine ):
-		"""A container which accumulates edits to a line, and remembers
-		the line number of the line being edited."""
-
-		class NotEditedYet( object ):
-			"""A dummy class indicating that one side of a DiffLine is
-			missing. This will never compare equal with a string or None,
-			which are what are normally stored in the DiffLine.left or
-			right."""
-			pass
-		_NOT_EDITED_YET = NotEditedYet()
-
-		def __init__( self, line_num ):
-
-			DiffLine.__init__( self,
-				EditableDiffModel.EditingLine._NOT_EDITED_YET,
-				EditableDiffModel.EditingLine._NOT_EDITED_YET,
-				difflinetypes.IDENTICAL )
-
-			self.line_num = line_num
-
-		def maybe_set_side( self, side, value, edited ):
-			if side == directions.LEFT:
-				if self.left == EditableDiffModel.EditingLine._NOT_EDITED_YET:
-					self.left = value
-					self.left_edited = edited
-					self._calc_properties()
-			else:
-				if ( self.right ==
-						EditableDiffModel.EditingLine._NOT_EDITED_YET ):
-					self.right = value
-					self.right_edited = edited
-					self._calc_properties()
-
-		def _calc_properties( self ):
-			if self.left == self.right:
-				self.status = difflinetypes.IDENTICAL
-			else:
-				self.status = difflinetypes.DIFFERENT
-
-		def is_fully_edited( self ):
-			return EditableDiffModel.EditingLine._NOT_EDITED_YET not in (
-				self.left, self.right )
-
-		def create_filled_in_diffline( self, staticdiffmodel ):
-			"""If any parts of this line have not yet been affected by
-			an edit, absorb them from the supplied static line and
-			return a DiffLine object representing the final version
-			of this line."""
-
-			if not self.is_fully_edited():
-
-				static_line = staticdiffmodel.get_line( self.line_num )
-
-				if static_line is None:
-					left = None
-					right = None
-				else:
-					left = static_line.left
-					right = static_line.right
-	
-				self.maybe_set_side( directions.LEFT,  left,  False )
-				self.maybe_set_side( directions.RIGHT, right, False )
-
-			return DiffLine.clone( self )
-
 
