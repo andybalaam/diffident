@@ -22,8 +22,7 @@ from diffline import DiffLine
 from lib.misc.constants import difflinetypes
 from lib.misc.constants import directions
 
-from addedit import AddEdit
-from changeedit import ChangeEdit
+from edit import Edit
 
 class EditableDiffModel( object ):
 	"""An abstract model of an editable set of differences between 2 files."""
@@ -109,29 +108,40 @@ class EditableDiffModel( object ):
 		side should be directions.LEFT or RIGHT.
 		lines should be iterable and len()-able"""
 
-		# Assure ourselves first is less than last
-		if first_line_num > last_line_num:
-			first_line_num, last_line_num = last_line_num, first_line_num
-
-		# Change this into a standard range - the last line is not included
-		last_line_num += 1
+		first_line_num, last_line_num = self._standard_range(
+			first_line_num, last_line_num )
 
 		assert( len( lines ) == ( last_line_num - first_line_num ) )
 
 		# If this edit changes anything, store it
-		if self._existing_lines_different(
-				first_line_num, last_line_num, side,  lines ):
-			self.edits.append( ChangeEdit(
-				first_line_num, last_line_num, side, lines ) )
+		if self._existing_lines_different( first_line_num, last_line_num,
+				side,  lines ):
+			edit = Edit( first_line_num, side, lines, is_add=False )
+			self.edits.append( edit )
 
 	def delete_lines( self, first_line_num, last_line_num, side ):
-		num_nones = 1 + last_line_num - first_line_num
+		"""Delete the lines specified and replace them with empty lines.
+		Note that last_line_num IS included in the range, and it is allowed
+		to be smaller than first_line_num.
+		side should be directions.LEFT or RIGHT."""
+
+		# We implement this by simply doing an edit that sets the lines
+		# to None.
+
+		first_line_num, last_line_num = self._standard_range(
+			first_line_num, last_line_num )
+
+		num_nones = last_line_num - first_line_num
 		nones = [ None ] * num_nones
-		self.edits.append( ChangeEdit(
-			first_line_num, last_line_num + 1, side, nones ) )
+
+		edit = Edit( first_line_num, side, nones, is_add=False )
+		self.edits.append( edit )
 
 	def add_lines( self, before_line_num, side, strs ):
-		add = AddEdit( before_line_num, side, strs )
+		"""Insert the lines supplied before the line specified.
+		side should be directions.LEFT or RIGHT."""
+
+		add = Edit( before_line_num, side, strs, is_add=True )
 		self.edits.append( add )
 		self.num_added_lines += add.num_added_lines
 
@@ -176,7 +186,17 @@ class EditableDiffModel( object ):
 		self.save_points[side] = len( self.edits )
 
 	# Private functions
-	
+
+	def _standard_range( self, first, last ):
+		# Assure ourselves first is <= than last
+		if first > last:
+			first, last = last, first
+
+		# Change this into a standard range - the last line was not included
+		last += 1
+
+		return ( first, last )
+
 	def _existing_lines_different( self, first_line_num, last_line_num,
 			side, strs ):
 		# NOTE: If this is slow, the UI can probably perform this check for us.
@@ -221,15 +241,12 @@ class EditableDiffModel( object ):
 					self.left = value
 					self.left_edited = edited
 					self._calc_properties()
-					return True
 			else:
 				if ( self.right ==
 						EditableDiffModel.EditingLine._NOT_EDITED_YET ):
 					self.right = value
 					self.right_edited = edited
 					self._calc_properties()
-					return True
-			return False
 
 		def _calc_properties( self ):
 			if self.left == self.right:
