@@ -5,10 +5,10 @@ Copyright (C) 2009 by Andy Balaam
 
 http://www.artificialworlds.net/wiki/Diffident
 
-  Diffident is intended to be a diff editor that allows you to adjust
-  the files you are comparing. It is also intended to be a patch editor.
+Diffident is a coloured side-by-side diff viewer and editor that works in a
+terminal.
 
-Currently, Diffident is a coloured side-by-side diff viewer that works in a terminal.
+There are also plans to make it possible to edit patch files with Diffident.
 
 Usage
 -----
