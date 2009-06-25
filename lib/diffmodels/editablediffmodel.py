@@ -18,6 +18,7 @@
 import itertools
 
 from lib.misc.constants import directions
+from lib.misc import diffidenttools
 
 from edit import Edit
 from editingline import EditingLine
@@ -66,8 +67,7 @@ class EditableDiffModel( object ):
 		# edit number (so that we can decide which edits should cause
 		# an "edited" flag to be set), and applying them to the
 		# list of lines we have made.
-		for r_edit_num, edit in enumerate( reversed( self.edits ) ):
-			edit_num = len( self.edits ) - r_edit_num - 1
+		for edit_num, edit in diffidenttools.reversed_enumerate( self.edits ):
 
 			any_gaps_left = edit.apply_to( annotated_lines, edit_num,
 				self.save_points )

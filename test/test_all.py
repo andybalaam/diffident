@@ -17,9 +17,10 @@
 
 import os
 
-import test_listview
+import test_diffidenttools
 import test_diffmodel
 import test_editablediffmodel
+import test_listview
 import test_ncursesview
 import test_ncursesview_editing
 import test_ncursesview_header
@@ -31,8 +32,9 @@ import test_ncursesview_status
 import test_unifieddiffparser
 
 def run_quick_tests():
-	test_editablediffmodel.run()
+	test_diffidenttools.run()
 	test_diffmodel.run()
+	test_editablediffmodel.run()
 	test_listview.run()
 	test_unifieddiffparser.run()
 
