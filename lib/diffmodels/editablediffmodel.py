@@ -22,6 +22,8 @@ from lib.misc.constants import directions
 from edit import Edit
 from editingline import EditingLine
 
+FILE_WRITING_CHUNK_SIZE = 1000  # When we write to file we use blocks this size
+
 class EditableDiffModel( object ):
 	"""An abstract model of an editable set of differences between 2 files."""
 
@@ -145,7 +147,7 @@ class EditableDiffModel( object ):
 
 	def write_to_file( self, fl, side ):
 		# We write this many lines at a time
-		chunk_size = 1000
+		chunk_size = FILE_WRITING_CHUNK_SIZE
 
 		num_lines = self.get_num_lines()
 		next_lnum = 0
