@@ -54,9 +54,9 @@ def normal():
                      Select page up/down - </>                                  
                        Scroll left/right - z/x                                  
                          Copy left/right - [/]                                  
+                             Insert line - a                                    
                           Delete line(s) - d                                    
                             Save changes - s                                    
-                                                                                
                                                                                 
    Diffident is Copyright (C) 2009 Andy Balaam and the Diffident developers.    
                   Diffident comes with ABSOLUTELY NO WARRANTY.                  

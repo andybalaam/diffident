@@ -40,6 +40,7 @@ HELP_MESSAGES = [
 	( _("Select page up/down"), _("</>") ),
 	( _("Scroll left/right"), _("z/x") ),
 	( _("Copy left/right"), _("[/]") ),
+	( _("Insert line"), _("a") ),
 	( _("Delete line(s)"), _("d") ),
 	( _("Save changes"), _("s") ),
 ]
@@ -195,6 +196,9 @@ class NCursesView( object ):
 		elif key == ord( "]" ): # Copy lines left to right
 			status_line = self.copy_lines( directions.RIGHT )
 
+		elif key == ord( "a" ): # Add a line
+			status_line = self.add_line()
+
 		elif key == ord( "d" ): # Delete selected lines
 			status_line = self.delete_lines()
 
@@ -328,6 +332,17 @@ class NCursesView( object ):
 		self.draw_header_window()
 
 		# TODO: only update changed lines
+		self.set_top_line( self.top_line )
+		self.draw_screen()
+
+	def add_line( self ):
+		last = self.mycursor.get_ordered_begin_and_end()[1]
+
+		self.diffmodel.add_lines( last + self.top_line,
+			self.mycursor.lr, ("",) )
+		self.draw_header_window()
+
+		# TODO: only update changed lines?
 		self.set_top_line( self.top_line )
 		self.draw_screen()
 

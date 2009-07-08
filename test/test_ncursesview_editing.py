@@ -40,6 +40,10 @@ class EditTracingFakeDiffModel( FakeDiffModel ):
 		self.trace.append( ( "delete_lines",
 			first_line_num, last_line_num, side ) )
 
+	def add_lines( self, before_line_num, side, strs ):
+		self.trace.append( ( "add_lines",
+			before_line_num, side, strs ) )
+
 class EditReportingFakeDiffModel( FakeDiffModel ):
 	def __init__( self ):
 		super( EditReportingFakeDiffModel, self ).__init__()
@@ -60,6 +64,12 @@ def _make_view():
 		DiffLine( "left 04", "right 04", difflinetypes.DIFFERENT ),
 		DiffLine( "left 05", "right 05", difflinetypes.DIFFERENT ),
 		DiffLine( "left 06", "right 06", difflinetypes.DIFFERENT ),
+		DiffLine( "left 07", "right 07", difflinetypes.DIFFERENT ),
+		DiffLine( "left 08", "right 08", difflinetypes.DIFFERENT ),
+		DiffLine( "left 09", "right 09", difflinetypes.DIFFERENT ),
+		DiffLine( "left 10", "right 10", difflinetypes.DIFFERENT ),
+		DiffLine( "left 11", "right 11", difflinetypes.DIFFERENT ),
+		DiffLine( "left 12", "right 12", difflinetypes.DIFFERENT ),
 	]
 
 	view = NCursesView( diffmodel )
@@ -100,6 +110,16 @@ def delete_lines():
 		[ ( "delete_lines", 3, 5, directions.RIGHT ),
 		] )
 
+def add_lines():
+	view, diffmodel = _make_view()
+	actions = [ curses.KEY_NPAGE, "k", "k", "a", "j", "j", "a", "l", "k", "a" ]
+	view.show( actions )
+
+	assert( diffmodel.trace ==
+		[ ( "add_lines", 3, directions.LEFT, ('',) ),
+		  ( "add_lines", 5, directions.LEFT, ('',) ),
+		  ( "add_lines", 4, directions.RIGHT, ('',) ),
+		] )
 
 def display_edited_lines():
 	diffmodel = FakeDiffModel()
@@ -190,4 +210,5 @@ def run():
 	display_file_modified_left_short()
 	display_file_modified_right()
 	display_file_modified_both()
+	add_lines()
 

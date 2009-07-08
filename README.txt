@@ -38,8 +38,9 @@ Keyboard shortcuts
  Select page up/down - </>
    Scroll left/right - z/x
      Copy left/right - [/]
-         Delete line - d
-        Save changes - s  (NOTE: saves the file containing the cursor)
+         Insert line - a  (Adds a line above the selected line)
+      Delete line(s) - d
+        Save changes - s  (Saves the file containing the cursor)
 
 Code
 ----
