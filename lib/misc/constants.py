@@ -15,6 +15,10 @@
 #   with this program; if not, write to the Free Software Foundation, Inc.,
 #   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+class cursor_column_state( object ):
+	COLUMN_ALL    = 0
+	COLUMN_SINGLE = 1
+
 class difflinetypes( object ):
 	"""The types of diff line there can be."""
 	DIFFERENT    = 0
@@ -41,4 +45,5 @@ class directions( object ):
 class save_status( object ):
 	STATUS_SAVED     = 0
 	STATUS_NOCHANGES = 1
+
 

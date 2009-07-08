@@ -17,15 +17,16 @@
 
 import curses
 
+from lib.misc.constants import cursor_column_state
 from lib.misc.constants import difflinetypes
 from lib.misc.constants import directions
 from lib.misc.constants import save_status
 
 from lib.misc.translation import _
 
-NEXT_DIFF_MARGIN = 3
+from lib.views.ncursesvieweditmode import NCursesViewEditMode
 
-DEFAULT_STATUS_MESSAGE = _("Press SHIFT-H for help")
+NEXT_DIFF_MARGIN = 3
 
 HELP_MESSAGES = [
 	"",
@@ -58,6 +59,8 @@ class NCursesView( object ):
 		def __init__( self, lr, line_num ):
 			self.lr = lr
 			self.set_line_num( line_num, False )
+			self.column_status = cursor_column_state.COLUMN_ALL
+			self.column_num = 0
 
 		def add_to_line_num( self, inc, shift_pressed ):
 			self.set_line_num( self.line_num + inc, shift_pressed )
@@ -101,11 +104,13 @@ class NCursesView( object ):
 		self.mycursor = NCursesView.Cursor( directions.LEFT, 0 )
 		self.win_height = None # Modify these in test code
 		self.win_width = None  #
+		self.DEFAULT_STATUS_MESSAGE = _("Press SHIFT-H for help")
 
 	def show( self, debug_actions=None ):
 		return curses.wrapper( self.show_impl, debug_actions )
 
 	def show_impl( self, stdscr, debug_actions ):
+		#curses.meta( 1 ) # TODO: use this to support SHIFT-up, CTRL-right etc.
 		self.stdscr = stdscr
 		self.stdscr.refresh()
 		# If we are in test code and have modified these, leave them.
@@ -140,7 +145,7 @@ class NCursesView( object ):
 			self.CP_NORMAL | curses.A_REVERSE )
 
 		self.draw_header_window()
-		self.set_status_line( DEFAULT_STATUS_MESSAGE, False )
+		self.set_status_line( self.DEFAULT_STATUS_MESSAGE, False )
 
 		self.set_top_line( 0 )
 		self.draw_screen()
@@ -202,6 +207,9 @@ class NCursesView( object ):
 		elif key == ord( "d" ): # Delete selected lines
 			status_line = self.delete_lines()
 
+		elif key == ord( "e" ): # Edit mode
+			status_line = NCursesViewEditMode( self ).run()
+
 		elif key == ord( "J" ): # Extend selection down
 			status_line = self.move_cursor( directions.DOWN, True )
 		elif key == ord( "K" ): # Extend selection up
@@ -246,7 +254,7 @@ class NCursesView( object ):
 			status_line = -1
 
 		if status_line is None:
-			self.set_status_line( DEFAULT_STATUS_MESSAGE, False )
+			self.set_status_line( self.DEFAULT_STATUS_MESSAGE, False )
 		elif status_line == -1:
 			pass # An unused key was pressed
 		else:
@@ -278,7 +286,7 @@ class NCursesView( object ):
 		self.textwindow.refresh()
 		if wait_for_input:
 			self.textwindow.getch()
-			self.set_status_line( DEFAULT_STATUS_MESSAGE, False )
+			self.set_status_line( self.DEFAULT_STATUS_MESSAGE, False )
 			self.draw_screen()
 
 	def get_horizontal_scroll_width( self ):
@@ -646,6 +654,8 @@ class NCursesView( object ):
 
 	def write_line( self, ln, line_num ):
 
+		singlecolcurs_colour_pair = self.CP_NORMAL | curses.A_REVERSE
+
 		if ln.status == difflinetypes.IDENTICAL:
 			left_colour_pair  = self.CP_NORMAL
 			right_colour_pair = self.CP_NORMAL
@@ -677,21 +687,33 @@ class NCursesView( object ):
 			right_colour_pair = self.CP_EDITED
 			mid_colour_pair = self.CP_EDITED | curses.A_REVERSE
 
-		if self.mycursor.is_line_selected( line_num ):
-			if self.mycursor.lr == directions.LEFT:
-				left_colour_pair  |= curses.A_REVERSE
-			else:
-				right_colour_pair |= curses.A_REVERSE
-
 		left  = self.pad_to_width( ln.left, self.first_col, self.left_width )
 		right = self.pad_to_width( ln.right, self.first_col, self.right_width )
 
-		self.textwindow.addnstr( line_num, 0, left, self.left_width,
-			left_colour_pair )
-		self.textwindow.addnstr( line_num, self.right_start, right,
-			self.right_width, right_colour_pair )
-		self.textwindow.addnstr( line_num, self.mid_col,
-			" %s " % mid_char, 3, mid_colour_pair )
+
+		if self.mycursor.column_status == cursor_column_state.COLUMN_ALL:
+
+			if self.mycursor.is_line_selected( line_num ):
+				if self.mycursor.lr == directions.LEFT:
+					left_colour_pair  |= curses.A_REVERSE
+				else:
+					right_colour_pair |= curses.A_REVERSE
+	
+			self.textwindow.addnstr( line_num, 0, left, self.left_width,
+				left_colour_pair )
+			self.textwindow.addnstr( line_num, self.right_start, right,
+				self.right_width, right_colour_pair )
+			self.textwindow.addnstr( line_num, self.mid_col,
+				" %s " % mid_char, 3, mid_colour_pair )
+		else:
+			col_num = self.mycursor.column_num
+			if self.mycursor.lr == directions.LEFT:
+				self.textwindow.addnstr( line_num, 0, left[:col_num],
+					self.left_width, left_colour_pair )
+				self.textwindow.addnstr( line_num, col_num + 1
+					, left[col_num+1:], self.left_width, left_colour_pair )
+				self.textwindow.addnstr( line_num, col_num, left[col_num],
+					self.left_width, singlecolcurs_colour_pair )
 
 	def pad_to_width( self, string, first_col, width ):
 		if string is None:
