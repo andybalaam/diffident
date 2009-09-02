@@ -25,6 +25,9 @@ Next:
 + Fix or remove all EditableDiffModel refactoring TODOs in code
 + Split EditableDiffModel into several files
 + ncurses: can add lines
++ Create a .deb package
+- Fix bug where loading a file which contains only empty lines displays the
+  contents of the other file
 - ncurses: Can edit lines
   + Change status message when you enter edit mode
   + Show a single-column cursor
