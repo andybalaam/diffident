@@ -1,4 +1,4 @@
 #!/bin/sh
 
-__DESTDIR__/lib/diffident/diffident.py
+__PREFIX__/lib/diffident/diffident.py
 
