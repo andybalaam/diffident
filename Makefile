@@ -1,7 +1,7 @@
 APP_NAME=diffident
 VERSION=0.2
 TMP_DIR=/tmp/$(APP_NAME)
-PREFIX=/usr
+DESTDIR=/usr
 
 all:
 	mkdir -p bin/lib/diffident/
@@ -10,12 +10,15 @@ all:
 
 	mkdir -p bin/bin/
 	cp install/diffident bin/bin/diffident
-	perl -p -i -e "s@__PREFIX__@${PREFIX}@g" bin/bin/diffident
+	perl -p -i -e "s@__DESTDIR__@${DESTDIR}@g" bin/bin/diffident
+
+clean:
+	rm -rf bin pkg
 
 install:
-	mkdir -p ${PREFIX}/lib/diffident
-	cp -r bin/lib/diffident/* ${PREFIX}/lib/diffident/
-	cp install/diffident ${PREFIX}/bin/
+	mkdir -p ${DESTDIR}/lib/diffident
+	cp -r bin/lib/diffident/* ${DESTDIR}/lib/diffident/
+	cp install/diffident ${DESTDIR}/bin/
 
 pkg-src:
 	mkdir -p pkg
