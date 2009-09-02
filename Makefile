@@ -15,10 +15,14 @@ all:
 clean:
 	rm -rf bin pkg
 
-install:
+install: inst
+
+inst:
 	mkdir -p ${DESTDIR}/lib/diffident
 	cp -r bin/lib/diffident/* ${DESTDIR}/lib/diffident/
-	cp install/diffident ${DESTDIR}/bin/
+
+	mkdir -p ${DESTDIR}/bin
+	cp bin/bin/diffident ${DESTDIR}/bin/
 
 pkg-src:
 	mkdir -p pkg
