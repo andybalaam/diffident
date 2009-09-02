@@ -1,0 +1,14 @@
+Source: diffident
+Section: editors
+Priority: optional
+Maintainer: Andy Balaam <axis3x3@users.sf.net>
+Build-Depends: debhelper (>= 4.0.0), autotools-dev
+Standards-Version: 3.6.2
+
+Package: diffident
+Architecture: any
+Depends: python(>= 2.5)
+Description: Diffident
+ Diffident is a diff editor that allows you to adjust the files you are
+ comparing.
+
