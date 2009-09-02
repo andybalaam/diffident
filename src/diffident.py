@@ -26,7 +26,7 @@ import test.test_all
 def main():
 
 	parser = optparse.OptionParser( usage="%prog [options] file1 file2",
-		version="diffident-0.1" )
+		version="diffident-0.2" )
 
 	parser.add_option("", "--view", dest="view",
 		default="term", type="string",
