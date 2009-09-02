@@ -11,7 +11,11 @@ all:
 	mkdir -p bin/bin/
 	cp install/diffident bin/bin/diffident
 	perl -p -i -e "s@__PREFIX__@${PREFIX}@g" bin/bin/diffident
-	
+
+install:
+	mkdir -p ${PREFIX}/lib/diffident
+	cp -r bin/lib/diffident/* ${PREFIX}/lib/diffident/
+	cp install/diffident ${PREFIX}/bin/
 
 pkg-src:
 	mkdir -p pkg
