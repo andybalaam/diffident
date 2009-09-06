@@ -16,6 +16,7 @@
 #   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import curses
+import itertools
 
 from lib.misc.constants import cursor_column_state
 from lib.misc.constants import difflinetypes
@@ -156,10 +157,12 @@ class NCursesView( object ):
 		else:
 			# Otherwise we have a list of things to do and then
 			# take a screenshot and return it
-			for action in debug_actions:
+			for act_num, action in enumerate( debug_actions ):
 				if isinstance( action, str ):
 					action = ord( action )
-				self.process_keypress( action, False )
+				remaining_dbg_acts = itertools.islice(
+					debug_actions, act_num, None )
+				self.process_keypress( action, remaining_dbg_acts, False )
 			return ( self.screenshot_textwindow(),
 				self.screenshot_header(),
 				self.screenshot_status() )
@@ -177,7 +180,8 @@ class NCursesView( object ):
 			key = self.stdscr.getch()
 			keep_going = self.process_keypress( key )
 
-	def process_keypress( self, key, wait_for_input=True ):
+	def process_keypress( self, key, remaining_dbg_acts=None,
+			wait_for_input=True ):
 
 		status_line = -1
 
@@ -208,7 +212,7 @@ class NCursesView( object ):
 			status_line = self.delete_lines()
 
 		elif key == ord( "e" ): # Edit mode
-			status_line = NCursesViewEditMode( self ).run()
+			status_line = NCursesViewEditMode( self ).run( remaining_dbg_acts )
 
 		elif key == ord( "J" ): # Extend selection down
 			status_line = self.move_cursor( directions.DOWN, True )

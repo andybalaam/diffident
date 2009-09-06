@@ -46,4 +46,7 @@ class save_status( object ):
 	STATUS_SAVED     = 0
 	STATUS_NOCHANGES = 1
 
+class keys( object ):
+	KEY_ESCAPE = 27
+
 

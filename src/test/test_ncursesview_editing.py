@@ -24,6 +24,7 @@ from testlib.fakediffmodel import FakeDiffModel
 
 from lib.misc.constants import directions
 from lib.misc.constants import difflinetypes
+from lib.misc.constants import keys
 
 from lib.views.ncursesview import NCursesView
 
@@ -202,6 +203,34 @@ def display_file_modified_both():
 	assert_strings_equal( header,
 		"[ni]*filename_left.txt             *filename_right.txt          \n" )
 
+def enter_edit_mode():
+	diffmodel = EditReportingFakeDiffModel()
+
+	view = NCursesView( diffmodel )
+	view.win_width = 50
+	view.win_height = 5
+
+	actions = [ "e" ]
+	(window, header, status ) = view.show( actions )
+
+	assert_strings_equal( status,
+		"""[mi]       Editing line.  Press ESC to finish.        
+""" )
+
+def exit_edit_mode():
+	diffmodel = EditReportingFakeDiffModel()
+
+	view = NCursesView( diffmodel )
+	view.win_width = 40
+	view.win_height = 5
+
+	actions = [ "e", keys.KEY_ESCAPE ]
+	(window, header, status ) = view.show( actions )
+
+	assert_strings_equal( status,
+		"""[ni]         Press SHIFT-H for help         
+""" )
+
 def run():
 	copy_l2r_1_line()
 	copy_r2l_multiple_lines_upside_down_after_scroll()
@@ -211,4 +240,14 @@ def run():
 	display_file_modified_right()
 	display_file_modified_both()
 	add_lines()
+
+	enter_edit_mode()
+	exit_edit_mode()
+	#type_into_empty_line()
+	#type_into_missing_line()
+	#move_right()
+	#move_right_and_type()
+	#move_left()
+	#move_left_and_type()
+	#exit_edit_mode_after_edits()
 

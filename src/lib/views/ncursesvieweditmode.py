@@ -18,22 +18,31 @@
 import curses
 
 from lib.misc.constants import cursor_column_state
+from lib.misc.constants import keys
 
 from lib.misc.translation import _
-
-KEY_ESCAPE = 27
 
 class NCursesViewEditMode( object ):
 	def __init__( self, parent_ncursesview ):
 		self.v = parent_ncursesview
 
-	def run( self ):
+	def run( self, debug_actions ):
 
 		self.v.set_status_line( _("Editing line.  Press ESC to finish."), True )
 		self.v.mycursor.column_status = cursor_column_state.COLUMN_SINGLE
 		self.v.refresh_cursor_line()
 
-		self.main_loop()
+		if debug_actions is None:
+			self.main_loop()
+		else:
+			for action in debug_actions:
+				if isinstance( action, str ):
+					action = ord( action )
+				keep_going = self.process_keypress( action )
+				if not keep_going:
+					break
+			else:
+				return -1
 
 		self.v.mycursor.column_status = cursor_column_state.COLUMN_ALL
 		self.v.refresh_cursor_line()
@@ -48,7 +57,7 @@ class NCursesViewEditMode( object ):
 	def process_keypress( self, key ):
 		keep_going = True
 
-		if key == KEY_ESCAPE: # Stop editing
+		if key == keys.KEY_ESCAPE: # Stop editing
 			keep_going = False
 
 		return keep_going
