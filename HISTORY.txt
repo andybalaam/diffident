@@ -1,3 +1,24 @@
+=== diffident-0.3 ===
+
++ ncurses: Select multiple lines
++ editablediffmodel: create class and tests
++ editablediffmodel: modified lines are returned when requested
++ editablediffmodel: EDITED_* status works
++ ncurses: Can copy from one side to the other
++ editablediffmodel: an edit is not an edit if it doesn't change the line
++ editablediffmodel: can save modified files
++ editablediffmodel: write and test EditableDiffModel.has_edit_affecting_side
++ ncurses: header indication that a file is modified
++ editablediffmodel: don't remember edits that don't change anything
++ ncurses: file modified * goes away on save
++ ncurses: tests for status messages on next etc.
++ ncurses: tests for status messages on save
++ ncurses: can delete lines
++ editablediffmodel: can add lines
++ Fix or remove all EditableDiffModel refactoring TODOs in code
++ Split EditableDiffModel into several files
++ ncurses: can add lines
++ Create a .deb package
 
 === diffident-0.2 ===
 

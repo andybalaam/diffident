@@ -211,8 +211,9 @@ class NCursesView( object ):
 		elif key == ord( "d" ): # Delete selected lines
 			status_line = self.delete_lines()
 
-		elif key == ord( "e" ): # Edit mode
-			status_line = NCursesViewEditMode( self ).run( remaining_dbg_acts )
+		# Edit mode disabled
+		#elif key == ord( "e" ): # Edit mode
+		#	status_line = NCursesViewEditMode( self ).run( remaining_dbg_acts )
 
 		elif key == ord( "J" ): # Extend selection down
 			status_line = self.move_cursor( directions.DOWN, True )

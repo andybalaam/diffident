@@ -241,8 +241,10 @@ def run():
 	display_file_modified_both()
 	add_lines()
 
-	enter_edit_mode()
-	exit_edit_mode()
+	# Edit mode disabled
+	##enter_edit_mode()
+	##exit_edit_mode()
+
 	#type_into_empty_line()
 	#type_into_missing_line()
 	#move_right()
