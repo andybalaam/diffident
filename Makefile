@@ -1,5 +1,5 @@
 APP_NAME=diffident
-VERSION=0.2
+VERSION=0.3
 TMP_DIR=/tmp/$(APP_NAME)
 PREFIX=/usr
 
@@ -23,6 +23,8 @@ inst:
 
 	mkdir -p ${DESTDIR}/${PREFIX}/bin
 	cp bin/bin/diffident ${DESTDIR}/${PREFIX}/bin/
+
+pkg-all: pkg-src pkg-deb
 
 pkg-src:
 	mkdir -p pkg
