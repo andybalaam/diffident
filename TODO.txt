@@ -5,6 +5,7 @@ Next:
 - ncurses: ask whether to quit if there are unsaved changes
 - Fix bug where loading a file which contains only empty lines displays the
   contents of the other file
+- Fix bug where added and deleted lines go yellow when you delete a line
 
 - release
 
