@@ -15,15 +15,15 @@ Usage
 
 To compare two files:
 
- diffident.py file1 file2
+ diffident file1 file2
 
 To run the tests:
 
- diffident.py --test-slow
+ diffident --test-slow
 
 For full usage information:
 
- diffident.py --help
+ diffident --help
 
 Keyboard shortcuts
 ------------------
